@@ -218,14 +218,12 @@ def achieve_legal_model(list_IDs, list_size, factor):
     
     while True:
         filename = list_IDs[random.randint(0,len(list_IDs)-1)]
-        
-        cur_factor = list_size[str(filename)]
-        
-        
+        filename = str(filename).replace("\\", "/")
+        cur_factor = list_size[filename]
+
         if cur_factor >= factor:
             continue
-        
-        
+
         label = int(os.path.basename(filename).split('_')[0])
         with open(filename, 'rb') as f:
             model = utils.binvox_rw.read_as_3d_array(f).data
