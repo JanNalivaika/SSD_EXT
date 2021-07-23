@@ -5,9 +5,8 @@ TODO
 
 
 # History (newest on top)
-21.07.21
-
-
+23.07.21
+store generated binvox and txt which contains the info which binvox are combined
 
 18.07.21
 create folder data/STL
