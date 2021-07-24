@@ -211,6 +211,23 @@ def get_label_from_csv(filename):
     return retarr[:, 6]
 
 
+def simple():
+    return "temp"
+
+
+def achieve_fixed_model(filename):
+    label = int(os.path.basename(filename).split('_')[0])
+    model_label = np.zeros((0))
+    model_label = np.append(model_label, label)
+    with open(filename, 'rb') as f:
+        model = utils.binvox_rw.read_as_3d_array(f).data
+
+    components = np.zeros((1, 64, 64, 64))
+    components[0, :, :, :] = model
+
+    return model, model_label, components
+
+
 def achieve_legal_model(list_IDs, list_size, factor):
     while True:
         filename = list_IDs[random.randint(0, len(list_IDs) - 1)]
@@ -252,12 +269,10 @@ def achieve_random_model(list_IDs, list_size, fileprefix):
         ret_model = ret_model * components[i, :, :, :]
         ChosenFiles = ChosenFiles + ', ' + filename
 
-
     utils.BinvoxSaver.write(ret_model, fileprefix + ".binvox")
 
     with open(fileprefix + ".txt", "w") as text_file:
         text_file.write(ChosenFiles)
-
 
     return ret_model, model_label, components
 
