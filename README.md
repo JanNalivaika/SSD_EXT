@@ -1,9 +1,21 @@
 # SSD_EXT
 
 How to create necessary files
-...
 
-How to run
+STLs are stored in data/STL/stls.rar
+
+1. unzip stls.rar. Unzipped files to be placed into data/STl/stls
+2. convert to binvox   (long running task aprox 24 hours)
+3. copy binvox to ...
+4. create minfo.csv  (only necessary if you add/delete some STLs). 
+...
+   
+Prep Training set
+
+run create_tr_set.py  (long running task aproc 72 hours)
+
+
+How to run (production, validation)
 
 ....
 

@@ -3,6 +3,7 @@ import torch
 import torch.utils.data as data
 import numpy as np
 import utils.binvox_rw
+import utils.BinvoxSaver
 import csv
 import random
 import os
@@ -116,6 +117,23 @@ def get_label_from_csv(filename):
     return retarr[:, 6]
 
 
+def simple():
+    return "temp"
+
+
+def achieve_fixed_model(filename):
+    label = int(os.path.basename(filename).split('_')[0])
+    model_label = np.zeros((0))
+    model_label = np.append(model_label, label)
+    with open(filename, 'rb') as f:
+        model = utils.binvox_rw.read_as_3d_array(f).data
+
+    components = np.zeros((1, 64, 64, 64))
+    components[0, :, :, :] = model
+
+    return model, model_label, components
+
+
 def achieve_legal_model(list_IDs, list_size, factor):
     while True:
         filename = list_IDs[random.randint(0, len(list_IDs) - 1)]
@@ -129,12 +147,17 @@ def achieve_legal_model(list_IDs, list_size, factor):
         with open(filename, 'rb') as f:
             model = utils.binvox_rw.read_as_3d_array(f).data
 
-        return label, model
-
+        return label, model, filename
 
 def achieve_random_model(list_IDs, list_size):
     # num_features = 2
     num_features = random.randint(2, 10)
+    factor = 76 - 6 * num_features
+
+def achieve_random_model(list_IDs, list_size, fileprefix):
+    # num_features = 2
+    num_features = random.randint(2, 10)
+    num_features = 5
     factor = 76 - 6 * num_features
 
     # print('n features:', num_features)
@@ -145,19 +168,28 @@ def achieve_random_model(list_IDs, list_size):
 
     model_label = np.zeros((0))
 
-    for i in range(num_features):
-        label, model = achieve_legal_model(list_IDs, list_size, factor)
+    ChosenFiles = ''
 
+    for i in range(num_features):
+        label, model, filename = achieve_legal_model(list_IDs, list_size, factor)
+        # lable = Feature (0,1,2,3,4,...)
+        # model = raw binvox array
         model_label = np.append(model_label, label)
         components[i, :, :, :] = rotate_sample24(model)
         ret_model = ret_model * components[i, :, :, :]
+        ChosenFiles = ChosenFiles + ', ' + filename
+
+    utils.BinvoxSaver.write(ret_model, fileprefix + ".binvox")
+
+    with open(fileprefix + ".txt", "w") as text_file:
+        text_file.write(ChosenFiles)
 
     return ret_model, model_label, components
 
 
 def create_img(obj3d, rotation, grayscale=False):
-
     cursample = obj3d.copy()
+    # cursample = np.array(cursample)
     cursample = rotate_sample(cursample, rotation)
 
     img0 = np.zeros((cursample.shape[1], cursample.shape[2]))
@@ -218,7 +250,7 @@ def achieve_model_gt(model_label, model_components, rotation):
 
 
 def create_partition(num_train_per_class=30, num_val_per_class=30):
-    num_classes = 24
+    num_classes = 26
     counter = np.zeros(num_classes)
     partition = {}
     for i in range(num_classes):
@@ -275,7 +307,22 @@ class VOCDetection(data.Dataset):
 
     def __init__(self, list_IDs=None, transform=None, phase='train'):
 
+    Arguments:
+        root (string): filepath to VOCdevkit folder.
+        image_set (string): imageset to use (eg. 'train', 'val', 'test')
+        transform (callable, optional): transformation to perform on the
+            input image
+        target_transform (callable, optional): transformation to perform on the
+            target `annotation`
+            (eg: take in caption string, return tensor of word indices)
+        dataset_name (string, optional): which dataset to load
+            (default: 'VOC2007')
+    """
+
+    def __init__(self, list_IDs=None, transform=None, phase='train'):
+
         self.transform = transform
+        self.list_IDs = list_IDs
         self.list_IDs = list_IDs
         self.phase = phase
 
@@ -291,6 +338,13 @@ class VOCDetection(data.Dataset):
             self.DIR = 'data/TrSet/'
             self.num_samples = int(
                 len([name for name in os.listdir(self.DIR) if os.path.isfile(os.path.join(self.DIR, name))]) / 2)
+
+            # self.num_samples = 143469
+            # self.is_test = False
+
+    #        with open('data/minfo.csv', mode='r') as infile:
+    #            reader = csv.reader(infile)
+    #            self.list_size = {rows[0]:int(rows[1]) for rows in reader}
 
     def __getitem__(self, idx):
 
