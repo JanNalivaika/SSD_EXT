@@ -1,6 +1,23 @@
 # SSD_EXT
 
-How to create necessary files
+The Solution contains two major parts (usages or activities)
+
+- Training of the DNN
+- Using DNN to recognize the features
+
+
+Sources/References:
+
+The DNN based on https://github.com/PeizhiShi/SsdNet.git
+
+
+
+# Training
+
+
+## How to create input files
+
+To train and validate the DNN we need the input data. 
 
 STLs are stored in data/STL/stls.rar
 
@@ -12,8 +29,10 @@ STLs are stored in data/STL/stls.rar
    
 Prep Training set
 
-run create_tr_set.py  (long running task aproc 72 hours)
+run create_tr_set.py  (long running task approx 72 hours)
 
+
+# Using of DNN
 
 How to run (production, validation)
 
@@ -21,8 +40,11 @@ How to run (production, validation)
 
 
 
-based on https://github.com/PeizhiShi/SsdNet.git
 
-# History
-17.07.21
-init clone from https://github.com/PeizhiShi/SsdNet.git
+
+
+# Glossary
+
+DNN - Deep Neural Network
+
+SSD - single shot multibox detector
