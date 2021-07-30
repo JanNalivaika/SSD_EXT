@@ -36,9 +36,31 @@ run create_tr_set.py  (long running task approx 72 hours)
 
 How to run (production, validation)
 
+ Segmentation of input PNG (if the size is bigger than 64x64)
+
+ goal  - find large features on large input-pictures, i.e. no size limitation, for example the whole -diameter can be 1000 px
+
+
+ Algorithm (incomplete/draft/general)
+
+ * input-picture
+ * test-picture
+ * window-size
+ * 64x64 - DNN Size
+
+ 1. resize the complete input-picture to 64x64 test-picture - run DNN and find the largest features (npy-like-file)
+ 2. resize the input-picture to 128x128 test-picture - do segmentation run DNN and detect features. compare/combine the features with prev test
+ 3. double the size and repeat step 2
+ 4. at some point (if any size of the input-picture is smaller than size of test-picture?) apply segmentation to the input-picture
+ 5. final result - show original input-picture (2D) with detected features
+
+ Run DNN on all segments
+
+ Re-Run DNN on 
+
 ....
 
-
+ Block-Diagramm?
 
 
 
