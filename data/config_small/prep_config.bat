@@ -5,7 +5,7 @@ REM prepare the small configuration for the app
 REM 
 REM in this small configuration the trainig and the validation data already generated
 REM
-REM to be started from folder data/config_samll
+REM to be started from folder data/config_small
 
 REM prep Training set
 set folder=..\trset\

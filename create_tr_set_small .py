@@ -12,9 +12,19 @@ def create_validation_set():
 def create_files(targetDir, idxFirst, idxLast):
     BINVOX_DIR = 'data/config_small/binvox/'
 
+    print('create files for ',targetDir)
+
+    # counter for progress info
+    counter = 0
+
     for idxBinvox in range(idxFirst, idxLast+1):
 
-        cur_model, cur_model_label, cur_model_components = achieve_fixed_model(BINVOX_DIR + "1_" + str(idxBinvox) + ".binvox")
+        filename = "1_" + str(idxBinvox) + ".binvox"
+        counter = counter + 1
+
+        print('processing the image', filename, ' (', counter, 'of', idxLast + 1 - idxFirst, ')')
+
+        cur_model, cur_model_label, cur_model_components = achieve_fixed_model(BINVOX_DIR + filename)
 
         for rotation in range(6):
 
@@ -24,7 +34,6 @@ def create_files(targetDir, idxFirst, idxLast):
             if target.shape[0] == 0:
                 continue
 
-            print('processing the', idxBinvox, 'th image...')
             filename = targetDir + str(idxBinvox) + str("_") + str(rotation)
             plt.imsave(filename + '.png', img, cmap='gray', vmin=0, vmax=255)
 

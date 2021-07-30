@@ -17,7 +17,33 @@ The DNN based on https://github.com/PeizhiShi/SsdNet.git
 
 ## How to create input files
 
-To train and validate the DNN we need the input data. 
+To train and validate the DNN we need the input data.
+
+Three different environments/configurations are prepared.
+The environments differ only by amount of input-files and amount of features in that files
+
+### small configuration
+In the folder **data/config_small** the input-files (PNGs) are already pre-generated.
+Just for info and for completeness the source files STLs and Binvox are presented in corresponding folders
+_data/config_small/binvox_ and _data/config_small/stl_.
+
+We can use the script 'create_tr_set_small.py' to regenerate the PNGs from the BINVOX files
+(for example in case if we want to change the set of input-files)
+
+The presented the input-files contain only one feature - "through hole"
+
+To use the input-PNG-files we need to place it into the folders _data/trset_ and _data/ValsSet_.
+We can copy the files manually or just start the BATCH-file _data/config_small/prep_config.bat_
+
+
+**_Still not described_** How to get BINVOX from STLs  (this info is available in next chapters)
+
+### medium configuration
+
+
+
+### large configuration
+
 
 STLs are stored in data/STL/stls.rar
 

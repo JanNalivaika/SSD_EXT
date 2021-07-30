@@ -2,13 +2,16 @@
 TODO
 1. re-create str.rar
 2. by gererating of PNGs create a file with mapping binvox -- png
+3. prep and descride show-case
 
 Info
 pip3 install -r requirements.txt
 python.exe -m pip install --upgrade pip
 
+
 # History (newest on top)
 30.07.21
+python.exe -m pip install --upgrade pip
 add requirements.txt
 
 29.07.21
