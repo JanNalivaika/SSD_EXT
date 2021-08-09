@@ -101,7 +101,7 @@ def Segment(file, dim_step, overlap, NN_dim, dim):
         xpos += int(dim * (1-overlap))
 
         if now_Special is True:
-            if int(stopper) is 1:
+            if int(stopper) is 1 or (dim == max_y_dim and dim == max_x_dim) :
                 break
                 break
             leftover = max(max_y_dim, max_x_dim) - min(max_y_dim, max_x_dim)
@@ -156,10 +156,10 @@ def do_special_images(file, max_y_dim, max_x_dim):
 
 
 if __name__ == "__main__":
-    file = "BIG.png"
-    dim_step = 2
+    file = "spoon.png"
+    dim_step = 1.2
     NN_dim = 64
     dim = 64
-    overlap = 0.1
+    overlap = 0.80
     Segment(file, dim_step, overlap, NN_dim, dim)
     # Construct()

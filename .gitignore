@@ -127,3 +127,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+/weights/*.pth
+/weights/VOC.rar
+/misc/Creating Binvox and Picture from STL with arbitary size/testing/output
+/weights
+/misc/Segmentation and reconstruction of big input pictures/pictures_IS_resized

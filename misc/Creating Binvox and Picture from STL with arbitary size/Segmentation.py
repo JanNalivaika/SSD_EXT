@@ -7,16 +7,17 @@ import math
 import binvox_rw
 from PIL import Image
 import time
+import pickle
 
-def MakeAPicture(block):
-    w, h = len(block), len(block[0])
-    data = np.zeros((w, h, 3), dtype=np.uint8)
+def MakeAPicture(block,file):
+    l, w = len(block), len(block[0])
+    data = np.zeros((l, w, 3), dtype=np.uint8)
     depth = len(block[0][0])
     inc = 255/depth
 
-    for x in range(depth):
-        for x in range(len(data)):
-            for y in range(len(data[0])):
+    for x in range(l):
+        for y in range(w):
+            for z in range(depth):
                 if int(block[x][y][z]) != 1:
                     data[x][y][0] += inc
                     data[x][y][1] += inc
@@ -24,17 +25,17 @@ def MakeAPicture(block):
 
 
     img = Image.fromarray(data, 'RGB')
-    img.save('my.png')
+    filename = file.replace(".stl", ".png")
+    img.save(filename)
     img.show()
 
-    pass
 
 
 
 
-
-def SAVEasBINVOX(block):
-    newfile = open('NEW.binvox', 'wb')
+def SAVEasBINVOX(block,file):
+    filename = file.replace(".stl",".binvox")
+    newfile = open(filename, 'wb')
     block = block.tolist()
     for x in range(len(block)):
         for y in range(len(block[0])):
@@ -184,8 +185,8 @@ def PointInTriangle(p, triangle):
         return (True)
     return (False)
 
-
-your_mesh = mesh.Mesh.from_file('part2.stl')  # the stl file you want to voxelize
+file = 'spoon.stl'
+your_mesh = mesh.Mesh.from_file(file)  # the stl file you want to voxelize
 
 ## set the height of your mesh
 first = len(your_mesh.vectors)
@@ -194,7 +195,7 @@ for i in range(first):
     for j in range(second):
         third = len(your_mesh.vectors[i][j])
         for k in range(third):
-            your_mesh.vectors[i][j][k] *= 0.1 # points per millimeter
+            your_mesh.vectors[i][j][k] *= 1 # points per millimeter
 
             # print(first * i + second * j + third * k)
 
@@ -213,13 +214,8 @@ for i in range(len(my_mesh)):  # go though each triangle and voxelize it
     voxel.append(new_voxel)
     t2=time.time()
     temp +=1
-    print(str(temp) +'  current: ' + str(t2-t1) + '   running avg: ' + str(int((t2-t0)/temp)) + '   total time: ' + str(int(t2-t0)))
+    print(str(temp) +'  current: ' + str(int(t2-t1)) + '   running avg: ' + str(int((t2-t0)/temp)) + '   total time: ' + str(int(t2-t0)))
 
-
-
-
-##
-#print(len(voxel))  # number of points in the voxel
 
 max_x = -math.inf
 min_x = math.inf
@@ -261,8 +257,12 @@ for step in range(len(voxel)):
         z = small_arr[2] - min_z
         block[x][y][z] = 1
 
-SAVEasBINVOX(block)
-MakeAPicture(block)
+#SAVEasBINVOX(block, file)
+#MakeAPicture(block, file)
+
+pic_name = file.replace(".stl", ".pickle")
+with open(pic_name, 'wb') as handle:
+    pickle.dump(block, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 # split in x,y,z points
 x_points = []
@@ -282,69 +282,9 @@ plt.ylabel('y')
 plt.show()
 
 ## plot 1 layer of the voxel
-#for a in range(len(z_points)):
-#    if z_points[a] == 300:
-#        plt.scatter(x_points[a], y_points[a])
+for a in range(len(z_points)):
+    if z_points[a] == 300:
+        plt.scatter(x_points[a], y_points[a])
 
 plt.show()
 
-"""import numpy as np
-from madcad.hashing import PositionMap
-from madcad.io import read
-import binvox_rw
-
-def SAVEasBINVOX(block, dim):
-    newfile = open('NEW.binvox', 'wb')
-    block = block.tolist()
-    for x in range(dim):
-        for y in range(dim):
-           for z in range(dim):
-                if block[x][y][z] == 1:
-                    block[x][y][z] = True
-                else:
-                    block[x][y][z] = False
-
-    dims = [dim, dim, dim]
-    translate = 0
-    scale = 10
-    axis_order = 'xyz'
-    m2 = binvox_rw.Voxels(block, dims, translate, scale, axis_order)
-    m2.write(newfile)
-
-
-
-# load the obj file in a madcad Mesh
-mymesh = read('part1.stl')
-# choose the cell size of the voxel
-size = 1
-
-voxel = set()    # this is a sparse voxel
-hasher = PositionMap(size)   # ugly object creation, just to use one of its methods
-for face in mymesh.faces:
-    voxel.update(hasher.keysfor(mymesh.facepoints(face)))
-
-print(len(voxel))
-
-tot_arr = list(voxel)
-maxp = max(tot_arr)
-dim = 0
-for x in tot_arr:
-    small_arr = list(x)
-    for y in range(3):
-        slice = small_arr[y]
-        if slice > dim:
-            dim = small_arr[y]
-
-
-block = (np.zeros((dim*2, dim*2, dim*2)))
-
-for inc in tot_arr:
-    small_arr = list(inc)
-    x=small_arr[0] + dim -1
-    y=small_arr[1] + dim -1
-    z=small_arr[2] + dim -1
-    block[x][y][z] = 1
-
-SAVEasBINVOX(block, dim*2)
-
-"""
