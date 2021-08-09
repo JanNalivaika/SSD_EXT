@@ -277,6 +277,40 @@ def achieve_random_model(list_IDs, list_size, fileprefix):
     return ret_model, model_label, components
 
 
+def achieve_random_model_simple(list_IDs, list_size, fileprefix):
+    # num_features = 2
+    num_features = random.randint(2, 10)
+    num_features = 5
+    factor = 76 - 6 * num_features
+
+    # print('n features:', num_features)
+
+    components = np.zeros((num_features, 64, 64, 64))
+
+    ret_model = np.ones((64, 64, 64))
+
+    model_label = np.zeros((0))
+
+    ChosenFiles = ''
+
+    for i in range(num_features):
+        label, model, filename = achieve_legal_model(list_IDs, list_size, factor)
+        # lable = Feature (0,1,2,3,4,...)
+        # model = raw binvox array
+        model_label = np.append(model_label, label)
+        components[i, :, :, :] = rotate_sample24(model)
+        ret_model = ret_model * components[i, :, :, :]
+        ChosenFiles = ChosenFiles + ', ' + filename
+
+    utils.BinvoxSaver.write(ret_model, fileprefix + ".binvox")
+
+    with open(fileprefix + ".txt", "w") as text_file:
+        text_file.write(ChosenFiles)
+
+    return ret_model, model_label, components
+
+
+
 def create_img(obj3d, rotation, grayscale=False):
     cursample = obj3d.copy()
     # cursample = np.array(cursample)
@@ -384,6 +418,34 @@ def create_partition(num_train_per_class=30, num_val_per_class=30):
 
     return ret
 
+# split file-names into training and validations sets
+# each set is subdivided into feature-subsets
+def create_partition_simple():
+
+    # dictionary : feature : int, i.e. amount of files per feature
+    counter = {}
+    partitionTraining = {}
+    partitionValidation = {}
+
+    with open(os.devnull, 'w') as devnull:
+        for filename in Path('data/FNSet/').glob('*.binvox'):
+            #extract feature_label from the file-name
+            namelist = os.path.basename(filename).split('_')
+            feature_label = int(namelist[0])
+
+            if ( feature_label not in counter):
+                counter[feature_label] = 0
+                partitionTraining[feature_label] = []
+                partitionValidation[feature_label] = []
+
+            counter[feature_label] += 1
+
+            if counter[feature_label] % 10 < 9:
+                partitionTraining[feature_label] += [filename]
+            else:
+                partitionValidation[feature_label] += [filename]
+
+    return partitionTraining, partitionValidation
 
 def create_test(testidx):
     partition = []
