@@ -1,4 +1,3 @@
-#import pyvista as pv
 import numpy as np
 import csv
 import utils.binvox_rw
@@ -13,9 +12,19 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from math import pow
 import matplotlib.patches as mpatches
+import warnings
+from PIL import Image
+from os import listdir
+from os.path import isfile, join
+import os
 
-if torch.cuda.is_available():
-    torch.set_default_tensor_type('torch.cuda.FloatTensor')
+
+warnings.simplefilter("ignore", UserWarning)
+import pickle
+
+"""if torch.cuda.is_available():
+    print("Replace cup with cuda")
+    torch.set_default_tensor_type('torch.cuda.FloatTensor')"""
 
 
 def get_gt_label(filename):
@@ -33,17 +42,18 @@ def get_gt_label(filename):
 
 def load_pretrained_model():
     ssd_net = build_ssd(cfg['min_dim'], cfg['num_classes'])
+
     net = ssd_net
 
     net = torch.nn.DataParallel(ssd_net)
     cudnn.benchmark = True
 
     # ssd_net.load_weights('weights/512-exp2-notlda/VOC.pth')
+    # ssd_net.load_weights('weights/VOCself5.pth')
     ssd_net.load_weights('weights/VOC.pth')
 
-    # print(net)
-
-    return net.cuda()
+    # print("Replace cup with cuda")
+    return net.cpu()
 
 
 def tensor_to_float(val):
@@ -156,26 +166,41 @@ def get_predicted_label(filename, net):
 
     transform = SSDAugmentation(cfg['min_dim'], MEANS, phase='test')
 
-    images = []
+    """images = []
+    rotations = []
 
     for rot in range(6):
         img, _ = create_img(model, rot)
 
         img, _, _ = transform(img, 0, 0)
 
+        images.append(img)"""
+
+    folder = "misc/Segmentation and reconstruction of big input pictures/pictures_IS_resized/321/"
+    place = [f for f in listdir(folder) if isfile(join(folder, f))]
+
+    images = []
+    rotations = []
+
+    for x in place:
+        img = np.asarray(Image.open(folder + "/" + x))
+        img, _, _ = transform(img, 0, 0)
         images.append(img)
 
+    num_images = len(images)
     images = torch.tensor(images).permute(0, 3, 1, 2).float()
 
-    images = Variable(images.cuda())
+    # print("Replace cup with cuda")
+    images = Variable(images.cpu())
     # images = images.cuda()
 
     out = net(images, 'test')
-    out.cuda()
+    # print("Replace cup with cuda")
+    out.cpu()
 
     cur_boxes = np.zeros((0, 8))
 
-    for i in range(6):
+    for i in range(num_images):
 
         for j in range(out.shape[1]):
             label = out[i, j, 1].detach().cpu()
@@ -201,8 +226,7 @@ def get_predicted_label(filename, net):
             d = z2
             e = y2
             f = x2
-
-            if i == 1:
+            """if i == 1:
                 a = 1 - z2
                 b = 1 - y2
                 c = x1
@@ -236,9 +260,17 @@ def get_predicted_label(filename, net):
                 c = 1 - z2
                 d = x2
                 e = y2
-                f = 1 - z1
+                f = 1 - z1"""
 
             cur_boxes = np.append(cur_boxes, np.array([a, b, c, d, e, f, label - 1, score]).reshape(1, 8), axis=0)
+            rotations = np.append(rotations, i)
+
+    with open('misc/Visualizer of output of the NN/cur_boxes.pickle', 'wb') as handle:
+        pickle.dump(cur_boxes, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    with open('misc/Visualizer of output of the NN/rotations.pickle', 'wb') as handle:
+        pickle.dump(rotations, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    with open('misc/Visualizer of output of the NN/location.pickle', 'wb') as handle:
+        pickle.dump(folder, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     keepidx = soft_nms_pytorch(cur_boxes[:, :7], cur_boxes[:, -1])
     cur_boxes = cur_boxes[keepidx, :]
@@ -351,7 +383,7 @@ def cal_localization_performance(pred_boxes_labels, gt_boxes_labels):
     return pred, gt, tp
 
 
-def test_ssdnet(sidx, metric=cal_detection_performance):
+def test_ssdnet(sidx, metric):
     net = load_pretrained_model()
 
     predictions = np.zeros(24)
@@ -360,20 +392,25 @@ def test_ssdnet(sidx, metric=cal_detection_performance):
 
     with torch.no_grad():
         with open(os.devnull, 'w') as devnull:
-            for filename in Path('data/MulSet/set' + str(sidx) + '/').glob('*.STL'):
-                filename = str(filename).replace('.STL', '')
+            # for filename in Path('data/MulSet/set' + str(sidx)+ '/').glob('*.STL'):
+            filename = "data/MulSet/set1/108.STL"
+            filename = str(filename).replace('.STL', '')
 
-                pred, trul, tp = metric(get_predicted_label(filename, net), get_gt_label(filename + '.csv'))
+            predicted_lable = get_predicted_label(filename, net)
+            # [x1,y1,x2,y2,x,x, feature, Probability?]
+            gt = get_gt_label(filename + '.csv')
 
-                predictions += pred
-                truelabels += trul
-                truepositives += tp
+            pred, trul, tp = metric(predicted_lable, gt)
 
-                print(filename)
+            predictions += pred
+            truelabels += trul
+            truepositives += tp
 
-                print(trul)
-                print(pred)
-                print(tp)
+            print(filename)
+
+            # print(trul)
+            # print(pred)
+            # print(tp)
 
     precision, recall = eval_metric(predictions, truelabels, truepositives)
     print('Precision scores')
@@ -392,7 +429,18 @@ start_time = time.time()
 
 data_group = 10
 
-test_ssdnet(data_group, cal_detection_performance)  # feature recognition
-# test_ssdnet(data_group,cal_localization_performance) #feature localisation
+# test_ssdnet(data_group,cal_detection_performance) #feature recognition
+test_ssdnet(data_group, cal_localization_performance)  # feature localisation
 
 print("--- %s seconds ---" % (time.time() - start_time))
+
+
+
+
+
+
+
+
+
+
+

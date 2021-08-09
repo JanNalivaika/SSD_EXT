@@ -14,10 +14,11 @@ The DNN based on https://github.com/PeizhiShi/SsdNet.git
 
 # Training
 
+To train and validate the DNN we need first the input data.
+
 
 ## How to create input files
 
-To train and validate the DNN we need the input data.
 
 Three different environments/configurations are prepared.
 The environments differ only by amount of input-files and amount of features in that files
@@ -30,9 +31,9 @@ _data/config_small/binvox_ and _data/config_small/stl_.
 We can use the script 'create_tr_set_small.py' to regenerate the PNGs from the BINVOX files
 (for example in case if we want to change the set of input-files)
 
-The presented the input-files contain only one feature - "through hole"
+The presented input-files contain only one feature - "through hole"
 
-To use the input-PNG-files we need to place it into the folders _data/trset_ and _data/ValsSet_.
+To use the input-PNG-files we need to place them into the folders _data/trset_ and _data/ValsSet_.
 We can copy the files manually or just start the BATCH-file _data/config_small/prep_config.bat_
 
 
@@ -41,9 +42,23 @@ We can copy the files manually or just start the BATCH-file _data/config_small/p
 ### medium configuration
 see readme.txt in the folder data/config_medium
 
+STLs with three features. Each file contains only one feature.
+
+ 1. Create Binvox-Files ( Now: using binvox.exe, but the idea is to use misc/ ... create binvox from stl)
+ 2. move binvox into ...
+ 3. run create_tr_set.py   (runtime approx 1 Hour)
+ - this script will generate random input-files (binvox) using the available binvox. These new generated binvox files will combine multiple features from the original files. Minimal 2 feature and maximum X features . These settings are hardcoded in the code.
+ - creates PNG from Binvox and place them ito TRSet and ValSet
+ 
+
+Algotrithm for creating random input files
+1. Select different input input-files (binvox)
+2. Rotate randomly ech input-file
+3. Combane the files into one file
+
+
 
 ### large configuration
-
 
 STLs are stored in data/STL/stls.rar
 
@@ -57,10 +72,22 @@ Prep Training set
 
 run create_tr_set.py  (long running task approx 72 hours)
 
+## How to train the DNN
 
-# Using of DNN
+On prev step the configuration (small, medium or large) is prepared. We are ready to train the DNN.
 
-How to run (production, validation)
+Steps: ...
+
+
+
+# Using of DNN (Production)
+
+
+The DNN is already trained and validated, the weights are stored in  ,/weights
+
+
+
+## Segmentation
 
  Segmentation of input PNG (if the size is bigger than 64x64)
 
@@ -89,6 +116,39 @@ How to run (production, validation)
  Block-Diagramm?
 
 
+## Show Case (small picture, 2D) - ignore for now
+
+no segmentation needed
+
+Expected (necessary) input - PNG File
+
+
+Expected result - PNG with marked (bounding box) features
+
+1. Folder dats/ShowCases/
+
+
+## Show Case (small picture, Binvox)
+
+no segmentation needed
+
+Expected (necessary) input - BINVOX FILE, with following limitations : size (64x64x64)
+
+Expected result - 6 PNGs with marked (bounding box) features
+
+1. Folder data/ShowCases/...
+
+place BINVOX in  folder ....
+
+run test_x.py
+
+save result as PNGs
+
+
+
+## Show Case (large picture)
+
+Segmentation is used  (my more value)
 
 
 # Glossary
