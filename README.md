@@ -39,7 +39,7 @@ We can copy the files manually or just start the BATCH-file _data/config_small/p
 **_Still not described_** How to get BINVOX from STLs  (this info is available in next chapters)
 
 ### medium configuration
-
+see readme.txt in the folder data/config_medium
 
 
 ### large configuration
