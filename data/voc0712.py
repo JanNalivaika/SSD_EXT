@@ -5,12 +5,9 @@ https://github.com/fmassa/vision/blob/voc_dataset/torchvision/datasets/voc.py
 
 Updated by: Ellis Brown, Max deGroot
 """
-from .config import HOME
-import os.path as osp
 import sys
 import torch
 import torch.utils.data as data
-import cv2
 import numpy as np
 
 if sys.version_info[0] == 2:
@@ -22,7 +19,6 @@ import utils.binvox_rw
 import utils.BinvoxSaver
 import csv
 import random
-# import cupy as cp
 import os
 from pathlib import Path
 import matplotlib.pyplot as plt
@@ -243,6 +239,21 @@ def achieve_legal_model(list_IDs, list_size, factor):
 
         return label, model, filename
 
+# returns a random model from the dictionary list_IDs
+def achieve_legal_model_simple(list_IDs):
+
+    feature_name, feature_list = random.choice(list(list_IDs.items()))
+
+    filename = random.choice(feature_list)
+
+    filename = str(filename).replace("\\", "/")
+
+    label = int(os.path.basename(filename).split('_')[0])
+    with open(filename, 'rb') as f:
+        model = utils.binvox_rw.read_as_3d_array(f).data
+
+    return label, model, filename
+
 
 def achieve_random_model(list_IDs, list_size, fileprefix):
     # num_features = 2
@@ -277,13 +288,12 @@ def achieve_random_model(list_IDs, list_size, fileprefix):
     return ret_model, model_label, components
 
 
-def achieve_random_model_simple(list_IDs, list_size, fileprefix):
-    # num_features = 2
-    num_features = random.randint(2, 10)
-    num_features = 5
-    factor = 76 - 6 * num_features
+# creates a random model by combining of list_IDs
+# each list_ID contains only a single feature
+# num_features_min and num_features_max - define how many features the generated model shall contain
+def achieve_random_model_simple(list_IDs, num_features_min, num_features_max, fileprefix):
 
-    # print('n features:', num_features)
+    num_features = random.randint(num_features_min, num_features_max)
 
     components = np.zeros((num_features, 64, 64, 64))
 
@@ -291,21 +301,22 @@ def achieve_random_model_simple(list_IDs, list_size, fileprefix):
 
     model_label = np.zeros((0))
 
-    ChosenFiles = ''
+    selected_files = ''
 
     for i in range(num_features):
-        label, model, filename = achieve_legal_model(list_IDs, list_size, factor)
-        # lable = Feature (0,1,2,3,4,...)
-        # model = raw binvox array
+        label, model, filename = achieve_legal_model_simple(list_IDs)
         model_label = np.append(model_label, label)
         components[i, :, :, :] = rotate_sample24(model)
         ret_model = ret_model * components[i, :, :, :]
-        ChosenFiles = ChosenFiles + ', ' + filename
+        selected_files = selected_files + ', ' + filename
+
+    #remove first two symbols  ' ,'
+    selected_files = selected_files[2:]
 
     utils.BinvoxSaver.write(ret_model, fileprefix + ".binvox")
 
-    with open(fileprefix + ".txt", "w") as text_file:
-        text_file.write(ChosenFiles)
+    with open(fileprefix + ".binvox.txt", "w") as text_file:
+        text_file.write(selected_files)
 
     return ret_model, model_label, components
 
@@ -446,6 +457,29 @@ def create_partition_simple():
                 partitionValidation[feature_label] += [filename]
 
     return partitionTraining, partitionValidation
+
+
+def create_partition_simple_light():
+
+    # dictionary : feature : list
+    # example
+    # 1: 1_1.binvox, 1_2.binvox
+    # 3: 3_1.binvox, 1_2.binvox
+    #
+    files_dictionary = {}
+
+    with open(os.devnull, 'w') as devnull:
+        for filename in Path('data/FNSet/').glob('*.binvox'):
+            #extract feature_label from the file-name
+            namelist = os.path.basename(filename).split('_')
+            feature_label = int(namelist[0])
+
+            if feature_label not in files_dictionary:
+                files_dictionary[feature_label] = []
+
+            files_dictionary[feature_label] += [filename]
+
+    return files_dictionary
 
 def create_test(testidx):
     partition = []

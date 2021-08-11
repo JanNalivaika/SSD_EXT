@@ -1,54 +1,62 @@
 from data import *
 import os
 import numpy as np
-import csv
 import matplotlib.pyplot as plt
 import random
+from pathlib import Path
 
-def create_training_set():
-    #print("Change num_samples = 2900000")
-    num_samples = 3_000_000
 
-    random.seed(1024) # initialize the random number generator
-    random_partition = create_partition_simple(3)
+# generates random input-files based on source-files
+# num_samples - how many input files shall be generated
+# num_features_min, num_features_max - how many features the generated files shall contain
+#                                      (how many source-files shall be combined)
+#
+def create_data_set(num_samples, num_features_min, num_features_max, folder_name):
 
-    list_IDs = random_partition['train']
+    remove_old_files(folder_name)
 
-    DIR = 'data/TrSet/'
+    random.seed()  # initialize the random number generator
 
-    with open('data/minfo.csv', mode='r') as infile:
-        reader = csv.reader(infile)
-        list_size = {rows[0]:int(rows[1]) for rows in reader}
+    list_files = create_partition_simple_light()
 
-    counter = 1
     for idx in range(num_samples):
-        rotation = int(idx%6)
-        m_idx = int(idx/6)
-        if rotation == 0:
-            cur_model, cur_model_label, cur_model_components = achieve_random_model(list_IDs, list_size, DIR + str(counter))
 
-        img, _ = create_img(cur_model, rotation, True)
-        target = achieve_model_gt(cur_model_label, cur_model_components, rotation)
+        cur_model, \
+        cur_model_label, \
+        cur_model_components = achieve_random_model_simple(
+            list_files,
+            num_features_min,
+            num_features_max,
+            folder_name + str(idx) + "__"
+        )
 
-        if target.shape[0] == 0:
-            continue
+        print(folder_name, 'processing the', idx, 'of', num_samples, 'image...')
 
-        print('processing the', idx, 'th image...')
-        filename = DIR+str(counter)+str("_")+str(rotation)
-        plt.imsave(filename+'.png',img,cmap='gray',vmin=0,vmax=255)
+        for rotation in range(6):
+
+            img, _ = create_img(cur_model, rotation, True)
+            target = achieve_model_gt(cur_model_label, cur_model_components, rotation)
+
+            if target.shape[0] == 0:
+                continue
+
+            filename = folder_name + str(idx) + str("_") + str(rotation)
+            plt.imsave(filename + '.png', img, cmap='gray', vmin=0, vmax=255)
+
+            np.save(filename + '.npy', target)
 
 
-        np.save(filename+'.npy',target)
-        counter = counter + 1
+def remove_old_files(folder_name):
+    files = \
+        list(Path(folder_name).glob('*.binvox')) + \
+        list(Path(folder_name).glob('*.binvox.txt')) + \
+        list(Path(folder_name).glob('*.npy')) + \
+        list(Path(folder_name).glob('*.png'))
 
-
-def test():
-    tSet, vSet = create_partition_simple()
-    print(len(tSet), len(vSet))
-
+    for single_file in files:
+        os.remove(single_file)
 
 
 if __name__ == '__main__':
-    #create_training_set()
-    test()
-
+    create_data_set(50, 2, 2, 'data/TrSet/')
+    create_data_set(10, 2, 2, 'data/ValSet/')

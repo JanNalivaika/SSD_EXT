@@ -10,6 +10,9 @@ python.exe -m pip install --upgrade pip
 
 
 # History (newest on top)
+11.08.21
+add achieve_legal_model_simple
+
 30.07.21
 python.exe -m pip install --upgrade pip
 add requirements.txt
