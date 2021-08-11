@@ -239,20 +239,20 @@ def achieve_legal_model(list_IDs, list_size, factor):
 
         return label, model, filename
 
-# returns a random model from the dictionary list_IDs
-def achieve_legal_model_simple(list_IDs):
 
-    feature_name, feature_list = random.choice(list(list_IDs.items()))
+# returns a random model from the dictionary list_IDs
+def achieve_legal_model_simple(files_dictionary):
+    #
+    feature_name, feature_list = random.choice(list(files_dictionary.items()))
 
     filename = random.choice(feature_list)
 
     filename = str(filename).replace("\\", "/")
 
-    label = int(os.path.basename(filename).split('_')[0])
     with open(filename, 'rb') as f:
         model = utils.binvox_rw.read_as_3d_array(f).data
 
-    return label, model, filename
+    return feature_name, model, filename
 
 
 def achieve_random_model(list_IDs, list_size, fileprefix):
@@ -288,11 +288,11 @@ def achieve_random_model(list_IDs, list_size, fileprefix):
     return ret_model, model_label, components
 
 
-# creates a random model by combining of list_IDs
-# each list_ID contains only a single feature
+# creates a random model by combining of source-files
+# each source-file contains only a single feature
 # num_features_min and num_features_max - define how many features the generated model shall contain
-def achieve_random_model_simple(list_IDs, num_features_min, num_features_max, fileprefix):
-
+def achieve_random_model_simple(files_dictionary, num_features_min, num_features_max, fileprefix):
+    #
     num_features = random.randint(num_features_min, num_features_max)
 
     components = np.zeros((num_features, 64, 64, 64))
@@ -304,13 +304,13 @@ def achieve_random_model_simple(list_IDs, num_features_min, num_features_max, fi
     selected_files = ''
 
     for i in range(num_features):
-        label, model, filename = achieve_legal_model_simple(list_IDs)
+        label, model, filename = achieve_legal_model_simple(files_dictionary)
         model_label = np.append(model_label, label)
         components[i, :, :, :] = rotate_sample24(model)
         ret_model = ret_model * components[i, :, :, :]
         selected_files = selected_files + ', ' + filename
 
-    #remove first two symbols  ' ,'
+    # remove first two symbols  ' ,'
     selected_files = selected_files[2:]
 
     utils.BinvoxSaver.write(ret_model, fileprefix + ".binvox")
@@ -319,7 +319,6 @@ def achieve_random_model_simple(list_IDs, num_features_min, num_features_max, fi
         text_file.write(selected_files)
 
     return ret_model, model_label, components
-
 
 
 def create_img(obj3d, rotation, grayscale=False):
@@ -429,10 +428,10 @@ def create_partition(num_train_per_class=30, num_val_per_class=30):
 
     return ret
 
+
 # split file-names into training and validations sets
 # each set is subdivided into feature-subsets
 def create_partition_simple():
-
     # dictionary : feature : int, i.e. amount of files per feature
     counter = {}
     partitionTraining = {}
@@ -440,11 +439,11 @@ def create_partition_simple():
 
     with open(os.devnull, 'w') as devnull:
         for filename in Path('data/FNSet/').glob('*.binvox'):
-            #extract feature_label from the file-name
+            # extract feature_label from the file-name
             namelist = os.path.basename(filename).split('_')
             feature_label = int(namelist[0])
 
-            if ( feature_label not in counter):
+            if (feature_label not in counter):
                 counter[feature_label] = 0
                 partitionTraining[feature_label] = []
                 partitionValidation[feature_label] = []
@@ -459,18 +458,18 @@ def create_partition_simple():
     return partitionTraining, partitionValidation
 
 
-def create_partition_simple_light():
-
+def create_file_dictionary_simple():
     # dictionary : feature : list
     # example
     # 1: 1_1.binvox, 1_2.binvox
-    # 3: 3_1.binvox, 1_2.binvox
+    # 3: 3_1.binvox, 3_2.binvox
     #
     files_dictionary = {}
 
+    # FINDING VN 'Why we need with open(os.devnull, 'w') as devnull'
     with open(os.devnull, 'w') as devnull:
         for filename in Path('data/FNSet/').glob('*.binvox'):
-            #extract feature_label from the file-name
+            # extract feature_label from the file-name
             namelist = os.path.basename(filename).split('_')
             feature_label = int(namelist[0])
 
@@ -480,6 +479,7 @@ def create_partition_simple_light():
             files_dictionary[feature_label] += [filename]
 
     return files_dictionary
+
 
 def create_test(testidx):
     partition = []

@@ -7,19 +7,21 @@ from pathlib import Path
 
 
 # generates random input-files based on source-files
-# num_samples - how many input files shall be generated
+# num_samples - how many input files (binvox) shall be generated
 # num_features_min, num_features_max - how many features the generated files shall contain
 #                                      (how many source-files shall be combined)
 #
 def create_data_set(num_samples, num_features_min, num_features_max, folder_name):
-
+    #
     remove_old_files(folder_name)
 
     random.seed()  # initialize the random number generator
 
-    list_files = create_partition_simple_light()
+    list_files = create_file_dictionary_simple()
 
     for idx in range(num_samples):
+
+        print(folder_name, 'processing the', idx, 'of', num_samples, 'image...')
 
         cur_model, \
         cur_model_label, \
@@ -30,13 +32,13 @@ def create_data_set(num_samples, num_features_min, num_features_max, folder_name
             folder_name + str(idx) + "__"
         )
 
-        print(folder_name, 'processing the', idx, 'of', num_samples, 'image...')
-
+        # rotate binvox and create PNG for each side of the cube
         for rotation in range(6):
 
             img, _ = create_img(cur_model, rotation, True)
             target = achieve_model_gt(cur_model_label, cur_model_components, rotation)
 
+            # skip the solid side of the cube
             if target.shape[0] == 0:
                 continue
 
@@ -58,5 +60,10 @@ def remove_old_files(folder_name):
 
 
 if __name__ == '__main__':
+    # medium configuration
     create_data_set(50, 2, 2, 'data/TrSet/')
     create_data_set(10, 2, 2, 'data/ValSet/')
+
+    # large configuration
+    # create_data_set(1_000_000, 2, 5, 'data/TrSet/')
+    # create_data_set(1000, 2, 5, 'data/ValSet/')

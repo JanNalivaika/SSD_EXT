@@ -42,19 +42,7 @@ We can copy the files manually or just start the BATCH-file _data/config_small/p
 ### medium configuration
 see readme.txt in the folder data/config_medium
 
-STLs with three features. Each file contains only one feature.
 
- 1. Create Binvox-Files ( Now: using binvox.exe, but the idea is to use misc/ ... create binvox from stl)
- 2. move binvox into ...
- 3. run create_tr_set.py   (runtime approx 1 Hour)
- - this script will generate random input-files (binvox) using the available binvox. These new generated binvox files will combine multiple features from the original files. Minimal 2 feature and maximum X features . These settings are hardcoded in the code.
- - creates PNG from Binvox and place them ito TRSet and ValSet
- 
-
-Algotrithm for creating random input files
-1. Select different input input-files (binvox)
-2. Rotate randomly ech input-file
-3. Combane the files into one file
 
 
 
