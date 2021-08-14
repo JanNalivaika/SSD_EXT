@@ -128,7 +128,7 @@ Expected result - 6 PNGs with marked (bounding box) features
 
 place BINVOX in  folder ....
 
-run test_x.py
+run validate_x.py
 
 save result as PNGs
 
