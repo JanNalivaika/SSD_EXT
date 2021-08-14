@@ -42,6 +42,8 @@ for x in range(int(num_facets)):
 
 areas, unique_vectors = zip(*sorted(zip(areas, unique_vectors)))
 
+
+
 status = []
 for x in range(len(unique_vectors)):
     a = unique_vectors[x][0]
@@ -52,14 +54,39 @@ for x in range(len(unique_vectors)):
     else:
         status.append(False)
 
+area_to_axis = 0
+area_NOT_to_axis = 0
+total_area = 0
+for x in range(len(unique_vectors)):
+    total_area += areas[x]
+    if status[x]:
+        area_to_axis += areas[x]
+    else:
+        area_NOT_to_axis+=areas[x]
+
+print(area_to_axis/total_area*100)
+print(area_NOT_to_axis/total_area*100)
+
+wrong_vectors = [i for i, x in enumerate(status) if x == False]
+
 # for selecting angle
 x_ax = [1,0,0]
 y_ax = [0,1,0]
 z_ax = [0,0,1]
+
+
 print("SELECT THE RIGHT VecTOR")
-dot_product = np.dot(unique_vectors[44], x_ax)
+# 49,48,47,44
+vector = unique_vectors[49]
+"""dot_product = np.dot( x_ax,vector)
 angle = np.arccos(dot_product) * 180 / math.pi
-angle = -np.arccos(dot_product) # why minus ???????????????????????????
+angle = np.arctan2(dot_product) # why minus ???????????????????????????
+angle = np.sign(vector[0]) * np.sign(vector[1]) * angle"""
+
+dot = np.dot( x_ax,vector)     # dot product
+det = -vector[1]      # determinant
+angle = np.arctan2(det, dot)
+
 print("make sure plus or minus !!!!!!")
 # rotate around Z == x and y change
 
