@@ -1,24 +1,17 @@
-#import pyvista as pv
-import numpy as np
-import csv
+#
+# validate.py
+#
 import utils.binvox_rw
 from utils.augmentations import SSDAugmentation
 from data import *
+import time
 import torch
 import torch.backends.cudnn as cudnn
 from ssd import build_ssd
 from torch.autograd import Variable
 from pathlib import Path
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from math import pow
-import matplotlib.patches as mpatches
 import warnings
 warnings.simplefilter("ignore", UserWarning)
-
-#if torch.cpu.is_available():
-#    torch.set_default_tensor_type('torch.cpu.FloatTensor')
-
 
 def get_gt_label(filename):
     retarr = np.zeros((0, 7))
@@ -33,18 +26,16 @@ def get_gt_label(filename):
     return retarr
 
 
-def load_pretrained_model():
+def load_pretrained_model(file_weights):
+    #
     ssd_net = build_ssd(cfg['min_dim'], cfg['num_classes'])
     net = ssd_net
 
     net = torch.nn.DataParallel(ssd_net)
     cudnn.benchmark = True
 
-    ssd_net.load_weights('weights/VOC.pth')
+    ssd_net.load_weights(file_weights)
 
-    # print(net)
-
-    #return net.cpu()
     return net.cpu()
 
 
@@ -275,87 +266,10 @@ def cal_detection_performance(pred_boxes_labels, gt_boxes_labels):
 
     return pred, gt, tp
 
-
-def cal_localization_performance(pred_boxes_labels, gt_boxes_labels):
-    gt = get_lvec(gt_boxes_labels[:, 6])
-    pred = get_lvec(pred_boxes_labels[:, 6])
-    tp = np.zeros(24).astype(int)
-    threshold = 0.5
+def test_ssdnet(folder_stl, file_weights):
     #
-    gt_boxes_labels = gt_boxes_labels[gt_boxes_labels[:, 6].argsort()]
-
-    pred_boxes_labels = pred_boxes_labels[pred_boxes_labels[:, 7].argsort()[::-1]]
-    pred_boxes_labels = pred_boxes_labels[pred_boxes_labels[:, 6].argsort(kind='stable')]
-
-    # print(gt_boxes_labels[:,-1])
-    # print(pred_boxes_labels[:,-2:])
-
-    # calculate the area of prediction and gt boxes
-    pred_z1 = pred_boxes_labels[:, 0]
-    pred_y1 = pred_boxes_labels[:, 1]
-    pred_x1 = pred_boxes_labels[:, 2]
-    pred_z2 = pred_boxes_labels[:, 3]
-    pred_y2 = pred_boxes_labels[:, 4]
-    pred_x2 = pred_boxes_labels[:, 5]
-    pred_areas = (pred_x2 - pred_x1 + 1) * (pred_y2 - pred_y1 + 1) * (pred_z2 - pred_z1 + 1)
-
-    gt_z1 = gt_boxes_labels[:, 0]
-    gt_y1 = gt_boxes_labels[:, 1]
-    gt_x1 = gt_boxes_labels[:, 2]
-    gt_z2 = gt_boxes_labels[:, 3]
-    gt_y2 = gt_boxes_labels[:, 4]
-    gt_x2 = gt_boxes_labels[:, 5]
-    gt_areas = (gt_x2 - gt_x1 + 1) * (gt_y2 - gt_y1 + 1) * (gt_z2 - gt_z1 + 1)
-
-    found_gt = np.zeros(gt_boxes_labels.shape[0])
-
-    # print(pred_areas)
-    # for each detection
-    for i in range(pred_boxes_labels.shape[0]):
-
-        pred_label = pred_boxes_labels[i, 6].astype(int)
-        found = -1
-        max_iou = 0
-
-        # among the ground-truths, choose one that belongs to the same class and has the highest IoU with the detection
-        for j in range(gt_boxes_labels.shape[0]):
-
-            gt_label = gt_boxes_labels[j, 6].astype(int)
-
-            if pred_label != gt_label or found_gt[j] == 1:
-                continue
-
-            zz1 = np.maximum(pred_z1[i], gt_z1[j])
-            yy1 = np.maximum(pred_y1[i], gt_y1[j])
-            xx1 = np.maximum(pred_x1[i], gt_x1[j])
-            zz2 = np.minimum(pred_z2[i], gt_z2[j])
-            yy2 = np.minimum(pred_y2[i], gt_y2[j])
-            xx2 = np.minimum(pred_x2[i], gt_x2[j])
-
-            w = np.maximum(0.0, xx2 - xx1 + 1)
-            h = np.maximum(0.0, yy2 - yy1 + 1)
-            l = np.maximum(0.0, zz2 - zz1 + 1)
-            inter = w * h * l
-            iou = inter / (pred_areas[i] + gt_areas[j] - inter)
-
-            if iou > max_iou:
-                found = j
-                max_iou = iou
-
-        # if no ground-truth can be chosen or IoU < threshold (e.g., 0.5):
-        # the detection is a false positive
-        # else:
-        # the detection is a true positive
-
-        if max_iou >= threshold and found >= 0:
-            found_gt[found] = 1
-            tp[pred_label] += 1
-
-    return pred, gt, tp
-
-
-def test_ssdnet(sidx, metric=cal_detection_performance):
-    net = load_pretrained_model()
+    net = load_pretrained_model(file_weights)
+    metric = cal_detection_performance
 
     predictions = np.zeros(24)
     truelabels = np.zeros(24)
@@ -363,7 +277,7 @@ def test_ssdnet(sidx, metric=cal_detection_performance):
 
     with torch.no_grad():
         with open(os.devnull, 'w') as devnull:
-            for filename in Path('data/MulSet/set' + str(sidx) + '/').glob('*.STL'):
+            for filename in Path(folder_stl).glob('*.STL'):
                 filename = str(filename).replace('.STL', '')
 
                 pred, trul, tp = metric(get_predicted_label(filename, net), get_gt_label(filename + '.csv'))
@@ -389,13 +303,16 @@ def test_ssdnet(sidx, metric=cal_detection_performance):
     print((2 * recall * precision) / (recall + precision))
 
 
-import time
+def run():
 
-start_time = time.time()
+    start_time = time.time()
 
-data_group = 20
+    folder_stl ='data/MulSet/set20/'
+    file_weights = 'weights/VOC.pth'
 
-test_ssdnet(data_group, cal_detection_performance)  # feature recognition
-# test_ssdnet(data_group,cal_localization_performance) #feature localisation
+    test_ssdnet(folder_stl, file_weights)
 
-print("--- %s seconds ---" % (time.time() - start_time))
+    print("--- %s seconds ---" % (time.time() - start_time))
+
+if __name__ == '__main__':
+    run()

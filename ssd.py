@@ -52,6 +52,7 @@ class SSD(nn.Module):
         self.softmax = nn.Softmax(dim=-1)
         self.detect = Detect(num_classes, 0, 300, 0.01, 0.45)
 
+
     def forward(self, x, phase = 'train'):
         """Applies network layers and ops on input image(s) x.
 
@@ -141,12 +142,10 @@ class SSD(nn.Module):
         #print('prior shape:',self.priors.shape)
         
         if phase == "test":
-            output = self.detect(
-                loc.view(loc.size(0), -1, 5),                   # loc preds
-                self.softmax(conf.view(conf.size(0), -1,
-                             self.num_classes)),                # conf preds
-                self.priors.type(type(x.data))                  # default boxes
-            )
+            p1 = loc.view(loc.size(0), -1, 5)                                 # loc preds
+            p2 = self.softmax(conf.view(conf.size(0), -1, self.num_classes))  # conf preds
+            p3 = self.priors.type(type(x.data))                               # default boxes
+            output = self.detect(p1, p2, p3)
         else:
             output = (
                 loc.view(loc.size(0), -1, 5),
@@ -156,6 +155,7 @@ class SSD(nn.Module):
         return output
 
     def load_weights(self, base_file, remove_layers = False):
+        #
         other, ext = os.path.splitext(base_file)
         if ext == '.pkl' or '.pth':
             print('Loading weights into state dict...')
