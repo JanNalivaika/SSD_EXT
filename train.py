@@ -17,7 +17,7 @@ import argparse
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from utils.utils import progress_bar
-import cupy as cp
+#import cupy as cp
 import random
 
 import time

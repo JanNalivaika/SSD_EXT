@@ -12,7 +12,7 @@ import os
 import sys
 import time
 import numpy as np
-import cupy as cp
+#import cupy as cp
 import csv
 import matplotlib.pyplot as plt
 import random
