@@ -50,7 +50,7 @@ class SSD(nn.Module):
 
         #if phase == 'test':
         self.softmax = nn.Softmax(dim=-1)
-        self.detect = Detect(num_classes, 0, 300, 0.01, 0.45)
+        self.detect_func = Detect(num_classes, 0, 300, 0.01, 0.45) #FINDING magic numbers
 
 
     def forward(self, x, phase = 'train'):
@@ -145,7 +145,7 @@ class SSD(nn.Module):
             p1 = loc.view(loc.size(0), -1, 5)                                 # loc preds
             p2 = self.softmax(conf.view(conf.size(0), -1, self.num_classes))  # conf preds
             p3 = self.priors.type(type(x.data))                               # default boxes
-            output = self.detect(p1, p2, p3)
+            output = self.detect_func.forward(p1, p2, p3)
         else:
             output = (
                 loc.view(loc.size(0), -1, 5),

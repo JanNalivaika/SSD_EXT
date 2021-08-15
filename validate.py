@@ -13,7 +13,7 @@ from pathlib import Path
 import warnings
 warnings.simplefilter("ignore", UserWarning)
 
-def get_gt_label(filename):
+def get_gt_information(filename):
     retarr = np.zeros((0, 7))
     with open(filename, newline='') as csvfile:
         spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
@@ -143,7 +143,8 @@ def soft_nms_pytorch(boxes, box_scores, sigma=0.5):
     return keep.to("cpu").numpy()
 
 
-def get_predicted_label(filename, net):
+def get_predicted_information(filename, net):
+    #
     with open(filename + '.binvox', 'rb') as f:
         model = utils.binvox_rw.read_as_3d_array(f).data
 
@@ -243,7 +244,10 @@ def get_predicted_label(filename, net):
 
 
 def get_lvec(labels):
+    # input = [4,6,2,5,5]
+    # output = [0,0,1,0,1,2,1,0,.....]
     results = np.zeros(24)
+
 
     for i in labels:
         results[int(i)] += 1
@@ -251,20 +255,41 @@ def get_lvec(labels):
     return results.astype(int)
 
 
-def eval_metric(pre, trul, tp):
-    precision = tp / pre
+def eval_metric(prediction_labels, true_labels):
+    #
+    true_positives = np.minimum(prediction_labels, true_labels)
 
-    recall = tp / trul
+    precision = divide_arrs(true_positives, prediction_labels)
+    recall = divide_arrs(true_positives, true_labels)
 
     return precision, recall
 
 
-def cal_detection_performance(pred_boxes_labels, gt_boxes_labels):
-    gt = get_lvec(gt_boxes_labels[:, 6])
-    pred = get_lvec(pred_boxes_labels[:, 6])
-    tp = np.minimum(gt, pred)
+# 0/0 => 1
+# x/0 => 0
+def divide_arrs(arr1, arr2):
+    arr2 = np.where(arr2 == 0, -1, arr2)
+    ret = arr1/arr2
 
-    return pred, gt, tp
+    ret = np.where(ret == 0, 1, ret)
+    ret = np.where(ret < 0, 0, ret)
+
+    return ret
+
+
+
+def cal_detection_performance(predicted_information, gt_information):
+    #
+    pred_boxes_labels = predicted_information[:, 6] # take only label name
+
+    prediction_labels = get_lvec(pred_boxes_labels)
+
+    gt_boxes_labels = gt_information[:, 6]
+    gt_labels = get_lvec(gt_boxes_labels)
+
+    true_positives = np.minimum(gt_labels, prediction_labels)
+
+    return prediction_labels, gt_labels, true_positives
 
 def test_ssdnet(folder_stl, file_weights):
     #
@@ -280,7 +305,10 @@ def test_ssdnet(folder_stl, file_weights):
             for filename in Path(folder_stl).glob('*.STL'):
                 filename = str(filename).replace('.STL', '')
 
-                pred, trul, tp = metric(get_predicted_label(filename, net), get_gt_label(filename + '.csv'))
+                predicted_information = get_predicted_information(filename, net)
+                ground_truth_information = get_gt_information(filename + '.csv')
+
+                pred, trul, tp = metric(predicted_information, ground_truth_information)
 
                 predictions += pred
                 truelabels += trul
@@ -292,7 +320,7 @@ def test_ssdnet(folder_stl, file_weights):
                 print(pred)
                 #print(tp)
 
-    precision, recall = eval_metric(predictions, truelabels, truepositives)
+    precision, recall = eval_metric(predictions, truelabels)
     print('Precision scores')
     precision = precision.mean()
     print(precision)
