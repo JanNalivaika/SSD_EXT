@@ -305,7 +305,15 @@ def test_ssdnet(folder_stl, file_weights):
             for filename in Path(folder_stl).glob('*.STL'):
                 filename = str(filename).replace('.STL', '')
 
+
+                #TODO split large pictures (Showcase large)
+
                 predicted_information = get_predicted_information(filename, net)
+
+                #TODO Save the found info - PNGs with boxes
+
+                #TODO combine pictures to original size (Showcase large)
+
                 ground_truth_information = get_gt_information(filename + '.csv')
 
                 pred, trul, tp = metric(predicted_information, ground_truth_information)
@@ -334,6 +342,9 @@ def test_ssdnet(folder_stl, file_weights):
 def run():
 
     start_time = time.time()
+
+    #folder_stl ='data/MulSet/set20/' # small showcase   64x64
+    #folder_stl ='data/MulSet/set20/' # large showcase   256x256
 
     folder_stl ='data/MulSet/set20/'
     file_weights = 'weights/VOC.pth'
