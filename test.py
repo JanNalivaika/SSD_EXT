@@ -14,8 +14,8 @@ from mpl_toolkits.mplot3d import Axes3D
 from math import pow
 import matplotlib.patches as mpatches
 
-if torch.cuda.is_available():
-    torch.set_default_tensor_type('torch.cuda.FloatTensor')
+"""if torch.cuda.is_available():
+    torch.set_default_tensor_type('torch.cuda.FloatTensor')"""
 
 
 def get_gt_label(filename):
@@ -43,7 +43,7 @@ def load_pretrained_model():
 
     # print(net)
 
-    return net.cuda()
+    return net.cpu()
 
 
 def tensor_to_float(val):
@@ -167,11 +167,11 @@ def get_predicted_label(filename, net):
 
     images = torch.tensor(images).permute(0, 3, 1, 2).float()
 
-    images = Variable(images.cuda())
-    # images = images.cuda()
+    images = Variable(images.cpu())
+    # images = images.cpu(
 
     out = net(images, 'test')
-    out.cuda()
+    out.cpu()
 
     cur_boxes = np.zeros((0, 8))
 
