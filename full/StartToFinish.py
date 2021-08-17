@@ -23,9 +23,9 @@ if __name__ == '__main__':
     file = "STL_files/ALL_TURNED.stl"
     resolution = 3000
 
-    dim_step = 1.2
+    dim_step = 1.5
     NN_dim = 64
-    overlap = 0.5
+    overlap = 0.3
 
     #deleteOLD()
     #Slicer(file, resolution)
@@ -35,5 +35,6 @@ if __name__ == '__main__':
     #Segment(dim_step,NN_dim,overlap)
     #Recognize()
     #Visualize()
+    #TURN IS POSSIBLE !!!!
     #Reconstruct()
 
