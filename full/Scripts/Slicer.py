@@ -4,8 +4,8 @@ import os
 
 
 def Slicer(file,resolution):
-    array = np.zeros((resolution, resolution, resolution), dtype=np.uint8)
-    del array
+    #array = np.zeros((resolution, resolution, resolution), dtype=np.uint8)
+    #del array
 
     output_path= r'Output/Sliced'
     if not os.path.exists(output_path):

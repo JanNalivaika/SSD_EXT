@@ -20,20 +20,20 @@ if __name__ == '__main__':
 
 
 
-    file = "STL_files/spoon.stl"
+    file = "STL_files/ALL_TURNED.stl"
     resolution = 3000
 
-    dim_step = 1.5
+    dim_step = 1.2
     NN_dim = 64
-    overlap = 1/3
+    overlap = 0.5
 
-    deleteOLD()
-    Slicer(file, resolution)
-    Remover()
-    Voxel_Combiner()
-    PNG_Creator()
-    Segment(dim_step,NN_dim,overlap)
-    Recognize()
-    Visualize()
+    #deleteOLD()
+    #Slicer(file, resolution)
+    #Remover()
+    #Voxel_Combiner()
+    #PNG_Creator()
+    #Segment(dim_step,NN_dim,overlap)
+    #Recognize()
+    #Visualize()
     #Reconstruct()
 
