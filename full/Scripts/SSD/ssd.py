@@ -162,7 +162,7 @@ class SSD(nn.Module):
 #            self.load_state_dict(torch.load(base_file,
 #                                 map_location=lambda storage, loc: storage),strict=False)
             
-            checkpoint = torch.load(base_file, map_location=torch.device('cpu'))
+            checkpoint = torch.load(base_file, map_location=torch.device('cuda'))
             
             if remove_layers:
                 del checkpoint['loc.0.weight']

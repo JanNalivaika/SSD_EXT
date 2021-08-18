@@ -12,6 +12,13 @@ from torch.autograd import Variable
 from pathlib import Path
 import warnings
 warnings.simplefilter("ignore", UserWarning)
+import pickle
+from PIL import Image
+import matplotlib
+
+
+if torch.cuda.is_available():
+    torch.set_default_tensor_type('torch.cuda.FloatTensor')
 
 def get_gt_information(filename):
     retarr = np.zeros((0, 7))
@@ -36,7 +43,7 @@ def load_pretrained_model(file_weights):
 
     ssd_net.load_weights(file_weights)
 
-    return net.cpu()
+    return net.cuda()
 
 
 def tensor_to_float(val):
@@ -143,7 +150,7 @@ def soft_nms_pytorch(boxes, box_scores, sigma=0.5):
     return keep.to("cpu").numpy()
 
 
-def get_predicted_information(filename, net):
+def get_predicted_information(filename, net, folder_stl):
     #
     with open(filename + '.binvox', 'rb') as f:
         model = utils.binvox_rw.read_as_3d_array(f).data
@@ -153,22 +160,31 @@ def get_predicted_information(filename, net):
     images = []
 
     for rot in range(6):
-        img, _ = create_img(model, rot)
+        raw_img, _ = create_img(model, rot)
 
-        img, _, _ = transform(img, 0, 0)
+        img, _, _ = transform(raw_img, 0, 0)
 
         images.append(img)
 
+
+        print("saving Images here")
+        new_filename = filename + "_" + str(rot) + ".png"
+        cv2.imwrite(new_filename, raw_img)
+        """raw_img = Image.open(new_filename)
+        raw_img = raw_img.resize((1000, 1000), Image.ANTIALIAS)
+        raw_img.save(new_filename)"""
+
+
     images = torch.tensor(images).permute(0, 3, 1, 2).float()
 
-    images = Variable(images.cpu())
-    images = Variable(images.cpu())
-    # images = images.cpu()
+    images = Variable(images.cuda())
+    images = Variable(images.cuda())
+    # images = images.cuda()
 
     out = net(images, 'test')
-    out.cpu()
+    out.cuda()
 
-    cur_boxes = np.zeros((0, 8))
+    cur_boxes = np.zeros((0, 9))
 
     for i in range(6):
 
@@ -196,8 +212,8 @@ def get_predicted_information(filename, net):
             d = z2
             e = y2
             f = x2
-
-            if i == 1:
+            print("what the hell is this")
+            """if i == 1:
                 a = 1 - z2
                 b = 1 - y2
                 c = x1
@@ -231,9 +247,12 @@ def get_predicted_information(filename, net):
                 c = 1 - z2
                 d = x2
                 e = y2
-                f = 1 - z1
+                f = 1 - z1"""
 
-            cur_boxes = np.append(cur_boxes, np.array([a, b, c, d, e, f, label - 1, score]).reshape(1, 8), axis=0)
+            cur_boxes = np.append(cur_boxes, np.array([a, b, c, d, e, f, label - 1, score, i]).reshape(1, 9), axis=0)
+
+    with open(filename +'.pickle', 'wb') as handle:
+        pickle.dump(cur_boxes, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     keepidx = soft_nms_pytorch(cur_boxes[:, :7], cur_boxes[:, -1])
     cur_boxes = cur_boxes[keepidx, :]
@@ -308,7 +327,7 @@ def test_ssdnet(folder_stl, file_weights):
 
                 #TODO split large pictures (Showcase large)
 
-                predicted_information = get_predicted_information(filename, net)
+                predicted_information = get_predicted_information(filename, net, folder_stl)
 
                 #TODO Save the found info - PNGs with boxes
 
@@ -339,6 +358,94 @@ def test_ssdnet(folder_stl, file_weights):
     print((2 * recall * precision) / (recall + precision))
 
 
+
+def visualize(folder_stl):
+
+    predictions_list  = [f for f in os.listdir(folder_stl) if f.endswith('.pickle')]
+
+    for predicton_container in predictions_list:
+
+        with open(folder_stl + predicton_container, 'rb') as handle:
+            predictions = pickle.load(handle)
+
+        picture = folder_stl + predicton_container.replace(".pickle", "")
+
+        counter = 0
+        for x in range(len(predictions)):
+
+            data = predictions[x]
+            selected_image = int(data[8])
+
+
+            z1 = int(data[0] * 64)
+            x1 = int(data[1] * 64)
+            y1 = int(data[2] * 64)
+            z2 = int(data[3] * 64) - 1
+            x2 = int(data[4] * 64) - 1
+            y2 = int(data[5] * 64) - 1
+            Feature = data[6]
+            prop = data[7]
+
+            if prop >= 0.95:
+
+                selected_image = picture + "_" + str(selected_image) + ".png"
+                im = np.array(Image.open(selected_image))
+
+
+                print("found feature " + str(Feature) + " in picture " + selected_image)
+
+
+                color = {
+                    0: [255, 255, 0, 255],
+                    1: [255, 0, 0, 255],
+                    2: [0, 255, 0, 255],
+                    3: [0, 0, 255, 255],
+                    4: [255, 127, 0, 255],
+                    5: [255, 212, 0, 255],
+                    6: [255, 255, 0, 255],
+                    7: [191, 255, 0, 255],
+                    8: [106, 255, 0, 255],
+                    9: [0, 234, 255, 255],
+                    10: [0, 149, 255, 255],
+                    11: [0, 64, 255, 255],
+                    12: [170, 0, 255, 255],
+                    13: [255, 0, 170, 255],
+                    14: [237, 185, 185, 255],
+                    15: [231, 233, 185, 255],
+                    16: [185, 237, 224, 255],
+                    17: [185, 215, 237, 255],
+                    18: [220, 185, 237, 255],
+                    19: [143, 35, 35, 255],
+                    20: [143, 106, 3, 255],
+                    21: [79, 143, 35, 255],
+                    22: [35, 98, 143, 255],
+                    23: [107, 35, 143, 255],
+                    24: [115, 115, 115, 255],
+                    25: [204, 204, 204, 255]
+                }[Feature]
+
+                color = color[0:3][::-1]
+                im[x1][y1] = color
+                im[x2][y2] = color
+
+                for x in range(x2 - x1):
+                    im[x1 + x][y1] = color
+                    im[x1 + x][y2] = color
+
+                for x in range(y2 - y1):
+                    im[x1][y1 + x] = color
+                    im[x2][y1 + x] = color
+
+                new_filename = selected_image.replace(".png", ("_" + str(counter) + ".png"))
+                cv2.imwrite(new_filename, im)
+
+                img = Image.open(new_filename)
+                img = img.resize((500, 500), Image.ANTIALIAS)
+                img.save(new_filename)
+
+                counter += 1
+
+
 def run():
 
     start_time = time.time()
@@ -346,10 +453,12 @@ def run():
     #folder_stl ='data/MulSet/set20/' # small showcase   64x64
     #folder_stl ='data/MulSet/set20/' # large showcase   256x256
 
-    folder_stl ='data/MulSet/set20/'
+    folder_stl ='data/MulSet/set11/'
     file_weights = 'weights/VOC.pth'
 
     test_ssdnet(folder_stl, file_weights)
+
+    visualize(folder_stl)
 
     print("--- %s seconds ---" % (time.time() - start_time))
 

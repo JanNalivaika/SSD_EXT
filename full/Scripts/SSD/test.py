@@ -21,9 +21,8 @@ import numpy as np
 warnings.simplefilter("ignore", UserWarning)
 import pickle
 
-"""if torch.cuda.is_available():
-    print("Replace cup with cuda")
-    torch.set_default_tensor_type('torch.cuda.FloatTensor')"""
+if torch.cuda.is_available():
+    torch.set_default_tensor_type('torch.cuda.FloatTensor')
 
 
 def get_gt_label(filename):
@@ -52,7 +51,7 @@ def load_pretrained_model():
     ssd_net.load_weights('Scripts/SSD/weights/VOCself6.pth')
 
     # print("Replace cup with cuda")
-    return net.cpu()
+    return net.cuda()
 
 
 def tensor_to_float(val):
@@ -168,12 +167,12 @@ def get_predictions(net):
         images = torch.tensor(images).permute(0, 3, 1, 2).float()
 
         # print("Replace cup with cuda")
-        images = Variable(images.cpu())
+        images = Variable(images.cuda())
         # images = images.cuda()
 
         out = net(images, 'test')
         # print("Replace cup with cuda")
-        out.cpu()
+        out.cuda()
 
         cur_boxes = np.zeros((0, 9))
 

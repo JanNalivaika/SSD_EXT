@@ -184,12 +184,12 @@ def log_sum_exp(x):
 #    
 #    N = dets.shape[0]
 #    
-#    indexes = torch.arange(0, N, dtype=torch.double).view(N, 1).cpu()
-#    #dets = torch.from_numpy(dets).double().cpu()
-#    #box_scores = torch.from_numpy(box_scores).double().cpu()
+#    indexes = torch.arange(0, N, dtype=torch.double).view(N, 1).cuda()
+#    #dets = torch.from_numpy(dets).double().cuda()
+#    #box_scores = torch.from_numpy(box_scores).double().cuda()
 #        
-#    box_scores = box_scores.double().cpu()
-#    dets = torch.cat((dets.double().cpu(), indexes.double()), dim=1).double().cpu()
+#    box_scores = box_scores.double().cuda()
+#    dets = torch.cat((dets.double().cuda(), indexes.double()), dim=1).double().cuda()
 #    
 #
 #    y1 = dets[:, 0]
@@ -212,18 +212,18 @@ def log_sum_exp(x):
 #
 #
 #        # IoU calculate
-#        yy1 = np.maximum(dets[i, 0].to("cpu").numpy(), dets[pos:, 0].to("cpu").numpy())
-#        xx1 = np.maximum(dets[i, 1].to("cpu").numpy(), dets[pos:, 1].to("cpu").numpy())
-#        yy2 = np.minimum(dets[i, 2].to("cpu").numpy(), dets[pos:, 2].to("cpu").numpy())
-#        xx2 = np.minimum(dets[i, 3].to("cpu").numpy(), dets[pos:, 3].to("cpu").numpy())
+#        yy1 = np.maximum(dets[i, 0].to("cuda").numpy(), dets[pos:, 0].to("cuda").numpy())
+#        xx1 = np.maximum(dets[i, 1].to("cuda").numpy(), dets[pos:, 1].to("cuda").numpy())
+#        yy2 = np.minimum(dets[i, 2].to("cuda").numpy(), dets[pos:, 2].to("cuda").numpy())
+#        xx2 = np.minimum(dets[i, 3].to("cuda").numpy(), dets[pos:, 3].to("cuda").numpy())
 #        
 #        w = np.maximum(0.0, xx2 - xx1 + 1)
 #        h = np.maximum(0.0, yy2 - yy1 + 1)
-#        inter = torch.tensor(w * h ).cpu()
-#        ovr = torch.div(inter, (areas[i] + areas[pos:] - inter)).cpu()
+#        inter = torch.tensor(w * h ).cuda()
+#        ovr = torch.div(inter, (areas[i] + areas[pos:] - inter)).cuda()
 #
 #        # Gaussian decay
-#        weight = torch.exp(-(ovr * ovr) / sigma).cpu()
+#        weight = torch.exp(-(ovr * ovr) / sigma).cuda()
 #        
 #        
 #        scores[pos:] = weight * scores[pos:]
@@ -248,7 +248,7 @@ def log_sum_exp(x):
 ##    if keep.shape[0] > top_k:
 ##        keep = keep[:top_k]
 #
-#    return keep.to("cpu").numpy(), keep.shape[0]
+#    return keep.to("cuda").numpy(), keep.shape[0]
 
 # Original author: Francisco Massa:
 # https://github.com/fmassa/object-detection.torch
