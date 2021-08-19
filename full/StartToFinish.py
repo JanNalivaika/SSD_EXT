@@ -5,7 +5,10 @@ from Scripts.PNGfromArray import PNG_Creator
 from Scripts.Segment import Segment
 from Scripts.SSD.test import *
 from Scripts.Visualize import Visualize
+from Scripts.PNGfromArrayBOOL import PNG_Creator_from_BOOL
 import shutil
+import time
+
 
 def deleteOLD():
     ## If folder exists, delete it ##
@@ -18,23 +21,31 @@ def deleteOLD():
 if __name__ == '__main__':
 
 
-
+    t1= time.time()
 
     file = "STL_files/ALL_TURNED.stl"
-    resolution = 300
+    resolution = 1000
+    # 300 new = 5.5 min
+    # 500 old = 6.2 min
 
     dim_step = 1.2
     NN_dim = 64
-    overlap = 0.5
+    overlap = 2/3
 
-    #deleteOLD()
-    #Slicer(file, resolution)
-    #Remover()
-    #Voxel_Combiner()
-    #PNG_Creator()
-    #Segment(dim_step,NN_dim,overlap)
+    deleteOLD()
+    Slicer(file, resolution)
+
+    Remover()           # may be obsolete
+    Voxel_Combiner()    # may be obsolete
+    PNG_Creator()       # may be obsolete
+
+    #PNG_Creator_from_BOOL()
+
+    Segment(dim_step,NN_dim,overlap)
     Recognize()
     Visualize()
     #TURN IS POSSIBLE !!!!
     #Reconstruct()
+
+    print(time.time()-t1)
 

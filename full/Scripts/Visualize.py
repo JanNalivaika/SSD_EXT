@@ -28,7 +28,7 @@ def Visualize():
 
     for itr in range(len(paths)):
         path = paths[itr]
-        print("Working on path " + str(itr) + " out of " + str(len(paths)))
+        #print("Working on path " + str(itr) + " out of " + str(len(paths)))
 
 
 
@@ -68,7 +68,7 @@ def Visualize():
                 if not os.path.exists(path_out):
                     os.makedirs(path_out)
 
-                print("found feature " + str(Feature) + " in picture " + working_image )
+                #print("found feature " + str(Feature) + " in picture " + working_image )
 
                 # z1,y1,x1,z2,y2,x2 = reomove_rotations(z1,y1,x1,z2,y2,x2,rotations[x])
 
@@ -101,7 +101,7 @@ def Visualize():
                     25: [204, 204, 204, 255]
                 }[Feature]
 
-                color = color[0:3]
+                color = color[0:3][::-1]
                 im[x1][y1] = color
                 im[x2][y2] = color
 

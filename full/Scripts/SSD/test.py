@@ -48,7 +48,7 @@ def load_pretrained_model():
 
     # ssd_net.load_weights('weights/512-exp2-notlda/VOC.pth')
     # ssd_net.load_weights('weights/VOCself5.pth')
-    ssd_net.load_weights('Scripts/SSD/weights/VOCself6.pth')
+    ssd_net.load_weights('Scripts/SSD/weights/VOC.pth')
 
     # print("Replace cup with cuda")
     return net.cuda()

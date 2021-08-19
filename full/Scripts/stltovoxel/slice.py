@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
 from . import perimeter
+import pickle
+import os
 
 
 def mesh_to_plane(output_file_path, mesh, bounding_box, parallel, resolution):
@@ -17,6 +19,7 @@ def mesh_to_plane(output_file_path, mesh, bounding_box, parallel, resolution):
     vol = np.zeros([resolution,resolution], dtype=bool)
     current_mesh_indices = set()
     z = 0
+    BOOL = []
     for event_z, status, tri_ind in generate_tri_events(mesh):
         while event_z - z >= 0:
             mesh_subset = [mesh[ind] for ind in current_mesh_indices]
@@ -29,7 +32,10 @@ def mesh_to_plane(output_file_path, mesh, bounding_box, parallel, resolution):
                 #vol[z] = pixels
                 if z > 0:
                     plt.imsave(output_file_path+str(z) + '.png', pixels, cmap=cm.gray)
+                    BOOL.append(pixels)
             z += 1
+
+
 
         if status == 'start':
             assert tri_ind not in current_mesh_indices
@@ -37,6 +43,13 @@ def mesh_to_plane(output_file_path, mesh, bounding_box, parallel, resolution):
         elif status == 'end':
             assert tri_ind in current_mesh_indices
             current_mesh_indices.remove(tri_ind)
+
+    output_path = r'Output/Combined_Voxel'
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+
+    with open("Output/Combined_Voxel/VoxelizedSTL.pickle", 'wb') as handle:
+        pickle.dump(BOOL, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     if parallel:
         results = [r.get() for r in result_ids]
