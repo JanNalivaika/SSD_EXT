@@ -24,13 +24,13 @@ if __name__ == '__main__':
     t1= time.time()
 
     file = "STL_files/ALL_TURNED.stl"
-    resolution = 1000
-    # 300 new = 5.5 min
-    # 500 old = 6.2 min
+    resolution = 3000
+    # 3000 new = 3.1 h
+    # 3000 old = 6.0 min
 
     dim_step = 1.2
     NN_dim = 64
-    overlap = 2/3
+    overlap = 1/3
 
     deleteOLD()
     Slicer(file, resolution)
