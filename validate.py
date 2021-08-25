@@ -11,14 +11,17 @@ from ssd import build_ssd
 from torch.autograd import Variable
 from pathlib import Path
 import warnings
+import os
+import glob
+
 warnings.simplefilter("ignore", UserWarning)
 import pickle
 from PIL import Image
 import matplotlib
 
-
 if torch.cuda.is_available():
     torch.set_default_tensor_type('torch.cuda.FloatTensor')
+
 
 def get_gt_information(filename):
     retarr = np.zeros((0, 7))
@@ -166,24 +169,24 @@ def get_predicted_information(filename, net, folder_stl):
 
         images.append(img)
 
-
         print("saving Images here")
         new_filename = filename + "_" + str(rot) + ".png"
+        cv2.imwrite(new_filename, raw_img)
+        new_filename = filename + "_" + str(rot) + "_result.png"
         cv2.imwrite(new_filename, raw_img)
         """raw_img = Image.open(new_filename)
         raw_img = raw_img.resize((1000, 1000), Image.ANTIALIAS)
         raw_img.save(new_filename)"""
 
-
     images = torch.tensor(images).permute(0, 3, 1, 2).float()
 
-    images = Variable(images.cuda())
     images = Variable(images.cuda())
     # images = images.cuda()
 
     out = net(images, 'test')
     out.cuda()
 
+    boxes_for_visuali = np.zeros((0, 9))
     cur_boxes = np.zeros((0, 9))
 
     for i in range(6):
@@ -212,8 +215,11 @@ def get_predicted_information(filename, net, folder_stl):
             d = z2
             e = y2
             f = x2
-            print("what the hell is this")
-            """if i == 1:
+
+            boxes_for_visuali = np.append(boxes_for_visuali, np.array([a, b, c, d, e, f, label - 1, score, i]).reshape(1, 9), axis=0)
+
+            print("why is this necessary when working wit validation")
+            if i == 1:
                 a = 1 - z2
                 b = 1 - y2
                 c = x1
@@ -247,12 +253,12 @@ def get_predicted_information(filename, net, folder_stl):
                 c = 1 - z2
                 d = x2
                 e = y2
-                f = 1 - z1"""
+                f = 1 - z1
 
             cur_boxes = np.append(cur_boxes, np.array([a, b, c, d, e, f, label - 1, score, i]).reshape(1, 9), axis=0)
 
-    with open(filename +'.pickle', 'wb') as handle:
-        pickle.dump(cur_boxes, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    with open(filename + '.pickle', 'wb') as handle:
+        pickle.dump(boxes_for_visuali, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     keepidx = soft_nms_pytorch(cur_boxes[:, :7], cur_boxes[:, -1])
     cur_boxes = cur_boxes[keepidx, :]
@@ -267,19 +273,18 @@ def get_lvec(labels):
     # output = [0,0,1,0,1,2,1,0,.....]
     results = np.zeros(24)
 
-
     for i in labels:
         results[int(i)] += 1
 
     return results.astype(int)
 
 
-def eval_metric(prediction_labels, true_labels):
+def eval_metric(prediction_labels, true_labels, positives):
     #
-    true_positives = np.minimum(prediction_labels, true_labels)
+    precision = divide_arrs(positives, prediction_labels)
+    recall = divide_arrs(positives, true_labels)
 
-    precision = divide_arrs(true_positives, prediction_labels)
-    recall = divide_arrs(true_positives, true_labels)
+
 
     return precision, recall
 
@@ -287,28 +292,38 @@ def eval_metric(prediction_labels, true_labels):
 # 0/0 => 1
 # x/0 => 0
 def divide_arrs(arr1, arr2):
-    arr2 = np.where(arr2 == 0, -1, arr2)
-    ret = arr1/arr2
+    ret = []
 
-    ret = np.where(ret == 0, 1, ret)
-    ret = np.where(ret < 0, 0, ret)
+    for idx in range(len(arr2)):
+        if (arr2[idx] == arr1[idx]):
+            ret.append(1)
+        else:
+            if arr2[idx] == 0:
+                ret.append(0)
+            else:
+                ret.append(arr1[idx] / arr2[idx])
 
     return ret
 
 
-
-def cal_detection_performance(predicted_information, gt_information):
+def cal_detection_performance(predicted_information, true_information):
     #
-    pred_boxes_labels = predicted_information[:, 6] # take only label name
+    prediction_labels = get_labels(predicted_information)
 
-    prediction_labels = get_lvec(pred_boxes_labels)
+    true_labels = get_labels(true_information)
 
-    gt_boxes_labels = gt_information[:, 6]
-    gt_labels = get_lvec(gt_boxes_labels)
+    positives = np.minimum(true_labels, prediction_labels)
 
-    true_positives = np.minimum(gt_labels, prediction_labels)
+    return prediction_labels, true_labels, positives
 
-    return prediction_labels, gt_labels, true_positives
+
+def get_labels(information):
+    #
+    boxes_labels = information[:, 6]
+    labels = get_lvec(boxes_labels)
+
+    return labels
+
 
 def test_ssdnet(folder_stl, file_weights):
     #
@@ -324,44 +339,38 @@ def test_ssdnet(folder_stl, file_weights):
             for filename in Path(folder_stl).glob('*.STL'):
                 filename = str(filename).replace('.STL', '')
 
-
-                #TODO split large pictures (Showcase large)
+                # TODO split large pictures (Showcase large)
 
                 predicted_information = get_predicted_information(filename, net, folder_stl)
 
-                #TODO Save the found info - PNGs with boxes
-
-                #TODO combine pictures to original size (Showcase large)
-
                 ground_truth_information = get_gt_information(filename + '.csv')
 
-                pred, trul, tp = metric(predicted_information, ground_truth_information)
+                prediction_labels, true_labels, positives = metric(predicted_information, ground_truth_information)
 
-                predictions += pred
-                truelabels += trul
-                truepositives += tp
+                predictions += prediction_labels
+                truelabels += true_labels
+                truepositives += positives
 
                 print(filename)
 
-                print(trul)
-                print(pred)
-                #print(tp)
+                print(true_labels)
+                print(prediction_labels)
+                print(positives)
 
-    precision, recall = eval_metric(predictions, truelabels)
+    print("THIS METRIC IS WRONG ")
+    precision, recall = eval_metric(predictions, truelabels, positives)
     print('Precision scores')
-    precision = precision.mean()
+    precision = np.mean(precision)
     print(precision)
     print('Recall scores')
-    recall = recall.mean()
-    print(recall.mean())
+    recall = np.mean(recall)
+    print(recall)
     print('F scores')
     print((2 * recall * precision) / (recall + precision))
 
 
-
 def visualize(folder_stl):
-
-    predictions_list  = [f for f in os.listdir(folder_stl) if f.endswith('.pickle')]
+    predictions_list = [f for f in os.listdir(folder_stl) if f.endswith('.pickle')]
 
     for predicton_container in predictions_list:
 
@@ -376,7 +385,6 @@ def visualize(folder_stl):
             data = predictions[x]
             selected_image = int(data[8])
 
-
             z1 = int(data[0] * 64)
             x1 = int(data[1] * 64)
             y1 = int(data[2] * 64)
@@ -388,12 +396,11 @@ def visualize(folder_stl):
 
             if prop >= 0.95:
 
-                selected_image = picture + "_" + str(selected_image) + ".png"
+                selected_image = picture + "_" + str(selected_image) + "_result.png"
                 im = np.array(Image.open(selected_image))
-
+                im = cv2.imread(selected_image)
 
                 print("found feature " + str(Feature) + " in picture " + selected_image)
-
 
                 color = {
                     0: [255, 255, 0, 255],
@@ -436,31 +443,42 @@ def visualize(folder_stl):
                     im[x1][y1 + x] = color
                     im[x2][y1 + x] = color
 
-                new_filename = selected_image.replace(".png", ("_" + str(counter) + ".png"))
-                cv2.imwrite(new_filename, im)
-
-                img = Image.open(new_filename)
-                img = img.resize((500, 500), Image.ANTIALIAS)
-                img.save(new_filename)
-
+                backup_filename = selected_image.replace(".png", ("_" + str(counter) + ".png"))
+                cv2.imwrite(selected_image, im)
                 counter += 1
+
+""" img = Image.open(selected_image)
+img = img.resize((500, 500), Image.ANTIALIAS)
+img.save(selected_image)"""
+
+
 
 
 def run():
-
     start_time = time.time()
 
-    #folder_stl ='data/MulSet/set20/' # small showcase   64x64
-    #folder_stl ='data/MulSet/set20/' # large showcase   256x256
+    # folder_stl ='data/MulSet/set20/' # small showcase   64x64
+    # folder_stl ='data/MulSet/set20/' # large showcase   256x256
 
-    folder_stl ='data/MulSet/set11/'
+    folder_stl = 'data/MulSet/set11/'
     file_weights = 'weights/VOC.pth'
+
+    files = glob.glob(folder_stl + '/*.png', recursive=True)
+
+    for f in files:
+        try:
+            os.remove(f)
+        except OSError as e:
+            print("Error: %s : %s" % (f, e.strerror))
+
+
 
     test_ssdnet(folder_stl, file_weights)
 
     visualize(folder_stl)
 
     print("--- %s seconds ---" % (time.time() - start_time))
+
 
 if __name__ == '__main__':
     run()

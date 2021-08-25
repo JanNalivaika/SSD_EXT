@@ -42,10 +42,10 @@ def PNG_Creator_from_BOOL():
             for y in range(w):
                 new_color = 0
                 for z in range(d):
-                    if int(block[x][y][z]) == 0:
-                        new_color += inc
-                    else:
+                    if block[x][y][z]:
                         break
+                    else:
+                        new_color += inc
                 data[x][y][0] = new_color
                 data[x][y][1] = new_color
                 data[x][y][2] = new_color
@@ -65,10 +65,10 @@ def PNG_Creator_from_BOOL():
             for y in range(w):
                 new_color = 0
                 for z in range(d):
-                    if int(block[x][y][d - 1 - z]) == 0:
-                        new_color += inc
-                    else:
+                    if (block[x][y][d - 1 - z]):
                         break
+                    else:
+                        new_color += inc
                 data[x][y][0] = new_color
                 data[x][y][1] = new_color
                 data[x][y][2] = new_color
@@ -88,10 +88,10 @@ def PNG_Creator_from_BOOL():
             for y in range(d):
                 new_color = 0
                 for z in range(l):
-                    if int(block[z][x][y]) == 0:
-                        new_color += inc
-                    else:
+                    if block[z][x][y]:
                         break
+                    else:
+                        new_color += inc
                 data[x][y][0] = new_color
                 data[x][y][1] = new_color
                 data[x][y][2] = new_color
@@ -111,10 +111,10 @@ def PNG_Creator_from_BOOL():
             for y in range(d):
                 new_color = 0
                 for z in range(l):
-                    if int(block[l - 1 - z][x][y]) == 0:
-                        new_color += inc
-                    else:
+                    if block[l - 1 - z][x][y]:
                         break
+                    else:
+                        new_color += inc
                 data[x][y][0] = new_color
                 data[x][y][1] = new_color
                 data[x][y][2] = new_color
@@ -134,10 +134,10 @@ def PNG_Creator_from_BOOL():
             for y in range(d):
                 new_color = 0
                 for z in range(w):
-                    if int(block[x][z][y]) == 0:
-                        new_color += inc
-                    else:
+                    if block[x][z][y]:
                         break
+                    else:
+                        new_color += inc
                 data[x][y][0] = new_color
                 data[x][y][1] = new_color
                 data[x][y][2] = new_color
@@ -157,10 +157,10 @@ def PNG_Creator_from_BOOL():
             for y in range(d):
                 new_color = 0
                 for z in range(w):
-                    if int(block[x][w-1-z][y]) == 0:
-                        new_color += inc
-                    else:
+                    if block[x][w-1-z][y]:
                         break
+                    else:
+                        new_color += inc
                     data[x][y][0] = new_color
                     data[x][y][1] = new_color
                     data[x][y][2] = new_color

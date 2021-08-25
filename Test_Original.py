@@ -1,4 +1,4 @@
-import pyvista as pv
+#import pyvista as pv
 import numpy as np
 import csv
 import utils.binvox_rw
@@ -390,7 +390,7 @@ import time
 
 start_time = time.time()
 
-data_group = 10
+data_group = 20
 
 test_ssdnet(data_group, cal_detection_performance)  # feature recognition
 # test_ssdnet(data_group,cal_localization_performance) #feature localisation

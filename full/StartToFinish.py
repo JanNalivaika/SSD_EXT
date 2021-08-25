@@ -23,7 +23,7 @@ if __name__ == '__main__':
 
     t = time.time()
 
-    file = "STL_files/TITAN-15.stl"
+    file = "STL_files/StartToFinish.stl"
     resolution = 3000
     # 3000 new optimized  = 40 min
     # 3000 new = 3.1 h
