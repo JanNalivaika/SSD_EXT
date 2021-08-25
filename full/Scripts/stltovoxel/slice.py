@@ -20,6 +20,7 @@ def mesh_to_plane(output_file_path, mesh, bounding_box, parallel, resolution):
     current_mesh_indices = set()
     z = 0
     BOOL = []
+    final_bar = math.inf
     for event_z, status, tri_ind in generate_tri_events(mesh):
         while event_z - z >= 0:
             mesh_subset = [mesh[ind] for ind in current_mesh_indices]
@@ -31,8 +32,25 @@ def mesh_to_plane(output_file_path, mesh, bounding_box, parallel, resolution):
                 _, pixels = paint_z_plane(mesh_subset, z, bounding_box[:2])
                 #vol[z] = pixels
                 if z > 0:
-                    plt.imsave(output_file_path+str(z) + '.png', pixels, cmap=cm.gray)
+                    #plt.imsave(output_file_path+str(z) + '.png', pixels, cmap=cm.gray)
                     BOOL.append(pixels)
+
+
+                    # finding unused bars
+                    bar = 0
+                    for x in range(len(pixels)):
+                        arr = np.zeros(len(pixels))
+                        arr1 = pixels[- 1 - x]
+                        if np.array_equiv(arr, arr1):
+                            bar += 1
+                        else:
+                            break
+                    if bar<final_bar:
+                        final_bar = bar
+                        #print(final_bar)
+
+
+
             z += 1
 
 
@@ -44,11 +62,20 @@ def mesh_to_plane(output_file_path, mesh, bounding_box, parallel, resolution):
             assert tri_ind in current_mesh_indices
             current_mesh_indices.remove(tri_ind)
 
+    #removing unused bar
+    print(final_bar)
+    original_len= len(BOOL[0][0])
+    leave = original_len-final_bar
+    for x in range(len(BOOL)):
+        print('Removing empty space from layer %d/%d' % (x, len(BOOL)))
+        BOOL[x] = BOOL[x][:leave]
+
+
     output_path = r'Output/Combined_Voxel'
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
-    with open("Output/Combined_Voxel/VoxelizedSTL.pickle", 'wb') as handle:
+    with open("Output/Combined_Voxel/VoxelizedSTL_BOOL.pickle", 'wb') as handle:
         pickle.dump(BOOL, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     if parallel:

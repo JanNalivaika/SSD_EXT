@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 from PIL import Image
 import pickle
@@ -169,7 +171,7 @@ def PNG_Creator_from_BOOL():
         #img.show()
 
 
-    file = "Output/Combined_Voxel/VoxelizedSTL.pickle"
+    file = "Output/Combined_Voxel/VoxelizedSTL_BOOL.pickle"
     with open(file, 'rb') as handle:
         block = pickle.load(handle)
 
@@ -179,10 +181,35 @@ def PNG_Creator_from_BOOL():
 
     block =np.asarray(block)
 
+
+    #t1 = time.time()
+    #print("Working on Picture 0" )
     #XRay(block, output_path)
+    #print(time.time()-t1)
+
+    # takes around 400 sec per picture
+
+    t1 = time.time()
+    print("Working on Picture 1")
     MakeAPicture1(block, output_path)  # under side
+    print(time.time() - t1)
+    t1 = time.time()
+    print("Working on Picture 2")
     MakeAPicture2(block, output_path)  # top side
+    print(time.time() - t1)
+    t1 = time.time()
+    print("Working on Picture 3")
     MakeAPicture3(block, output_path)  # left
+    print(time.time() - t1)
+    t1 = time.time()
+    print("Working on Picture 4")
     MakeAPicture4(block, output_path)  # right
+    print(time.time() - t1)
+    t1 = time.time()
+    print("Working on Picture 5")
     MakeAPicture5(block, output_path)
+    print(time.time() - t1)
+    t1 = time.time()
+    print("Working on Picture 6")
     MakeAPicture6(block, output_path)
+    print(time.time() - t1)

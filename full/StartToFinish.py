@@ -21,31 +21,34 @@ def deleteOLD():
 if __name__ == '__main__':
 
 
-    t1= time.time()
+    t = time.time()
 
-    file = "STL_files/ALL_TURNED.stl"
+    file = "STL_files/TITAN-15.stl"
     resolution = 3000
+    # 3000 new optimized  = 40 min
     # 3000 new = 3.1 h
     # 3000 old = 6.0 min
 
-    dim_step = 1.2
+    dim_step = 1.5
     NN_dim = 64
     overlap = 1/3
 
     deleteOLD()
     Slicer(file, resolution)
 
-    Remover()           # may be obsolete
-    Voxel_Combiner()    # may be obsolete
-    PNG_Creator()       # may be obsolete
+    #Remover()           # IS obsolete
+    #Voxel_Combiner()    # IS be obsolete
+    #PNG_Creator()       # IS be obsolete
 
-    #PNG_Creator_from_BOOL()
+    PNG_Creator_from_BOOL()
 
     Segment(dim_step,NN_dim,overlap)
     Recognize()
     Visualize()
     #TURN IS POSSIBLE !!!!
+    # To Do : IMPLEMENT TURNING HERE !
+
     #Reconstruct()
 
-    print(time.time()-t1)
+    print(time.time()-t)
 

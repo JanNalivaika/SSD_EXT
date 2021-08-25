@@ -150,7 +150,7 @@ def get_predictions(net):
 
     for itr in range(len(paths)):
         path = paths[itr]
-        print("Working on path " + str(itr) + " out of " + str(len(paths)))
+        print("Working Recognition on path " + str(itr) + " out of " + str(len(paths)))
         #path = "Output/sliced_IS_resized/top/top_800"
         onlyfiles = [f for f in listdir(path) if isfile(join(path, f))]
 

@@ -28,7 +28,7 @@ def Visualize():
 
     for itr in range(len(paths)):
         path = paths[itr]
-        #print("Working on path " + str(itr) + " out of " + str(len(paths)))
+        print("Working on Visualization on path " + str(itr) + " out of " + str(len(paths)))
 
 
 
