@@ -6,7 +6,7 @@ import pickle
 import os
 import numpy as np
 
-def PNG_Creator_from_BOOL():
+def PNG_Creator_from_BOOL(png_precision):
 
     def XRay(block, file):
         l, w, d = len(block), len(block[0]), len(block[0][0])
@@ -33,19 +33,22 @@ def PNG_Creator_from_BOOL():
         # img.show()
 
 
-    def MakeAPicture1(block, file):
+    def MakeAPicture1(block, file, png_precision):
         l, w, d = len(block), len(block[0]), len(block[0][0])
         data = np.zeros((l, w, 3), dtype=np.uint8)
         inc = 255 / d
 
-        for x in range(l):
-            for y in range(w):
+        for x in range(0, (l), 1):
+            for y in range(0, (w), 1):
                 new_color = 0
-                for z in range(d):
+                for z in range(0, (d), png_precision):
                     if block[x][y][z]:
                         break
                     else:
-                        new_color += inc
+                        new_color += inc * png_precision
+
+                if new_color > 255:
+                    new_color = 255
                 data[x][y][0] = new_color
                 data[x][y][1] = new_color
                 data[x][y][2] = new_color
@@ -56,19 +59,22 @@ def PNG_Creator_from_BOOL():
         # img.show()
 
 
-    def MakeAPicture2(block, file):
+    def MakeAPicture2(block, file, png_precision):
         l, w, d = len(block), len(block[0]), len(block[0][0])
         data = np.zeros((l, w, 3), dtype=np.uint8)
         inc = 255 / d
 
-        for x in range(l):
-            for y in range(w):
+        for x in range(0, (l), 1):
+            for y in range(0, (w), 1):
                 new_color = 0
-                for z in range(d):
+                for z in range(0, (d), png_precision):
                     if (block[x][y][d - 1 - z]):
                         break
                     else:
-                        new_color += inc
+                        new_color += inc * png_precision
+
+                if new_color > 255:
+                    new_color = 255
                 data[x][y][0] = new_color
                 data[x][y][1] = new_color
                 data[x][y][2] = new_color
@@ -79,19 +85,21 @@ def PNG_Creator_from_BOOL():
         # img.show()
 
 
-    def MakeAPicture3(block, file):
+    def MakeAPicture3(block, file, png_precision):
         l, w, d = len(block), len(block[0]), len(block[0][0])
         data = np.zeros((w, d, 3), dtype=np.uint8)
         inc = 255 / l
 
-        for x in range(w):
-            for y in range(d):
+        for x in range(0, (w), 1):
+            for y in range(0, (d), 1):
                 new_color = 0
-                for z in range(l):
+                for z in range(0, (l), png_precision):
                     if block[z][x][y]:
                         break
                     else:
-                        new_color += inc
+                        new_color += inc * png_precision
+                if new_color > 255:
+                    new_color = 255
                 data[x][y][0] = new_color
                 data[x][y][1] = new_color
                 data[x][y][2] = new_color
@@ -102,19 +110,22 @@ def PNG_Creator_from_BOOL():
         # img.show()
 
 
-    def MakeAPicture4(block, file):
+    def MakeAPicture4(block, file, png_precision):
         l, w, d = len(block), len(block[0]), len(block[0][0])
         data = np.zeros((w, d, 3), dtype=np.uint8)
         inc = 255 / l
 
-        for x in range(w):
-            for y in range(d):
+        for x in range(0, (w), 1):
+            for y in range(0, (d), 1):
                 new_color = 0
-                for z in range(l):
+                for z in range(0, (l), png_precision):
                     if block[l - 1 - z][x][y]:
                         break
                     else:
-                        new_color += inc
+                        new_color += inc * png_precision
+
+                if new_color > 255:
+                    new_color = 255
                 data[x][y][0] = new_color
                 data[x][y][1] = new_color
                 data[x][y][2] = new_color
@@ -125,19 +136,22 @@ def PNG_Creator_from_BOOL():
         # img.show()
 
 
-    def MakeAPicture5(block, file):
+    def MakeAPicture5(block, file, png_precision):
         l, w, d = len(block), len(block[0]), len(block[0][0])
         data = np.zeros((l, d, 3), dtype=np.uint8)
         inc = 255 / w
 
-        for x in range(l):
-            for y in range(d):
+        for x in range(0, (l), 1):
+            for y in range(0, (d), 1):
                 new_color = 0
-                for z in range(w):
+                for z in range(0, (w), png_precision):
                     if block[x][z][y]:
                         break
                     else:
-                        new_color += inc
+                        new_color += inc * png_precision
+
+                if new_color > 255:
+                    new_color = 255
                 data[x][y][0] = new_color
                 data[x][y][1] = new_color
                 data[x][y][2] = new_color
@@ -148,22 +162,25 @@ def PNG_Creator_from_BOOL():
         #img.show()
 
 
-    def MakeAPicture6(block, file):
+    def MakeAPicture6(block, file, png_precision):
         l, w, d = len(block), len(block[0]), len(block[0][0])
         data = np.zeros((l, d, 3), dtype=np.uint8)
         inc = 255 / w
 
-        for x in range(l):
-            for y in range(d):
+        for x in range(0, (l), 1):
+            for y in range(0, (d), 1):
                 new_color = 0
-                for z in range(w):
+                for z in range(0, (w), png_precision):
                     if block[x][w-1-z][y]:
                         break
                     else:
-                        new_color += inc
-                    data[x][y][0] = new_color
-                    data[x][y][1] = new_color
-                    data[x][y][2] = new_color
+                        new_color += inc * png_precision
+
+                if new_color > 255:
+                    new_color = 255
+                data[x][y][0] = new_color
+                data[x][y][1] = new_color
+                data[x][y][2] = new_color
 
         img = Image.fromarray(data, 'RGB')
         filename = file + "\HD_back2.png"
@@ -191,25 +208,25 @@ def PNG_Creator_from_BOOL():
 
     t1 = time.time()
     print("Working on Picture 1")
-    MakeAPicture1(block, output_path)  # under side
+    MakeAPicture1(block, output_path, png_precision)  # under side
     print(time.time() - t1)
     t1 = time.time()
     print("Working on Picture 2")
-    MakeAPicture2(block, output_path)  # top side
+    MakeAPicture2(block, output_path, png_precision)  # top side
     print(time.time() - t1)
     t1 = time.time()
     print("Working on Picture 3")
-    MakeAPicture3(block, output_path)  # left
+    MakeAPicture3(block, output_path, png_precision)  # left
     print(time.time() - t1)
     t1 = time.time()
     print("Working on Picture 4")
-    MakeAPicture4(block, output_path)  # right
+    MakeAPicture4(block, output_path, png_precision)  # right
     print(time.time() - t1)
     t1 = time.time()
     print("Working on Picture 5")
-    MakeAPicture5(block, output_path)
+    MakeAPicture5(block, output_path, png_precision)
     print(time.time() - t1)
     t1 = time.time()
     print("Working on Picture 6")
-    MakeAPicture6(block, output_path)
+    MakeAPicture6(block, output_path, png_precision)
     print(time.time() - t1)

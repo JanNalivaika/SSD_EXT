@@ -23,8 +23,13 @@ if __name__ == '__main__':
 
     t = time.time()
 
-    file = "STL_files/StartToFinish.stl"
+    file = "STL_files/ALL_TURNED.stl"
     resolution = 3000
+    # 3000 png loop in step 50 = 13min
+    # 3000 png loop in step 30 = 13min
+    # 3000 png loop in step 20 = 14min
+    # 3000 png loop in step 10 = 18min
+    # 3000 png loop in step  5 = 20 min
     # 3000 new optimized  = 40 min
     # 3000 new = 3.1 h
     # 3000 old = 6.0 min
@@ -40,7 +45,9 @@ if __name__ == '__main__':
     #Voxel_Combiner()    # IS be obsolete
     #PNG_Creator()       # IS be obsolete
 
-    PNG_Creator_from_BOOL()
+    png_precision = 10
+
+    PNG_Creator_from_BOOL(png_precision)
 
     Segment(dim_step,NN_dim,overlap)
     Recognize()

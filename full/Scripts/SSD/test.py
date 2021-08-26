@@ -64,8 +64,6 @@ def tensor_to_float(val):
     return float(val)
 
 
-
-
 def soft_nms_pytorch(boxes, box_scores, sigma=0.5):
     dets = boxes[:, 0:6].copy() * 1000
 
@@ -134,24 +132,20 @@ def soft_nms_pytorch(boxes, box_scores, sigma=0.5):
 
 
 def get_predictions(net):
-
     transform = SSDAugmentation(cfg['min_dim'], MEANS, phase='test')
-
-
-
 
     paths = []
     p1 = "Output/sliced_IS_resized"
     path_pos = [f.path for f in os.scandir(p1) if f.is_dir()]
     for x in path_pos:
-        #p = x.repace("\\" ,"/")
+        # p = x.repace("\\" ,"/")
         path_dim = [f.path for f in os.scandir(x) if f.is_dir()]
         paths = paths + path_dim
 
     for itr in range(len(paths)):
         path = paths[itr]
         print("Working Recognition on path " + str(itr) + " out of " + str(len(paths)))
-        #path = "Output/sliced_IS_resized/top/top_800"
+        # path = "Output/sliced_IS_resized/top/top_800"
         onlyfiles = [f for f in listdir(path) if isfile(join(path, f))]
 
         images = []
@@ -162,7 +156,6 @@ def get_predictions(net):
             img, _, _ = transform(img, 0, 0)
 
             images.append(img)
-
 
         images = torch.tensor(images).permute(0, 3, 1, 2).float()
 
@@ -203,18 +196,17 @@ def get_predictions(net):
                 e = y2
                 f = x2
 
-                cur_boxes = np.append(cur_boxes, np.array([a, b, c, d, e, f, label - 1, score, i]).reshape(1, 9), axis=0)
+                cur_boxes = np.append(cur_boxes, np.array([a, b, c, d, e, f, label - 1, score, i]).reshape(1, 9),
+                                      axis=0)
 
+        print("Pay attention here")
+        keepidx = soft_nms_pytorch(cur_boxes[:, :7], cur_boxes[:, -1])
+        cur_boxes = cur_boxes[keepidx, :]
 
         with open(path + '/predictions.pickle', 'wb') as handle:
             pickle.dump(cur_boxes, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-
-        keepidx = soft_nms_pytorch(cur_boxes[:, :7], cur_boxes[:, -1])
-        cur_boxes = cur_boxes[keepidx, :]
-
-        cur_boxes[:, 0:6] = 10000 * cur_boxes[:, 0:6]
-
+        # cur_boxes[:, 0:6] = 10000 * cur_boxes[:, 0:6]
 
 
 def Recognize():
@@ -222,9 +214,4 @@ def Recognize():
 
     with torch.no_grad():
         with open(os.devnull, 'w') as devnull:
-
             get_predictions(net)
-
-
-
-
