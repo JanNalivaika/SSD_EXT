@@ -45,7 +45,7 @@ if __name__ == '__main__':
     #Voxel_Combiner()    # IS be obsolete
     #PNG_Creator()       # IS be obsolete
 
-    png_precision = 10
+    png_precision = 50
 
     PNG_Creator_from_BOOL(png_precision)
 

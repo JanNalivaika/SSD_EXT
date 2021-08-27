@@ -3,7 +3,7 @@ from copy import deepcopy
 import numpy as np
 
 
-f = open("turnedinspace2.stl", "r")
+f = open("StartToFinish.stl", "r")
 g = f.read()
 # print(g)
 num_lines = g.count('\n')
@@ -19,6 +19,8 @@ areas = []
 for x in range(int(num_facets)):
     pos = 1 + (7 * x)
     cur_vector = [float(lines_nospace[pos][2]) , float(lines_nospace[pos][3]) , float(lines_nospace[pos][4])]
+
+    cur_vector = [round(num, 4) for num in cur_vector]
 
     v1 = [float(lines_nospace[pos + 2][1]), float(lines_nospace[pos + 2][2]), float(lines_nospace[pos + 2][3])]
     v2 = [float(lines_nospace[pos + 3][1]), float(lines_nospace[pos + 3][2]), float(lines_nospace[pos + 3][3])]
@@ -49,9 +51,10 @@ for x in range(len(unique_vectors)):
     a = unique_vectors[x][0]
     b = unique_vectors[x][1]
     c = unique_vectors[x][2]
-    if (a+b) ==0 or  (b+c) == 0 or (c+a) == 0:
+    if (a+b) == 0 or  (b+c) == 0 or (c+a) == 0:
         status.append(True)
     else:
+        print(a, b, c)
         status.append(False)
 
 area_to_axis = 0
@@ -77,7 +80,7 @@ z_ax = [0,0,1]
 
 print("SELECT THE RIGHT VecTOR")
 # 49,48,47,44
-vector = unique_vectors[49]
+vector = unique_vectors[63]
 """dot_product = np.dot( x_ax,vector)
 angle = np.arccos(dot_product) * 180 / math.pi
 angle = np.arctan2(dot_product) # why minus ???????????????????????????
