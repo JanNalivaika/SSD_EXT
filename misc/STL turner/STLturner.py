@@ -80,7 +80,7 @@ z_ax = [0,0,1]
 
 print("SELECT THE RIGHT VecTOR")
 # 49,48,47,44
-vector = unique_vectors[63]
+vector = unique_vectors[62]
 """dot_product = np.dot( x_ax,vector)
 angle = np.arccos(dot_product) * 180 / math.pi
 angle = np.arctan2(dot_product) # why minus ???????????????????????????

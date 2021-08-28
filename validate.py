@@ -87,6 +87,10 @@ def rotate_sample(sample, rotation, reverse=False):
 
 
 def soft_nms_pytorch(boxes, box_scores, sigma=0.5):
+    # short explanation for NMS == Non-Maximum Suppression (NMS)
+    # https://towardsdatascience.com/understanding-ssd-multibox-real-time-object-detection-in-deep-learning-495ef744fab
+
+
     dets = boxes[:, 0:6].copy() * 1000
 
     N = dets.shape[0]
@@ -162,18 +166,20 @@ def get_predicted_information(filename, net, folder_stl):
 
     images = []
 
-    for rot in range(6):
-        raw_img, _ = create_img(model, rot)
+
+    # create 6 PNGs
+    for rotation in range(6):
+        raw_img, _ = create_img(model, rotation)
 
         img, _, _ = transform(raw_img, 0, 0)
 
         images.append(img)
 
-        print("saving Images here")
-        new_filename = filename + "_" + str(rot) + ".png"
+        #print("saving Images here")
+        new_filename = filename + "_" + str(rotation) + ".png"
         cv2.imwrite(new_filename, raw_img)
-        new_filename = filename + "_" + str(rot) + "_result.png"
-        cv2.imwrite(new_filename, raw_img)
+        #new_filename = filename + "_" + str(rotation) + "_result.png"
+        #cv2.imwrite(new_filename, raw_img)
         """raw_img = Image.open(new_filename)
         raw_img = raw_img.resize((1000, 1000), Image.ANTIALIAS)
         raw_img.save(new_filename)"""
@@ -181,7 +187,6 @@ def get_predicted_information(filename, net, folder_stl):
     images = torch.tensor(images).permute(0, 3, 1, 2).float()
 
     images = Variable(images.cuda())
-    # images = images.cuda()
 
     out = net(images, 'test')
     out.cuda()
@@ -218,7 +223,8 @@ def get_predicted_information(filename, net, folder_stl):
 
             boxes_for_visuali = np.append(boxes_for_visuali, np.array([a, b, c, d, e, f, label - 1, score, i]).reshape(1, 9), axis=0)
 
-            print("why is this necessary when working wit validation")
+            #print("why is this necessary when working with validation")
+            # Converting local coordinates to global coordinates for later comparison with .csv
             if i == 1:
                 a = 1 - z2
                 b = 1 - y2
@@ -257,13 +263,18 @@ def get_predicted_information(filename, net, folder_stl):
 
             cur_boxes = np.append(cur_boxes, np.array([a, b, c, d, e, f, label - 1, score, i]).reshape(1, 9), axis=0)
 
-    with open(filename + '.pickle', 'wb') as handle:
-        pickle.dump(boxes_for_visuali, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
 
     keepidx = soft_nms_pytorch(cur_boxes[:, :7], cur_boxes[:, -1])
     cur_boxes = cur_boxes[keepidx, :]
-
     cur_boxes[:, 0:6] = 10000 * cur_boxes[:, 0:6]
+
+
+    keepidx_2 = soft_nms_pytorch(boxes_for_visuali[:, :7], boxes_for_visuali[:, -1])
+    boxes_for_visuali = boxes_for_visuali[keepidx_2, :]
+    with open(filename + '.pickle', 'wb') as handle:
+        pickle.dump(boxes_for_visuali, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
 
     return cur_boxes
 
@@ -394,9 +405,9 @@ def visualize(folder_stl):
             Feature = data[6]
             prop = data[7]
 
-            if prop >= 0.95:
+            if prop >= 0.5:
 
-                selected_image = picture + "_" + str(selected_image) + "_result.png"
+                selected_image = picture + "_" + str(selected_image) + ".png"
                 im = np.array(Image.open(selected_image))
                 im = cv2.imread(selected_image)
 
@@ -443,7 +454,7 @@ def visualize(folder_stl):
                     im[x1][y1 + x] = color
                     im[x2][y1 + x] = color
 
-                backup_filename = selected_image.replace(".png", ("_" + str(counter) + ".png"))
+                #backup_filename = selected_image.replace(".png", ("_" + str(counter) + ".png"))
                 cv2.imwrite(selected_image, im)
                 counter += 1
 

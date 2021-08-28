@@ -84,6 +84,9 @@ def rotate_sample(sample, rotation, reverse=False):
 
 
 def soft_nms_pytorch(boxes, box_scores, sigma=0.5):
+    # short explanation for NMS == Non-Maximum Suppression (NMS)
+    # https://towardsdatascience.com/understanding-ssd-multibox-real-time-object-detection-in-deep-learning-495ef744fab
+
     dets = boxes[:, 0:6].copy() * 1000
 
     N = dets.shape[0]
