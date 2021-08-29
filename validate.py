@@ -368,7 +368,7 @@ def test_ssdnet(folder_stl, file_weights):
                 print(prediction_labels)
                 print(positives)
 
-    print("THIS METRIC IS WRONG ")
+    #print("THIS METRIC IS WRONG ")
     precision, recall = eval_metric(predictions, truelabels, positives)
     print('Precision scores')
     precision = np.mean(precision)

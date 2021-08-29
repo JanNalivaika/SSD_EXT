@@ -211,6 +211,7 @@ def get_predictions(net):
 
 def Recognize():
     net = load_pretrained_model()
+    # if
 
     with torch.no_grad():
         with open(os.devnull, 'w') as devnull:

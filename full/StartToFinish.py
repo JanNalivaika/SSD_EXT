@@ -23,35 +23,55 @@ if __name__ == '__main__':
 
     t = time.time()
 
-    file = "STL_files/ALL_TURNED.stl"
-    resolution = 3000
+    file = "STL_files/DIRECTIONS.stl"
+    resolution = 2950
+    print("Why 500 not working")
     # 3000 png loop in step 50 = 13min
     # 3000 png loop in step 30 = 13min
     # 3000 png loop in step 20 = 14min
     # 3000 png loop in step 10 = 18min
     # 3000 png loop in step  5 = 20 min
-    # 3000 new optimized  = 40 min
-    # 3000 new = 3.1 h
-    # 3000 old = 6.0 min
+    # 3000 png loop in step  1, 1.5, 1/3 === __ min
 
     dim_step = 1.5
     NN_dim = 64
     overlap = 1/3
 
     deleteOLD()
-    Slicer(file, resolution)
 
+
+    t1 = time.time()
+    Slicer(file, resolution)  # worst case 420 sec
+    print("Slicer Time")
+    print(time.time()-t1)
     #Remover()           # IS obsolete
     #Voxel_Combiner()    # IS be obsolete
     #PNG_Creator()       # IS be obsolete
 
-    png_precision = 50
+    png_precision = 1
+    t1 = time.time()
+    PNG_Creator_from_BOOL(png_precision)  # worst case __sec
+    print("PNG creator time Time")
+    print(time.time() - t1)
 
-    PNG_Creator_from_BOOL(png_precision)
-
+    t1 = time.time()
     Segment(dim_step,NN_dim,overlap)
+    print("Segmentation Time")
+    print(time.time() - t1)
+
+
+    t1 = time.time()
     Recognize()
+    print("Recognition Time")
+    print(time.time() - t1)
+
+
+    t1 = time.time()
     Visualize()
+    print("Visualize Time")
+    print(time.time() - t1)
+
+
     #TURN IS POSSIBLE !!!!
     # To Do : IMPLEMENT TURNING HERE !
 

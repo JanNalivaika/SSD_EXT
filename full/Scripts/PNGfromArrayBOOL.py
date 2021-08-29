@@ -54,7 +54,7 @@ def PNG_Creator_from_BOOL(png_precision):
                 data[x][y][2] = new_color
 
         img = Image.fromarray(data, 'RGB')
-        filename = file + "\HD_bottom2.png"
+        filename = file + "\HD_bottom.png"
         img.save(filename)
         # img.show()
 
@@ -80,7 +80,7 @@ def PNG_Creator_from_BOOL(png_precision):
                 data[x][y][2] = new_color
 
         img = Image.fromarray(data, 'RGB')
-        filename = file + "\HD_top2.png"
+        filename = file + "\HD_top.png"
         img.save(filename)
         # img.show()
 
@@ -105,7 +105,7 @@ def PNG_Creator_from_BOOL(png_precision):
                 data[x][y][2] = new_color
 
         img = Image.fromarray(data, 'RGB')
-        filename = file + "\HD_left2.png"
+        filename = file + "\HD_left.png"
         img.save(filename)
         # img.show()
 
@@ -131,7 +131,7 @@ def PNG_Creator_from_BOOL(png_precision):
                 data[x][y][2] = new_color
 
         img = Image.fromarray(data, 'RGB')
-        filename = file + "\HD_right2.png"
+        filename = file + "\HD_right.png"
         img.save(filename)
         # img.show()
 
@@ -157,7 +157,7 @@ def PNG_Creator_from_BOOL(png_precision):
                 data[x][y][2] = new_color
 
         img = Image.fromarray(data, 'RGB')
-        filename = file + "\HD_front2.png"
+        filename = file + "\HD_front.png"
         img.save(filename)
         #img.show()
 
@@ -183,7 +183,7 @@ def PNG_Creator_from_BOOL(png_precision):
                 data[x][y][2] = new_color
 
         img = Image.fromarray(data, 'RGB')
-        filename = file + "\HD_back2.png"
+        filename = file + "\HD_back.png"
         img.save(filename)
         #img.show()
 
