@@ -3,6 +3,9 @@ TODO
 1. re-create str.rar
 2. by gererating of PNGs create a file with mapping binvox -- png
 3. prep and descride show-case
+4. vn- docker container
+5. vn- unit tests
+6. vn- web hosting for showcases
 
 Info
 pip3 install -r requirements.txt
