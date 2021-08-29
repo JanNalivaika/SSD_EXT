@@ -4,6 +4,7 @@ from functools import reduce
 def lines_to_voxels(line_list, pixels):
     current_line_indices = set()
     x = 0
+
     for (event_x, status, line_ind) in generate_line_events(line_list):
         while event_x - x >= 0:
             lines = reduce(lambda acc, cur: acc + [line_list[cur]], current_line_indices, [])
@@ -29,13 +30,18 @@ def slope_intercept(p1, p2):
 def generate_y(p1, p2, x):
     slope, intercept = slope_intercept(p1, p2)
     y = slope * x + intercept
+
     return y
 
 
 def paint_y_axis(lines, pixels, x):
     is_black = False
+
+    # array with points where the color is changed
+
     target_ys = list(map(lambda line: int(generate_y(line[0], line[1], x)), lines))
     target_ys.sort()
+
     if len(target_ys) % 2:
         print('[Warning] The number of lines is odd')
         distances = []
@@ -46,14 +52,25 @@ def paint_y_axis(lines, pixels, x):
         del target_ys[min_idx]
 
     yi = 0
+
+    #y_len = len(pixels)
+
     for target_y in target_ys:
+        # TODO why index out ouf bounds ?
+        #if (target_y>y_len):
+        #    is_black = not is_black
+        #    break
+
         if is_black:
             # Bulk assign all pixels between yi -> target_y
             pixels[yi:target_y, x] = True
+
         pixels[target_y][x] = True
         is_black = not is_black
         yi = target_y
+
     assert is_black is False, 'an error has occured at x%s' % x
+
 
 
 def generate_line_events(line_list):

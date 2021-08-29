@@ -24,7 +24,7 @@ if __name__ == '__main__':
     t = time.time()
 
     file = "STL_files/DIRECTIONS.stl"
-    resolution = 2950
+    resolution = 1000
     print("Why 500 not working")
     # 3000 png loop in step 50 = 13min
     # 3000 png loop in step 30 = 13min

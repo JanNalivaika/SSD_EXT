@@ -161,7 +161,7 @@ class SSD(nn.Module):
             print('Loading weights into state dict...')
 #            self.load_state_dict(torch.load(base_file,
 #                                 map_location=lambda storage, loc: storage),strict=False)
-            if (torch.cuda.is_available()):
+            if torch.cuda.is_available():
                 checkpoint = torch.load(base_file, map_location=torch.device('cuda'))
             else:
                 checkpoint = torch.load(base_file, map_location=torch.device('cpu'))
