@@ -359,20 +359,20 @@ def test_ssdnet(folder_stl, file_weights):
 
                 ground_truth_information = get_gt_information(filename + '.csv')
 
-                prediction_labels, true_labels, positives = metric(predicted_information, ground_truth_information)
+                prediction_label, true_label, positive = metric(predicted_information, ground_truth_information)
 
-                predictions += prediction_labels
-                truelabels += true_labels
-                truepositives += positives
+                predictions += prediction_label
+                truelabels += true_label
+                truepositives += positive
 
                 print(filename)
 
-                print(true_labels)
-                print(prediction_labels)
-                print(positives)
+                print(true_label)
+                print(prediction_label)
+                print(positive)
 
     #print("THIS METRIC IS WRONG ")
-    precision, recall = eval_metric(predictions, truelabels, positives)
+    precision, recall = eval_metric(predictions, truelabels, truepositives)
     print('Precision scores')
     precision = np.mean(precision)
     print(precision)
@@ -474,7 +474,7 @@ def run():
     # folder_stl ='data/MulSet/set20/' # small showcase   64x64
     # folder_stl ='data/MulSet/set20/' # large showcase   256x256
 
-    folder_stl = 'data/MulSet/set11/'
+    folder_stl = 'data/MulSet/set1/'
     file_weights = 'weights/VOC.pth'
 
     files = glob.glob(folder_stl + '/*.png', recursive=True)

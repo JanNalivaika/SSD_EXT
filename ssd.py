@@ -161,9 +161,11 @@ class SSD(nn.Module):
             print('Loading weights into state dict...')
 #            self.load_state_dict(torch.load(base_file,
 #                                 map_location=lambda storage, loc: storage),strict=False)
-            
-            checkpoint = torch.load(base_file, map_location=torch.device('cuda'))
-            
+            if (torch.cuda.is_available()):
+                checkpoint = torch.load(base_file, map_location=torch.device('cuda'))
+            else:
+                checkpoint = torch.load(base_file, map_location=torch.device('cpu'))
+
             if remove_layers:
                 del checkpoint['loc.0.weight']
                 del checkpoint['loc.0.bias']
