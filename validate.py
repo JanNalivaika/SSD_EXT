@@ -23,6 +23,7 @@ if torch.cuda.is_available():
     torch.set_default_tensor_type('torch.cuda.FloatTensor')
 
 
+
 def get_gt_information(filename):
     retarr = np.zeros((0, 7))
     with open(filename, newline='') as csvfile:
@@ -46,7 +47,7 @@ def load_pretrained_model(file_weights):
 
     ssd_net.load_weights(file_weights)
 
-    return net.cuda()
+    return net.cuda() if (torch.cuda.is_available()) else net.cpu()
 
 
 def tensor_to_float(val):
@@ -186,10 +187,12 @@ def get_predicted_information(filename, net, folder_stl):
 
     images = torch.tensor(images).permute(0, 3, 1, 2).float()
 
-    images = Variable(images.cuda())
+    images = images.cuda() if (torch.cuda.is_available()) else images.cpu()
+
+    images = Variable(images)
 
     out = net(images, 'test')
-    out.cuda()
+    out.cuda() if (torch.cuda.is_available()) else out.cpu()
 
     boxes_for_visuali = np.zeros((0, 9))
     cur_boxes = np.zeros((0, 9))
