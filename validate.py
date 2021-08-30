@@ -17,11 +17,9 @@ import glob
 warnings.simplefilter("ignore", UserWarning)
 import pickle
 from PIL import Image
-import matplotlib
 
 if torch.cuda.is_available():
     torch.set_default_tensor_type('torch.cuda.FloatTensor')
-
 
 
 def get_gt_information(filename):
@@ -90,7 +88,6 @@ def rotate_sample(sample, rotation, reverse=False):
 def soft_nms_pytorch(boxes, box_scores, sigma=0.5):
     # short explanation for NMS == Non-Maximum Suppression (NMS)
     # https://towardsdatascience.com/understanding-ssd-multibox-real-time-object-detection-in-deep-learning-495ef744fab
-
 
     dets = boxes[:, 0:6].copy() * 1000
 
@@ -167,7 +164,6 @@ def get_predicted_information(filename, net, folder_stl):
 
     images = []
 
-
     # create 6 PNGs
     for rotation in range(6):
         raw_img, _ = create_img(model, rotation)
@@ -176,11 +172,11 @@ def get_predicted_information(filename, net, folder_stl):
 
         images.append(img)
 
-        #print("saving Images here")
+        # print("saving Images here")
         new_filename = filename + "_" + str(rotation) + ".png"
         cv2.imwrite(new_filename, raw_img)
-        #new_filename = filename + "_" + str(rotation) + "_result.png"
-        #cv2.imwrite(new_filename, raw_img)
+        # new_filename = filename + "_" + str(rotation) + "_result.png"
+        # cv2.imwrite(new_filename, raw_img)
         """raw_img = Image.open(new_filename)
         raw_img = raw_img.resize((1000, 1000), Image.ANTIALIAS)
         raw_img.save(new_filename)"""
@@ -224,9 +220,10 @@ def get_predicted_information(filename, net, folder_stl):
             e = y2
             f = x2
 
-            boxes_for_visuali = np.append(boxes_for_visuali, np.array([a, b, c, d, e, f, label - 1, score, i]).reshape(1, 9), axis=0)
+            boxes_for_visuali = np.append(boxes_for_visuali,
+                                          np.array([a, b, c, d, e, f, label - 1, score, i]).reshape(1, 9), axis=0)
 
-            #print("why is this necessary when working with validation")
+            # print("why is this necessary when working with validation")
             # Converting local coordinates to global coordinates for later comparison with .csv
             if i == 1:
                 a = 1 - z2
@@ -266,18 +263,14 @@ def get_predicted_information(filename, net, folder_stl):
 
             cur_boxes = np.append(cur_boxes, np.array([a, b, c, d, e, f, label - 1, score, i]).reshape(1, 9), axis=0)
 
-
-
     keepidx = soft_nms_pytorch(cur_boxes[:, :7], cur_boxes[:, -1])
     cur_boxes = cur_boxes[keepidx, :]
     cur_boxes[:, 0:6] = 10000 * cur_boxes[:, 0:6]
-
 
     keepidx_2 = soft_nms_pytorch(boxes_for_visuali[:, :7], boxes_for_visuali[:, -1])
     boxes_for_visuali = boxes_for_visuali[keepidx_2, :]
     with open(filename + '.pickle', 'wb') as handle:
         pickle.dump(boxes_for_visuali, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
 
     return cur_boxes
 
@@ -297,8 +290,6 @@ def eval_metric(prediction_labels, true_labels, positives):
     #
     precision = divide_arrs(positives, prediction_labels)
     recall = divide_arrs(positives, true_labels)
-
-
 
     return precision, recall
 
@@ -371,7 +362,7 @@ def test_ssdnet(folder_stl, file_weights):
                 print(prediction_label)
                 print(positive)
 
-    #print("THIS METRIC IS WRONG ")
+    # print("THIS METRIC IS WRONG ")
     precision, recall = eval_metric(predictions, truelabels, truepositives)
     print('Precision scores')
     precision = np.mean(precision)
@@ -457,24 +448,37 @@ def visualize(folder_stl):
                     im[x1][y1 + x] = color
                     im[x2][y1 + x] = color
 
-                #backup_filename = selected_image.replace(".png", ("_" + str(counter) + ".png"))
+                # backup_filename = selected_image.replace(".png", ("_" + str(counter) + ".png"))
                 cv2.imwrite(selected_image, im)
                 counter += 1
 
-""" img = Image.open(selected_image)
-img = img.resize((500, 500), Image.ANTIALIAS)
-img.save(selected_image)"""
+def create_weigths():
+    #
+    file_weights = 'weights/VOC.pth'
+    flag = os.path.isfile(file_weights)
+    if (flag):
+        return
 
+    import zipfile
 
+    zips = glob.glob('weights/VOC.zip.*')  # os.listdir("weights/VOC.zip.*")
+    target = os.path.relpath("weights/voc.zip")
+    for zipName in zips:
+        source = zipName
+        with open(target, "ab") as f:
+            with open(source, "rb") as z:
+                f.write(z.read())
+
+    zip_ref = zipfile.ZipFile(target, "r")
+    zip_ref.extractall("weights")
 
 
 def run():
     start_time = time.time()
 
-    # folder_stl ='data/MulSet/set20/' # small showcase   64x64
-    # folder_stl ='data/MulSet/set20/' # large showcase   256x256
+    create_weigths()
 
-    folder_stl = 'data/MulSet/set1/'
+    folder_stl = 'data/MulSet/set20/'
     file_weights = 'weights/VOC.pth'
 
     files = glob.glob(folder_stl + '/*.png', recursive=True)
@@ -484,8 +488,6 @@ def run():
             os.remove(f)
         except OSError as e:
             print("Error: %s : %s" % (f, e.strerror))
-
-
 
     test_ssdnet(folder_stl, file_weights)
 
