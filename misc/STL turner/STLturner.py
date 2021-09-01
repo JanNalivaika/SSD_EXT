@@ -18,29 +18,31 @@ areas = []
 
 for x in range(int(num_facets)):
     pos = 1 + (7 * x)
-    cur_vector = [float(lines_nospace[pos][2]) , float(lines_nospace[pos][3]) , float(lines_nospace[pos][4])]
+    cur_vector_normal = [float(lines_nospace[pos][2]) , float(lines_nospace[pos][3]) , float(lines_nospace[pos][4])]
 
-    cur_vector = [round(num, 4) for num in cur_vector]
+    cur_vector_normal = [round(num, 3) for num in cur_vector_normal]
 
-    v1 = [float(lines_nospace[pos + 2][1]), float(lines_nospace[pos + 2][2]), float(lines_nospace[pos + 2][3])]
-    v2 = [float(lines_nospace[pos + 3][1]), float(lines_nospace[pos + 3][2]), float(lines_nospace[pos + 3][3])]
-    v3 = [float(lines_nospace[pos + 4][1]), float(lines_nospace[pos + 4][2]), float(lines_nospace[pos + 4][3])]
+    cur_p1 = [float(lines_nospace[pos + 2][1]), float(lines_nospace[pos + 2][2]), float(lines_nospace[pos + 2][3])]
+    cur_p2 = [float(lines_nospace[pos + 3][1]), float(lines_nospace[pos + 3][2]), float(lines_nospace[pos + 3][3])]
+    cur_p3 = [float(lines_nospace[pos + 4][1]), float(lines_nospace[pos + 4][2]), float(lines_nospace[pos + 4][3])]
 
-    all_points.append([v1,v2,v3])
+    all_points.append([cur_p1,cur_p2,cur_p3])
 
-    va = np.subtract(v1, v2)
-    vb = np.subtract(v1, v3)
+    va = np.subtract(cur_p1, cur_p2)
+    vb = np.subtract(cur_p1, cur_p3)
     cross = np.cross(va, vb)
-    area = 0.5 * ((cross[0]**2 + cross[1]**2 + cross[2]**2)**0.5)
+    cur_area = 0.5 * ((cross[0]**2 + cross[1]**2 + cross[2]**2)**0.5)
 
-    all_vectors.append(cur_vector)
+    all_vectors.append(cur_vector_normal)
 
-    if cur_vector not in unique_vectors:
-        unique_vectors.append(cur_vector)
-        areas.append(area)
+    if cur_vector_normal not in unique_vectors:
+        inverse_v = [ -x for x in cur_vector_normal]
+        if inverse_v not in unique_vectors:
+            unique_vectors.append(cur_vector_normal)
+            areas.append(cur_area)
     else:
-        value_index = unique_vectors.index(cur_vector)
-        areas[value_index] += area
+        value_index = unique_vectors.index(cur_vector_normal)
+        areas[value_index] += cur_area
 
 areas, unique_vectors = zip(*sorted(zip(areas, unique_vectors)))
 
@@ -51,45 +53,74 @@ for x in range(len(unique_vectors)):
     a = unique_vectors[x][0]
     b = unique_vectors[x][1]
     c = unique_vectors[x][2]
-    if (a+b) == 0 or  (b+c) == 0 or (c+a) == 0:
+    if (a+b) == 0 or (b+c) == 0 or (c+a) == 0:
+        # is facing a axis
         status.append(True)
     else:
-        print(a, b, c)
+        # pointing randomly in space
         status.append(False)
 
 area_to_axis = 0
 area_NOT_to_axis = 0
 total_area = 0
+
 for x in range(len(unique_vectors)):
     total_area += areas[x]
     if status[x]:
         area_to_axis += areas[x]
     else:
-        area_NOT_to_axis+=areas[x]
+        area_NOT_to_axis += areas[x]
 
 print(area_to_axis/total_area*100)
 print(area_NOT_to_axis/total_area*100)
 
 wrong_vectors = [i for i, x in enumerate(status) if x == False]
+wrong_areas_pers=[]
+for x in wrong_vectors:
+    wrong_areas_pers.append(areas[x]/area_NOT_to_axis)
 
 # for selecting angle
 x_ax = [1,0,0]
 y_ax = [0,1,0]
 z_ax = [0,0,1]
 
+angles_for_turning = []
+for idx, pos in enumerate(wrong_vectors):
+    if wrong_areas_pers[idx] > 0.05:
 
-print("SELECT THE RIGHT VecTOR")
-# 49,48,47,44
-vector = unique_vectors[62]
-"""dot_product = np.dot( x_ax,vector)
-angle = np.arccos(dot_product) * 180 / math.pi
-angle = np.arctan2(dot_product) # why minus ???????????????????????????
-angle = np.sign(vector[0]) * np.sign(vector[1]) * angle"""
+        vector = unique_vectors[pos]
 
-dot = np.dot( x_ax,vector)     # dot product
-det = -vector[1]      # determinant
-angle = np.arctan2(det, dot)
+        dot = np.dot(x_ax,vector)     # dot product
+        det = -vector[1]      # determinant
+        x_angle = np.arctan2(det, dot)
 
+        dot = np.dot(y_ax, vector)  # dot product
+        det = -vector[1]  # determinant
+        y_angle = np.arctan2(det, dot)
+
+        dot = np.dot(z_ax, vector)  # dot product
+        det = -vector[1]  # determinant
+        z_angle = np.arctan2(det, dot)
+
+        turning_vec = [x_angle, y_angle, z_angle]
+
+        for idx,x in enumerate(turning_vec):
+            if abs(round(x,3)) == round(math.pi,3) or abs(round(x,3)) == round(math.pi/2,3) or x == 0:
+                turning_vec[idx] = 0
+
+
+
+        angles_for_turning.append(turning_vec)
+
+x_angles_for_turning = []
+y_angles_for_turning = []
+z_angles_for_turning = []
+
+for x in range(len(angles_for_turning)):
+    if angles_for_turning[x][2]==0:
+        x_angles_for_turning.append(angles_for_turning[x])
+
+angle = 0
 print("make sure plus or minus !!!!!!")
 # rotate around Z == x and y change
 
