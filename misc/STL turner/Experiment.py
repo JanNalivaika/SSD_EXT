@@ -2,7 +2,7 @@ import math
 from copy import deepcopy
 import numpy as np
 
-f = open("StartToFinish.stl", "r")
+f = open("ALL_TURNED.stl", "r")
 g = f.read()
 # print(g)
 num_lines = g.count('\n')
@@ -47,12 +47,10 @@ areas, unique_vectors = zip(*sorted(zip(areas, unique_vectors)))
 
 status = []
 for x in range(len(unique_vectors)):
-    a = unique_vectors[x][0]
-    b = unique_vectors[x][1]
-    c = unique_vectors[x][2]
+    a = round(unique_vectors[x][0],4)
+    b = round(unique_vectors[x][1],4)
+    c = round(unique_vectors[x][2],4)
     if 2 == unique_vectors[x].count(0):
-        print("hello")
-    #if (a + b) == 0 or (b + c) == 0 or (c + a) == 0:
         # is facing a axis
         status.append(True)
     else:
@@ -80,7 +78,6 @@ for x in wrong_vectors:
 
 # for selecting angle
 x_ax = [1, 0, 0]
-y_ax = [0, 1, 0]
 z_ax = [0, 0, 1]
 
 angles_for_turning = []
@@ -93,40 +90,25 @@ for idx, pos in enumerate(wrong_vectors):
         det = -vector[1]  # determinant
         x_angle = np.arctan2(det, dot)
 
-        dot = np.dot(y_ax, vector)  # dot product
-        det = -vector[1]  # determinant
-        y_angle = np.arctan2(det, dot)
-
         dot = np.dot(z_ax, vector)  # dot product
         det = -vector[1]  # determinant
         z_angle = np.arctan2(det, dot)
 
-        turning_vec = [x_angle, y_angle, z_angle]
+        turning_vec = [x_angle, z_angle]
 
         for idx, x in enumerate(turning_vec):
             if abs(round(x, 3)) == round(math.pi, 3) or abs(round(x, 3)) == round(math.pi / 2, 3) or x == 0:
                 turning_vec[idx] = 0
 
+
         angles_for_turning.append(turning_vec)
 
-x_angles_for_turning = []
-y_angles_for_turning = []
-z_angles_for_turning = []
 
-for x in range(len(angles_for_turning)):
-    if angles_for_turning[x][2] == 0:
-        x_angles_for_turning.append(angles_for_turning[x])
-    if angles_for_turning[x][0] == 0:
-        z_angles_for_turning.append(angles_for_turning[x])
-    if angles_for_turning[x][0] != 0 and angles_for_turning[x][2] != 0:
-        y_angles_for_turning.append(angles_for_turning[x])
+angles_for_turning = [ elem for elem in angles_for_turning if  elem != [0,0] ]
 
-#angle = y_angles_for_turning[-1][0]
-#angle = x_angles_for_turning[-1][0]
-#angle = z_angles_for_turning[-1][0]
-
-print("make sure plus or minus !!!!!!")
-# rotate around Z == x and y change
+chosen = 2
+angleXY = angles_for_turning[-chosen][0]
+angleZX = -angles_for_turning[-chosen][1]
 
 all_vectors_new = deepcopy(all_vectors)
 all_points_new = deepcopy(all_points)
@@ -136,19 +118,14 @@ for x in range(len(all_vectors)):
     x_pos, y_pos, z_pos = all_vectors[x][0], all_vectors[x][1], all_vectors[x][2]
 
     # turning around Z
-    # new_z = z_pos
-    # new_x = math.cos(angle) * x_pos - math.sin(angle) * y_pos
-    # new_y = math.sin(angle) * x_pos + math.cos(angle) * y_pos
-
-    # turning around X
-    #new_x = x_pos
-    #new_z = math.cos(angle) * z_pos - math.sin(angle) * y_pos
-    #new_y = math.sin(angle) * z_pos + math.cos(angle) * y_pos
+    new_z = z_pos
+    new_x = math.cos(angleXY) * x_pos - math.sin(angleXY) * y_pos
+    new_y = math.sin(angleXY) * x_pos + math.cos(angleXY) * y_pos
 
     # turning around Y
-    new_y = y_pos
-    new_z = math.cos(angle) * z_pos - math.sin(angle) * x_pos
-    new_x = math.sin(angle) * z_pos + math.cos(angle) * x_pos
+    new_x = math.sin(angleZX) * new_z - math.cos(angleZX) * new_x
+    new_z = math.cos(angleZX) * new_z + math.sin(angleZX) * new_x
+
 
 
     all_vectors_new[x][0], all_vectors_new[x][1], all_vectors_new[x][2] = new_x, new_y, new_z
@@ -158,19 +135,14 @@ for x in range(len(all_vectors)):
         x_pos, y_pos, z_pos = all_points[x][y][0], all_points[x][y][1], all_points[x][y][2]
 
         # turning around Z
-        # new_z = z_pos
-        # new_x = math.cos(angle) * x_pos - math.sin(angle) * y_pos
-        # new_y = math.sin(angle) * x_pos + math.cos(angle) * y_pos
+        new_z = z_pos
+        new_x = math.cos(angleXY) * x_pos - math.sin(angleXY) * y_pos
+        new_y = math.sin(angleXY) * x_pos + math.cos(angleXY) * y_pos
 
-        # turning around X
-        #new_x = x_pos
-        #new_z = math.cos(angle) * z_pos - math.sin(angle) * y_pos
-        #new_y = math.sin(angle) * z_pos + math.cos(angle) * y_pos
+        # turning around Y
+        new_x = math.sin(angleZX) * z_pos - math.cos(angleZX) * new_x
+        new_z = math.cos(angleZX) * z_pos + math.sin(angleZX) * new_x
 
-        # turning around
-        new_y = y_pos
-        new_z = math.cos(angle) * z_pos - math.sin(angle) * x_pos
-        new_x = math.sin(angle) * z_pos + math.cos(angle) * x_pos
 
 
         all_points_new[x][y][0], all_points_new[x][y][1], all_points_new[x][y][2] = new_x, new_y, new_z
