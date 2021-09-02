@@ -39,6 +39,10 @@ for x in range(int(num_facets)):
         if inverse_v not in unique_vectors:
             unique_vectors.append(cur_vector_normal)
             areas.append(cur_area)
+        else:
+            value_index = unique_vectors.index(inverse_v)
+            areas[value_index] += cur_area
+
     else:
         value_index = unique_vectors.index(cur_vector_normal)
         areas[value_index] += cur_area
@@ -91,24 +95,21 @@ for idx, pos in enumerate(wrong_vectors):
         x_angle = np.arctan2(det, dot)
 
         dot = np.dot(z_ax, vector)  # dot product
-        det = -vector[1]  # determinant
+        det = vector[1]  # determinant
         z_angle = np.arctan2(det, dot)
 
         turning_vec = [x_angle, z_angle]
-
-        for idx, x in enumerate(turning_vec):
-            if abs(round(x, 3)) == round(math.pi, 3) or abs(round(x, 3)) == round(math.pi / 2, 3) or x == 0:
-                turning_vec[idx] = 0
-
 
         angles_for_turning.append(turning_vec)
 
 
 angles_for_turning = [ elem for elem in angles_for_turning if  elem != [0,0] ]
 
-chosen = 2
-angleXY = angles_for_turning[-chosen][0]
-angleZX = -angles_for_turning[-chosen][1]
+chosen = 4
+angleXY = angles_for_turning[-1][0]
+angleZX = angles_for_turning[-1][1]
+#angleXY = math.pi/2
+#angleZX = math.pi/4
 
 all_vectors_new = deepcopy(all_vectors)
 all_points_new = deepcopy(all_points)
@@ -118,13 +119,14 @@ for x in range(len(all_vectors)):
     x_pos, y_pos, z_pos = all_vectors[x][0], all_vectors[x][1], all_vectors[x][2]
 
     # turning around Z
-    new_z = z_pos
-    new_x = math.cos(angleXY) * x_pos - math.sin(angleXY) * y_pos
-    new_y = math.sin(angleXY) * x_pos + math.cos(angleXY) * y_pos
+    new_z_temp = z_pos
+    new_x_temp = math.cos(angleXY) * x_pos - math.sin(angleXY) * y_pos
+    new_y_temp = math.sin(angleXY) * x_pos + math.cos(angleXY) * y_pos
 
     # turning around Y
-    new_x = math.sin(angleZX) * new_z - math.cos(angleZX) * new_x
-    new_z = math.cos(angleZX) * new_z + math.sin(angleZX) * new_x
+    new_y = new_y_temp
+    new_x = math.cos(angleZX) * new_x_temp - math.sin(angleZX) * new_z_temp
+    new_z = math.sin(angleZX) * new_x_temp + math.cos(angleZX) * new_z_temp
 
 
 
@@ -135,13 +137,14 @@ for x in range(len(all_vectors)):
         x_pos, y_pos, z_pos = all_points[x][y][0], all_points[x][y][1], all_points[x][y][2]
 
         # turning around Z
-        new_z = z_pos
-        new_x = math.cos(angleXY) * x_pos - math.sin(angleXY) * y_pos
-        new_y = math.sin(angleXY) * x_pos + math.cos(angleXY) * y_pos
+        new_z_temp = z_pos
+        new_x_temp = math.cos(angleXY) * x_pos - math.sin(angleXY) * y_pos
+        new_y_temp = math.sin(angleXY) * x_pos + math.cos(angleXY) * y_pos
 
         # turning around Y
-        new_x = math.sin(angleZX) * z_pos - math.cos(angleZX) * new_x
-        new_z = math.cos(angleZX) * z_pos + math.sin(angleZX) * new_x
+        new_y = new_y_temp
+        new_x = math.cos(angleZX) * new_x_temp - math.sin(angleZX) * new_z_temp
+        new_z = math.sin(angleZX) * new_x_temp + math.cos(angleZX) * new_z_temp
 
 
 
