@@ -466,19 +466,29 @@ img = img.resize((500, 500), Image.ANTIALIAS)
 img.save(selected_image)"""
 
 
-
-
-def run():
-    start_time = time.time()
-
-    # folder_stl ='data/MulSet/set20/' # small showcase   64x64
-    # folder_stl ='data/MulSet/set20/' # large showcase   256x256
-
-    folder_stl = 'data/MulSet/set1/'
+def create_weigths():
+    #
     file_weights = 'weights/VOC.pth'
+    flag = os.path.isfile(file_weights)
+    if (flag):
+        return
 
-    files = glob.glob(folder_stl + '/*.png', recursive=True)
+    import zipfile
 
+    zips = glob.glob('weights/VOC.zip.*')
+    target = os.path.relpath("weights/voc.zip")
+    for zipName in zips:
+        source = zipName
+        with open(target, "ab") as f:
+            with open(source, "rb") as z:
+                f.write(z.read())
+
+    zip_ref = zipfile.ZipFile(target, "r")
+    zip_ref.extractall("weights")
+
+
+def remove_files(folder, pattern):
+    files = glob.glob(folder + '/' + pattern, recursive=True)
     for f in files:
         try:
             os.remove(f)
@@ -486,6 +496,19 @@ def run():
             print("Error: %s : %s" % (f, e.strerror))
 
 
+def run():
+    start_time = time.time()
+
+    create_weigths()
+
+    # folder_stl ='data/MulSet/set20/' # small showcase   64x64
+    # folder_stl ='data/MulSet/set20/' # large showcase   256x256
+
+    folder_stl = 'data/MulSet/set20/'
+    file_weights = 'weights/VOC.pth'
+    pattern = "*.png"
+
+    remove_files(folder_stl, pattern)
 
     test_ssdnet(folder_stl, file_weights)
 
