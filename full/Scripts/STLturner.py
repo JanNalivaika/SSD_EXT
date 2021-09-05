@@ -15,6 +15,11 @@ def turnSTL(file_source):
     f = open(file_source, "r")
     g = f.read()
     f.close()
+
+    f = open("Output/STLs/0.stl", "w")
+    f.write(g)
+    f.close()
+
     # print(g)
     num_lines = g.count('\n')
     num_facets = (num_lines - 2) / 7
@@ -204,7 +209,7 @@ def turnSTL(file_source):
 
         finish = "\n".join(str(item) for item in lines_nospace_new)
 
-        f = open("Output/STLs/" + str(chosen) + "_hope.stl", "w")
+        f = open("Output/STLs/" + str(chosen+1) + ".stl", "w")
         f.write(finish)
         f.close()
 

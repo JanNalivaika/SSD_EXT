@@ -27,6 +27,7 @@ if __name__ == '__main__':
     file = "STL_files/ALL_TURNED.stl"
     resolution = 1000
     print("Why 500 not working")
+    print("NOW WORKING ON CUBES")
     # 3000 png loop in step 50 = 13min
     # 3000 png loop in step 30 = 13min
     # 3000 png loop in step 20 = 14min
