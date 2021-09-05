@@ -5,6 +5,7 @@ from Scripts.PNGfromArray import PNG_Creator
 from Scripts.Segment import Segment
 from Scripts.SSD.test import *
 from Scripts.Visualize import Visualize
+from Scripts.STLturner import turnSTL
 from Scripts.PNGfromArrayBOOL import PNG_Creator_from_BOOL
 import shutil
 import time
@@ -23,7 +24,7 @@ if __name__ == '__main__':
 
     t = time.time()
 
-    file = "STL_files/DIRECTIONS.stl"
+    file = "STL_files/ALL_TURNED.stl"
     resolution = 1000
     print("Why 500 not working")
     # 3000 png loop in step 50 = 13min
@@ -39,6 +40,7 @@ if __name__ == '__main__':
 
     deleteOLD()
 
+    turnSTL(file)
 
     t1 = time.time()
     Slicer(file, resolution)  # worst case 420 sec
