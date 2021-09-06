@@ -15,30 +15,30 @@ def convert_mesh(mesh, resolution=100, parallel=True):
     return convert_meshes([mesh], resolution, parallel)
 
 
-def convert_meshes(output_file_path, meshes, resolution=100, parallel=True, ):
+def convert_meshes(Fname, output_file_path, meshes, resolution=100, parallel=True, ):
     scale, shift, shape = slice.calculate_scale_shift(meshes, resolution)
 
     #vol = np.zeros(shape[::-1], dtype=np.int8)
 
     for mesh_ind, org_mesh in enumerate(meshes):
         slice.scale_and_shift_mesh(org_mesh, scale, shift)
-        cur_vol = slice.mesh_to_plane(output_file_path,org_mesh, shape, parallel,resolution)
+        cur_vol = slice.mesh_to_plane(Fname, output_file_path,org_mesh, shape, parallel,resolution)
         #vol[cur_vol] = mesh_ind + 1
     #return vol, scale, shift
     #return  scale, shift
 
 
-def convert_file(input_file_path, output_file_path, resolution, pad=0, parallel=False):
-    convert_files([input_file_path], output_file_path, resolution=resolution, pad=pad, parallel=parallel)
+def convert_file(input_file_path, output_file_path, resolution, Fname, pad=0, parallel=False):
+    convert_files([input_file_path], output_file_path, Fname, resolution=resolution, pad=pad, parallel=parallel)
 
 
-def convert_files(input_file_paths, output_file_path, colors=[(255, 255, 255)], resolution=100, pad=1, parallel=False):
+def convert_files(input_file_paths, output_file_path, Fname, colors=[(255, 255, 255)], resolution=100,  pad=1, parallel=False):
     meshes = []
     for input_file_path in input_file_paths:
         mesh_obj = mesh.Mesh.from_file(input_file_path)
         org_mesh = np.hstack((mesh_obj.v0[:, np.newaxis], mesh_obj.v1[:, np.newaxis], mesh_obj.v2[:, np.newaxis]))
         meshes.append(org_mesh)
-    convert_meshes(output_file_path,meshes, resolution, parallel)
+    convert_meshes(Fname, output_file_path,meshes, resolution, parallel)
     """vol, scale, shift = convert_meshes(meshes, resolution, parallel)
     output_file_pattern, output_file_extension = os.path.splitext(output_file_path)
     if output_file_extension == '.png':

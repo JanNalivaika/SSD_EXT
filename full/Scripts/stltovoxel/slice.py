@@ -9,7 +9,7 @@ import pickle
 import os
 
 
-def mesh_to_plane(output_file_path, mesh, bounding_box, parallel, resolution):
+def mesh_to_plane(Fname, output_file_path, mesh, bounding_box, parallel, resolution):
     if parallel:
         pool = mp.Pool(mp.cpu_count())
         result_ids = []
@@ -75,8 +75,12 @@ def mesh_to_plane(output_file_path, mesh, bounding_box, parallel, resolution):
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
-    with open("Output/Combined_Voxel/VoxelizedSTL_BOOL.pickle", 'wb') as handle:
+    with open("Output/Combined_Voxel/" + Fname +".pickle", 'wb') as handle:
         pickle.dump(BOOL, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    with open("Output/Combined_Voxel/" + Fname +".npy", 'wb') as f:
+        np.save(f, BOOL)
+
 
     if parallel:
         results = [r.get() for r in result_ids]

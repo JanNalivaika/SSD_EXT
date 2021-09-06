@@ -62,7 +62,7 @@ def Visualize():
             Feature = data[6]
             prop = data[7]
 
-            if prop >= 0.9:
+            if prop >= 0.5:
 
                 path_out = path.replace("sliced_IS_resized", "Visualized")
                 if not os.path.exists(path_out):

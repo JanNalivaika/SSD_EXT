@@ -37,21 +37,21 @@ if __name__ == '__main__':
 
     dim_step = 1.5
     NN_dim = 64
-    overlap = 1/3
+    overlap = 2/3
 
     deleteOLD()
 
     turnSTL(file)
 
     t1 = time.time()
-    Slicer(file, resolution)  # worst case 420 sec
+    Slicer(resolution)  # worst case 420 sec
     print("Slicer Time")
     print(time.time()-t1)
     #Remover()           # IS obsolete
     #Voxel_Combiner()    # IS be obsolete
     #PNG_Creator()       # IS be obsolete
 
-    png_precision = 1
+    png_precision = 2
     t1 = time.time()
     PNG_Creator_from_BOOL(png_precision)  # worst case __sec
     print("PNG creator time Time")
