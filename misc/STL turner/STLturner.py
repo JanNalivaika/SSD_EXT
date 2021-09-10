@@ -121,9 +121,9 @@ for x in range(len(angles_for_turning)):
     if angles_for_turning[x][0] != 0 and angles_for_turning[x][2] != 0:
         y_angles_for_turning.append(angles_for_turning[x])
 
-#angle = y_angles_for_turning[-1][0]
-#angle = x_angles_for_turning[-1][0]
-#angle = z_angles_for_turning[-1][0]
+angle = y_angles_for_turning[-1][0]
+angle = x_angles_for_turning[-1][0]
+angle = z_angles_for_turning[-1][0]
 
 print("make sure plus or minus !!!!!!")
 # rotate around Z == x and y change
