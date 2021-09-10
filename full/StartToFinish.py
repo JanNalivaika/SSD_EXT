@@ -24,8 +24,8 @@ if __name__ == '__main__':
 
     t = time.time()
 
-    file = "STL_files/ALL_TURNED.stl"
-    resolution = 1000
+    file = "STL_files/4_5.STL"
+    resolution = 500
     print("Why 500 not working")
     print("NOW WORKING ON CUBES")
     # 3000 png loop in step 50 = 13min
@@ -74,9 +74,6 @@ if __name__ == '__main__':
     print("Visualize Time")
     print(time.time() - t1)
 
-
-    #TURN IS POSSIBLE !!!!
-    # To Do : IMPLEMENT TURNING HERE !
 
     #Reconstruct()
 
