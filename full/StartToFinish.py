@@ -24,8 +24,8 @@ if __name__ == '__main__':
 
     t = time.time()
 
-    file = "STL_files/4_5.STL"
-    resolution = 500
+    file = "STL_files/ALL_TURNED.stl"
+    resolution = 1000
     print("Why 500 not working")
     print("NOW WORKING ON CUBES")
     # 3000 png loop in step 50 = 13min
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     #Voxel_Combiner()    # IS be obsolete
     #PNG_Creator()       # IS be obsolete
 
-    png_precision = 2
+    png_precision = 1
     t1 = time.time()
     PNG_Creator_from_BOOL(png_precision)  # worst case __sec
     print("PNG creator time Time")

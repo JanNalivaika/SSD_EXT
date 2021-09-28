@@ -10,7 +10,7 @@ def Slicer(resolution):
     #del array
 
     path = 'Output/STLs'
-    STLfiles = [f for f in listdir(path) if f.endswith('.stl')]
+    STLfiles = [f for f in listdir(path) if (f.endswith('.stl') or f.endswith('.STL'))]
 
 
     for x in range(len(STLfiles)):
