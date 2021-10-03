@@ -48,7 +48,7 @@ def load_pretrained_model():
 
     # ssd_net.load_weights('weights/512-exp2-notlda/VOC.pth')
     # ssd_net.load_weights('weights/VOCself5.pth')
-    ssd_net.load_weights('Scripts/SSD/weights/VOCtrue.pth')
+    ssd_net.load_weights('Scripts/SSD/weights/VOC.pth')
 
     # print("Replace cup with cuda")
     return net.cuda()
@@ -152,10 +152,12 @@ def get_predictions(net):
 
         for image in onlyfiles:
             image = Image.open(path + "/" + image)
-            img = np.negative(np.array(image))
-            img, _, _ = transform(img, 0, 0)
+            temp = np.array(image)
+            #img = np.negative(temp)
+            img, _, _ = transform(temp, 0, 0)
 
             images.append(img)
+
 
         images = torch.tensor(images).permute(0, 3, 1, 2).float()
 
@@ -174,8 +176,8 @@ def get_predictions(net):
             for j in range(out.shape[1]):
                 label = out[i, j, 1].detach().cpu()
 
-                if label == 0:
-                    continue
+                #if label == 0:
+                #    continue
 
                 score = out[i, j, 0].detach().cpu()
 

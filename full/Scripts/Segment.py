@@ -3,6 +3,7 @@ from PIL import Image
 from os import listdir
 from os.path import isfile, join
 import os
+import cv2
 
 
 """def Construct():
@@ -147,16 +148,20 @@ def Segment(dim_step,NN_dim,overlap):
 
         for old_folder in place:
             new_folder = old_folder.replace("NON", "IS")
-            if not os.path.exists(new_folder):
-                os.makedirs(new_folder)
             files = [f for f in listdir(old_folder) if isfile(join(old_folder, f))]
 
             for file in files:
-                img = Image.open(old_folder + "/" + file)
-                img = img.resize((NN_dim, NN_dim))
-                if np.sum(np.asarray(img)) != 255*3*64*64:
-                    img.save(new_folder + "/" + file)
+                #img = Image.open(old_folder + "/" + file)
+                #img = img.resize((NN_dim, NN_dim))
 
+                img = cv2.imread(old_folder + "/" + file, cv2.IMREAD_UNCHANGED)
+                img = cv2.resize(img, (NN_dim, NN_dim))
+
+                if np.sum(np.asarray(img)) != 255*3*64*64 and np.sum(np.asarray(img)) != 0:
+                    if not os.path.exists(new_folder):
+                        os.makedirs(new_folder)
+                    #img.save(new_folder + "/" + file)
+                    cv2.imwrite(new_folder + "/" + file, img)
 
 
 

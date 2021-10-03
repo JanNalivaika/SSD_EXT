@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
     t = time.time()
 
-    file = "STL_files/ALL_TURNED.stl"
+    file = "STL_files/spoon.stl"
     resolution = 1000
     print("Why 500 not working")
     print("NOW WORKING ON CUBES")
