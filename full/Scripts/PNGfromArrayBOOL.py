@@ -213,27 +213,33 @@ def PNG_Creator_from_BOOL(png_precision):
 
         # takes around 400 sec per picture
 
-        t1 = time.time()
-        print("Working on Picture 1")
-        MakeAPicture1(block, output_path, png_precision, rot)  # under side
-        print(time.time() - t1)
-        t1 = time.time()
-        print("Working on Picture 2")
-        MakeAPicture2(block, output_path, png_precision, rot)  # top side
-        print(time.time() - t1)
-        t1 = time.time()
-        print("Working on Picture 3")
-        MakeAPicture3(block, output_path, png_precision, rot)  # left
-        print(time.time() - t1)
-        t1 = time.time()
-        print("Working on Picture 4")
-        MakeAPicture4(block, output_path, png_precision, rot)  # right
-        print(time.time() - t1)
-        t1 = time.time()
-        print("Working on Picture 5")
-        MakeAPicture5(block, output_path, png_precision, rot)
-        print(time.time() - t1)
-        t1 = time.time()
-        print("Working on Picture 6")
-        MakeAPicture6(block, output_path, png_precision, rot)
-        print(time.time() - t1)
+        if rot>0:
+            t1 = time.time()
+            print("Working on Picture 4")
+            MakeAPicture4(block, output_path, png_precision, rot)  # right
+            print(time.time() - t1)
+        else:
+            t1 = time.time()
+            print("Working on Picture 1")
+            MakeAPicture1(block, output_path, png_precision, rot)  # under side
+            print(time.time() - t1)
+            t1 = time.time()
+            print("Working on Picture 2")
+            MakeAPicture2(block, output_path, png_precision, rot)  # top side
+            print(time.time() - t1)
+            t1 = time.time()
+            print("Working on Picture 3")
+            MakeAPicture3(block, output_path, png_precision, rot)  # left
+            print(time.time() - t1)
+            t1 = time.time()
+            print("Working on Picture 4")
+            MakeAPicture4(block, output_path, png_precision, rot)  # right
+            print(time.time() - t1)
+            t1 = time.time()
+            print("Working on Picture 5")
+            MakeAPicture5(block, output_path, png_precision, rot)
+            print(time.time() - t1)
+            t1 = time.time()
+            print("Working on Picture 6")
+            MakeAPicture6(block, output_path, png_precision, rot)
+            print(time.time() - t1)

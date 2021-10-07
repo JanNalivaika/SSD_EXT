@@ -7,6 +7,8 @@ from Scripts.SSD.test import *
 from Scripts.Visualize import Visualize
 from Scripts.STLturner import turnSTL
 from Scripts.PNGfromArrayBOOL import PNG_Creator_from_BOOL
+from Scripts.Reconstruction import Reconstruct
+from Scripts.Resolution import Set_Resolution
 import shutil
 import time
 
@@ -21,11 +23,11 @@ def deleteOLD():
 
 if __name__ == '__main__':
 
-
     t = time.time()
-
-    file = "STL_files/spoon.stl"
-    resolution = 1000
+    speed = 1
+    file = "STL_files/allinone.stl"
+    resolution = int(Set_Resolution(file)/speed)*1.5
+    print(resolution)
     print("Why 500 not working")
     print("NOW WORKING ON CUBES")
     # 3000 png loop in step 50 = 13min
@@ -35,9 +37,10 @@ if __name__ == '__main__':
     # 3000 png loop in step  5 = 20 min
     # 3000 png loop in step  1, 1.5, 1/3 === __ min
 
-    dim_step = 1.5
+    dim_step = int(resolution/20*speed)
+
     NN_dim = 64
-    overlap = 2/3
+    overlap = 2/3/speed
 
     deleteOLD()
 
@@ -45,37 +48,33 @@ if __name__ == '__main__':
 
     t1 = time.time()
     Slicer(resolution)  # worst case 420 sec
-    print("Slicer Time")
-    print(time.time()-t1)
+    print("Slicer Time: " + str(time.time()-t1))
     #Remover()           # IS obsolete
     #Voxel_Combiner()    # IS be obsolete
     #PNG_Creator()       # IS be obsolete
 
-    png_precision = 1
+    png_precision = int(speed)
     t1 = time.time()
     PNG_Creator_from_BOOL(png_precision)  # worst case __sec
-    print("PNG creator time Time")
-    print(time.time() - t1)
+    print("PNG creator time Time " + str(time.time()-t1))
 
     t1 = time.time()
     Segment(dim_step,NN_dim,overlap)
-    print("Segmentation Time")
-    print(time.time() - t1)
+    print("Segmentation Time: " + str(time.time()-t1))
+
 
 
     t1 = time.time()
     Recognize()
-    print("Recognition Time")
-    print(time.time() - t1)
-
+    print("Recognition Time: " + str(time.time()-t1))
 
     t1 = time.time()
     Visualize()
-    print("Visualize Time")
-    print(time.time() - t1)
+    print("Visualize Time: " + str(time.time()-t1))
 
+    t1 = time.time()
+    Reconstruct()
+    print("Reconstruct Time: " + str(time.time() - t1))
 
-    #Reconstruct()
-
-    print(time.time()-t)
+    print("OVERALL Time: " + str(time.time() - t))
 

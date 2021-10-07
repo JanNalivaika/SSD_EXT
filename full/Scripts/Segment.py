@@ -55,6 +55,7 @@ def Segment(dim_step,NN_dim,overlap):
 
     for picture_name in pictures:
 
+
         path = "Output/HD_pictures/"+picture_name
         picture = np.asarray(Image.open(path))
 
@@ -74,6 +75,7 @@ def Segment(dim_step,NN_dim,overlap):
         stopper = 0
 
         while dim <= max_x_dim and dim <= max_y_dim:
+            print("Segmenting " + str(picture_name) + " in Dimention: " + str(dim))
 
             suffix = picture_name.replace(".png", "") + "/"
             suffix = suffix.replace("HD_", "")
@@ -129,7 +131,8 @@ def Segment(dim_step,NN_dim,overlap):
                 max_x_dim = len(picture)
                 now_Special = False
 
-            dim = int(dim_step * dim)
+            #dim = int(dim_step * dim)
+            dim = int(dim_step + dim)
 
             if dim > max_x_dim or dim > max_y_dim:
                 dim = min(max_y_dim, max_x_dim)
@@ -147,6 +150,7 @@ def Segment(dim_step,NN_dim,overlap):
         place = [x[0] for x in os.walk("Output/sliced_NON_resized/")]
 
         for old_folder in place:
+            print("resizing " + str(old_folder))
             new_folder = old_folder.replace("NON", "IS")
             files = [f for f in listdir(old_folder) if isfile(join(old_folder, f))]
 

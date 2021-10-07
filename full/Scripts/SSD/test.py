@@ -17,6 +17,7 @@ from os import listdir
 from os.path import isfile, join
 from PIL import Image
 import numpy as np
+import time
 
 warnings.simplefilter("ignore", UserWarning)
 import pickle
@@ -145,6 +146,7 @@ def get_predictions(net):
     for itr in range(len(paths)):
         path = paths[itr]
         print("Working Recognition on path " + str(itr) + " out of " + str(len(paths)))
+        t = time.time()
         # path = "Output/sliced_IS_resized/top/top_800"
         onlyfiles = [f for f in listdir(path) if isfile(join(path, f))]
 
@@ -153,11 +155,10 @@ def get_predictions(net):
         for image in onlyfiles:
             image = Image.open(path + "/" + image)
             temp = np.array(image)
-            #img = np.negative(temp)
+            # img = np.negative(temp)
             img, _, _ = transform(temp, 0, 0)
 
             images.append(img)
-
 
         images = torch.tensor(images).permute(0, 3, 1, 2).float()
 
@@ -176,7 +177,7 @@ def get_predictions(net):
             for j in range(out.shape[1]):
                 label = out[i, j, 1].detach().cpu()
 
-                #if label == 0:
+                # if label == 0:
                 #    continue
 
                 score = out[i, j, 0].detach().cpu()
@@ -201,7 +202,7 @@ def get_predictions(net):
                 cur_boxes = np.append(cur_boxes, np.array([a, b, c, d, e, f, label - 1, score, i]).reshape(1, 9),
                                       axis=0)
 
-        print("Pay attention here")
+        # print("Pay attention here")
         keepidx = soft_nms_pytorch(cur_boxes[:, :7], cur_boxes[:, -1])
         cur_boxes = cur_boxes[keepidx, :]
 
@@ -209,6 +210,12 @@ def get_predictions(net):
             pickle.dump(cur_boxes, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
         # cur_boxes[:, 0:6] = 10000 * cur_boxes[:, 0:6]
+
+        a= (time.time() - t)
+        b = len(onlyfiles)
+        print(
+            "Recognition on path " + str(itr) + " took " + str(int(time.time() - t)) + " seconds.   That equals to: " + str(int(
+                len(onlyfiles) / (time.time() - t) )) + " pic/sec    Analyzed pictures: " + str(len(onlyfiles)))
 
 
 def Recognize():
