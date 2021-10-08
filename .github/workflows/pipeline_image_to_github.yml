@@ -50,7 +50,7 @@ jobs:
           file: ./Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true          
-          tags: ghcr.io/JanNalivaika/SSD_EXT:latest  #tags: ghcr.io/${{ github.repository_owner }}/docker_ssd:latest
+          tags: ghcr.io/jannalivaika/image_ssd_ext_dev:latest  #tags: ghcr.io/${{ github.repository_owner }}/docker_ssd:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
