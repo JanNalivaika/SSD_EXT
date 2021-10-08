@@ -30,9 +30,10 @@ def debug():
     ...
 
     <h2> History </h2>
-    <br><strong>04.02.21</strong> show images as 200x200, sort resulting png-files, fix docker port
-    <br><strong>03.02.21</strong> try to fix issue with Create Folder
-    <br><strong>03.02.21</strong> add --show result PNG-Files    
+    <br><strong>08.10.21</strong> add Docker and app.py into SSD_EXT repo
+    <br><strong>04.09.21</strong> show images as 200x200, sort resulting png-files, fix docker port
+    <br><strong>03.09.21</strong> try to fix issue with Create Folder
+    <br><strong>03.09.21</strong> add --show result PNG-Files    
     """
     return str
 
@@ -81,8 +82,11 @@ def run_validate_internal():
         # ret += "<br> copy file" + folder_res + '/' + os.path.basename(f)
         shutil.copy(f, folder_static)
 
+    print("Copy done")
+
     files = glob.glob(folder_static + '/' + pattern)
     sorted_files = sorted(files)
+
 
     ret += "<div style='display:flex'>"
     for f in sorted_files:
@@ -94,7 +98,6 @@ def run_validate_internal():
     ret += "</div>"
 
     ret += "<div>" + log + "</div>"
-
     return ret
 
 
