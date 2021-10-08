@@ -11,7 +11,7 @@ from Scripts.Reconstruction import Reconstruct
 from Scripts.Resolution import Set_Resolution
 import shutil
 import time
-
+import math
 
 def deleteOLD():
     ## If folder exists, delete it ##
@@ -26,21 +26,16 @@ if __name__ == '__main__':
     t = time.time()
     speed = 1
     file = "STL_files/allinone.stl"
-    resolution = int(Set_Resolution(file)/speed)*1.5
+    resolution = int(Set_Resolution(file)/speed)
     print(resolution)
-    print("Why 500 not working")
-    print("NOW WORKING ON CUBES")
-    # 3000 png loop in step 50 = 13min
-    # 3000 png loop in step 30 = 13min
-    # 3000 png loop in step 20 = 14min
-    # 3000 png loop in step 10 = 18min
-    # 3000 png loop in step  5 = 20 min
-    # 3000 png loop in step  1, 1.5, 1/3 === __ min
+    print("NOT WORKING ON CUBES")
 
-    dim_step = int(resolution/20*speed)
 
-    NN_dim = 64
-    overlap = 2/3/speed
+    dim_step = int(resolution/25*speed) # ???????????????????????????????
+    dim_start = int(resolution/10)
+    dim_start = 64# ???????????????????????????????
+    NN_dim = 64 # ???????????????????????????????
+    overlap = 2/3/speed # ???????????????????????????????
 
     deleteOLD()
 
@@ -53,13 +48,13 @@ if __name__ == '__main__':
     #Voxel_Combiner()    # IS be obsolete
     #PNG_Creator()       # IS be obsolete
 
-    png_precision = int(speed)
+    png_precision = int(math.ceil(speed))
     t1 = time.time()
     PNG_Creator_from_BOOL(png_precision)  # worst case __sec
     print("PNG creator time Time " + str(time.time()-t1))
 
     t1 = time.time()
-    Segment(dim_step,NN_dim,overlap)
+    Segment(dim_start,dim_step,NN_dim,overlap)
     print("Segmentation Time: " + str(time.time()-t1))
 
 

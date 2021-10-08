@@ -7,6 +7,8 @@ import numpy as np
 from . import perimeter
 import pickle
 import os
+import time
+from tqdm import tqdm
 
 
 def mesh_to_plane(Fname, output_file_path, mesh, bounding_box, parallel, resolution):
@@ -66,6 +68,7 @@ def mesh_to_plane(Fname, output_file_path, mesh, bounding_box, parallel, resolut
     print(final_bar)
     original_len= len(BOOL[0][0])
     leave = original_len-final_bar
+    print('Removing empty space from layers')
     for x in range(len(BOOL)):
         print('Removing empty space from layer %d/%d' % (x, len(BOOL)))
         BOOL[x] = BOOL[x][:leave]

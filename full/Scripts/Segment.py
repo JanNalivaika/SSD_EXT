@@ -47,7 +47,7 @@ import cv2
     return 0"""
 
 
-def Segment(dim_step,NN_dim,overlap):
+def Segment(dim_start,dim_step,NN_dim,overlap):
 
     path = "Output\HD_pictures"
     pictures = [f for f in listdir(path) if isfile(join(path, f))]
@@ -59,7 +59,7 @@ def Segment(dim_step,NN_dim,overlap):
         path = "Output/HD_pictures/"+picture_name
         picture = np.asarray(Image.open(path))
 
-        dim = NN_dim
+        dim = dim_start
 
         max_x_dim = len(picture)
         max_y_dim = len(picture[0])
