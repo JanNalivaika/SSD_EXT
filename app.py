@@ -12,7 +12,7 @@ app = Flask(__name__)
 @app.route('/')
 def hello_world():
     str: str = """
-    <h2> docker_ssd v.0.0.5 is running ... </h2>
+    <h2> docker_ssd v.0.1 is running ... </h2>
     Execute <a href='./validate'>validate</a>
     <br><br><br>
     Show <a href='./debug'>debug</a>
