@@ -89,8 +89,8 @@ def turnSTL(file_source):
         else:
             area_NOT_to_axis += areas[x]
 
-    print(area_to_axis / total_area * 100)
-    print(area_NOT_to_axis / total_area * 100)
+    #print(area_to_axis / total_area * 100)
+    #print(area_NOT_to_axis / total_area * 100)
 
     wrong_vectors = [i for i, x in enumerate(status) if x == False]
     wrong_areas_pers = []

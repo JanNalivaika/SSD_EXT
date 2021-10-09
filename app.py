@@ -15,6 +15,8 @@ def hello_world():
     <h2> docker_ssd v.0.1 is running ... </h2>
     Execute <a href='./validate'>validate</a>
     <br><br><br>
+    Execute <a href='./test'>test</a>
+    <br><br><br>
     Show <a href='./debug'>debug</a>
     <br><br><br>
     <img src='.\static\docker_001.png'/>
@@ -40,6 +42,22 @@ def debug():
 
 @app.route('/validate')
 def run_validate():
+    #
+    ret = "<a href='/'> home </a>"
+    try:
+        ret += run_validate_internal()
+    except:
+        ret += """
+        <h1>Error</h1>
+        """
+        print("Unexpected error:", sys.exc_info()[0])
+        ret += str(sys.exc_info()[0])  # TODO encode the string ...
+
+    return ret
+
+
+@app.route('/test')
+def run_test():
     #
     ret = "<a href='/'> home </a>"
     try:

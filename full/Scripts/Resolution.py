@@ -1,4 +1,9 @@
 import math
+import math
+from copy import deepcopy
+import numpy as np
+import vg
+import os
 
 
 def Set_Resolution(file_source):
@@ -25,6 +30,7 @@ def Set_Resolution(file_source):
     lines = g.splitlines(0)
     lines_nospace = [lines[x].split() for x in range(len(lines))]
     all_points = []
+    areas = []
 
     for x in range(int(num_facets)):
         pos = 1 + (7 * x)
@@ -34,6 +40,28 @@ def Set_Resolution(file_source):
         cur_p3 = [float(lines_nospace[pos + 4][1]), float(lines_nospace[pos + 4][2]), float(lines_nospace[pos + 4][3])]
 
         all_points.append([cur_p1, cur_p2, cur_p3])
+
+        va = np.subtract(cur_p1, cur_p2)
+        vb = np.subtract(cur_p1, cur_p3)
+        cross = np.cross(va, vb)
+        cur_area = 0.5 * ((cross[0] ** 2 + cross[1] ** 2 + cross[2] ** 2) ** 0.5)
+        areas.append(cur_area)
+
+    areas = sorted(areas)
+    length = len(areas)
+    step = int(length/10)
+    totalA = sum(areas)
+    proportions = []
+    for x in range(10):
+        summe = sum(areas[x*step:step*(x+1)-1])
+        proportions.append(summe/totalA*100)
+    if proportions[-1]>50:
+        dim_start = 128
+    else:
+        dim_start = 64
+
+
+
 
     minimum_dist = math.inf
     for x in all_points:
@@ -74,4 +102,4 @@ def Set_Resolution(file_source):
     maximum_dist = max(x_dist, y_dist, z_dist)
     resolution = int(maximum_dist / minimum_dist)
 
-    return resolution
+    return resolution, dim_start
