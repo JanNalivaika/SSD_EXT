@@ -1,7 +1,7 @@
 
 # syntax=docker/dockerfile:1
 
-FROM python:3.9.6-slim-buster
+FROM python:3.8-slim-buster
 
 WORKDIR /app
 
@@ -22,4 +22,4 @@ RUN unzip ./weights/voc.zip -d ./weights
 
 
 #start web app
-CMD [ "python", "-m" , "flask", "run", "--host=0.0.0.0 --port80"]
+CMD ["python", "-m" , "flask", "run", "--host=0.0.0.0"]
