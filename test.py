@@ -1,6 +1,3 @@
-#import pyvista as pv
-import numpy as np
-import csv
 import utils.binvox_rw
 from utils.augmentations import SSDAugmentation
 from data import *
@@ -14,8 +11,8 @@ from mpl_toolkits.mplot3d import Axes3D
 from math import pow
 import matplotlib.patches as mpatches
 
-"""if torch.cuda.is_available():
-    torch.set_default_tensor_type('torch.cuda.FloatTensor')"""
+if torch.cuda.is_available():
+    torch.set_default_tensor_type('torch.cuda.FloatTensor')
 
 
 def get_gt_label(filename):
@@ -43,7 +40,7 @@ def load_pretrained_model():
 
     # print(net)
 
-    return net.cpu()
+    return net.cuda()
 
 
 def tensor_to_float(val):
@@ -84,9 +81,6 @@ def rotate_sample(sample, rotation, reverse=False):
 
 
 def soft_nms_pytorch(boxes, box_scores, sigma=0.5):
-    # short explanation for NMS == Non-Maximum Suppression (NMS)
-    # https://towardsdatascience.com/understanding-ssd-multibox-real-time-object-detection-in-deep-learning-495ef744fab
-
     dets = boxes[:, 0:6].copy() * 1000
 
     N = dets.shape[0]
@@ -170,11 +164,11 @@ def get_predicted_label(filename, net):
 
     images = torch.tensor(images).permute(0, 3, 1, 2).float()
 
-    images = Variable(images.cpu())
-    # images = images.cpu(
+    images = Variable(images.cuda())
+    # images = images.cuda()
 
     out = net(images, 'test')
-    out.cpu()
+    out.cuda()
 
     cur_boxes = np.zeros((0, 8))
 
@@ -399,3 +393,13 @@ test_ssdnet(data_group, cal_detection_performance)  # feature recognition
 # test_ssdnet(data_group,cal_localization_performance) #feature localisation
 
 print("--- %s seconds ---" % (time.time() - start_time))
+
+
+
+
+
+
+
+
+
+
