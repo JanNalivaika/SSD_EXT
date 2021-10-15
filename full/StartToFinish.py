@@ -25,7 +25,7 @@ def deleteOLD():
 
 if __name__ == '__main__':
     t = time.time()
-    speed = 1.2
+    speed = 1
     file = "STL_files/allinone.stl"
     resolution, dim_start = Set_Resolution(file)
     resolution = int(resolution / speed)
