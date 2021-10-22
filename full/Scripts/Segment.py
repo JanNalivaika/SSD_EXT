@@ -59,10 +59,11 @@ def Segment(dim_start,dim_step,NN_dim,overlap):
         path = "Output/HD_pictures/"+picture_name
         picture = np.asarray(Image.open(path))
 
-        dim = dim_start
-
         max_x_dim = len(picture)
         max_y_dim = len(picture[0])
+        dim = dim_start
+        if dim > min(max_y_dim,max_x_dim):
+            dim = min(max_y_dim,max_x_dim)
 
         if max_x_dim > max_y_dim:
             picture = np.transpose(picture, (1, 0, 2))

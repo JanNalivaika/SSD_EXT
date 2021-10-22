@@ -137,6 +137,14 @@ def get_predictions(net):
 
     paths = []
     p1 = "Output/sliced_IS_resized"
+
+    filelist = []
+    for root, dirs, files in os.walk(p1):
+        for file in files:
+            filelist.append(os.path.join(root, file))
+    estimated_time = len(filelist)/4
+    print("estmated time " + str(estimated_time) + " seconds")
+
     path_pos = [f.path for f in os.scandir(p1) if f.is_dir()]
     for x in path_pos:
         # p = x.repace("\\" ,"/")

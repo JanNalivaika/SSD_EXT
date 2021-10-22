@@ -67,7 +67,7 @@ def turnSTL(file_source):
 
     status = []
     for x in range(len(unique_vectors)):
-        round_prec = 5
+        round_prec = 3
         a = round(unique_vectors[x][0], round_prec)
         b = round(unique_vectors[x][1], round_prec)
         c = round(unique_vectors[x][2], round_prec)
@@ -103,7 +103,7 @@ def turnSTL(file_source):
 
     angles_for_turning = []
     for idx, pos in enumerate(wrong_vectors):
-        if wrong_areas_pers[idx] > 0.1:
+        if wrong_areas_pers[idx] > 0.15:
             vector = unique_vectors[pos]
 
             dot = np.dot(x_ax, vector)  # dot product
