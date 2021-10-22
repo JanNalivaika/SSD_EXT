@@ -1,1 +1,0 @@
-, data/FNSet/9_184.binvox, data/FNSet/25_176.binvox, data/FNSet/7_107.binvox, data/FNSet/14_252.binvox, data/FNSet/16_858.binvox

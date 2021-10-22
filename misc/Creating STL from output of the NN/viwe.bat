@@ -1,2 +1,0 @@
-viewvox.exe NEW.binvox
-
