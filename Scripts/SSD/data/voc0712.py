@@ -5,15 +5,9 @@ https://github.com/fmassa/vision/blob/voc_dataset/torchvision/datasets/voc.py
 
 Updated by: Ellis Brown, Max deGroot
 """
-from .config import HOME
-import os.path as osp
 import sys
 import torch
 import torch.utils.data as data
-import cv2
-import numpy as np
-from PIL import Image
-import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
 
@@ -23,20 +17,15 @@ else:
     import xml.etree.ElementTree as ET
 
 
-import Scripts.SSD.utils
+from ..utils import binvox_rw
+
 import csv
 import random
-#import cupy as cp
+
 import os
 from pathlib import Path
 import matplotlib.pyplot as plt
 
-#VOC_CLASSES = (  # always index 0
-#    'aeroplane', 'bicycle', 'bird', 'boat',
-#    'bottle', 'bus', 'car', 'cat', 'chair',
-#    'cow', 'diningtable', 'dog', 'horse',
-#    'motorbike', 'person', 'pottedplant',
-#    'sheep', 'sofa', 'train', 'tvmonitor')
 
 VOC_CLASSES = ('O ring', 'Through hole', 'Blind hole', 
                'Triangular passage', 'Rectangular passage', 
@@ -233,7 +222,7 @@ def achieve_legal_model(list_IDs, list_size, factor):
         
         label = int(os.path.basename(filename).split('_')[0])
         with open(filename, 'rb') as f:
-            model = utils.binvox_rw.read_as_3d_array(f).data
+            model = binvox_rw.read_as_3d_array(f).data
         
         return label, model
     
@@ -447,7 +436,7 @@ class VOCDetection(data.Dataset):
             if rotation == 0:
                 filename = self.list_IDs[m_idx]
                 with open(filename, 'rb') as f:
-                    self.cur_model = utils.binvox_rw.read_as_3d_array(f).data
+                    self.cur_model = binvox_rw.read_as_3d_array(f).data
                     self.cur_model_label = get_label_from_csv(str(filename).replace('.binvox','.csv'))
                     
             img, _ = create_img(self.cur_model, rotation)
