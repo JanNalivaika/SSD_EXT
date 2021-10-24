@@ -1,4 +1,3 @@
-import numpy as np
 import csv
 from .utils.augmentations import SSDAugmentation
 from .data import *
@@ -12,6 +11,7 @@ from os.path import isfile, join
 from PIL import Image
 import numpy as np
 import time
+import glob
 
 warnings.simplefilter("ignore", UserWarning)
 import pickle
@@ -19,6 +19,7 @@ import pickle
 if torch.cuda.is_available():
     torch.set_default_tensor_type('torch.cuda.FloatTensor')
 
+WEIGHTS_FOLDER = "Scripts/SSD/weights/"
 
 def get_gt_label(filename):
     retarr = np.zeros((0, 7))
@@ -43,7 +44,7 @@ def load_pretrained_model():
 
     # ssd_net.load_weights('weights/512-exp2-notlda/VOC.pth')
     # ssd_net.load_weights('weights/VOCself5.pth')
-    ssd_net.load_weights('Scripts/SSD/weights/VOC.pth')
+    ssd_net.load_weights(WEIGHTS_FOLDER + 'VOC.pth')
 
     # print("Replace cup with cuda")
     return net.cuda()
@@ -136,7 +137,7 @@ def get_predictions(net):
     for root, dirs, files in os.walk(p1):
         for file in files:
             filelist.append(os.path.join(root, file))
-    estimated_time = len(filelist)/4
+    estimated_time = len(filelist) / 4
     print("estmated time " + str(estimated_time) + " seconds")
 
     path_pos = [f.path for f in os.scandir(p1) if f.is_dir()]
@@ -213,17 +214,41 @@ def get_predictions(net):
 
         # cur_boxes[:, 0:6] = 10000 * cur_boxes[:, 0:6]
 
-        a= (time.time() - t)
+        a = (time.time() - t)
         b = len(onlyfiles)
         print(
-            "Recognition on path " + str(itr) + " took " + str(int(time.time() - t)) + " seconds.   That equals to: " + str(int(
-                len(onlyfiles) / (time.time() - t) )) + " pic/sec    Analyzed pictures: " + str(len(onlyfiles)))
+            "Recognition on path " + str(itr) + " took " + str(
+                int(time.time() - t)) + " seconds.   That equals to: " + str(int(
+                len(onlyfiles) / (time.time() - t))) + " pic/sec    Analyzed pictures: " + str(len(onlyfiles)))
 
 
 def Recognize():
+
+    create_weights()
+
     net = load_pretrained_model()
-    # if
 
     with torch.no_grad():
         with open(os.devnull, 'w') as devnull:
             get_predictions(net)
+
+
+def create_weights():
+    #
+    file_weights = WEIGHTS_FOLDER + 'VOC.pth'
+    flag = os.path.isfile(file_weights)
+    if flag:
+        return
+
+    import zipfile
+
+    zips = glob.glob(WEIGHTS_FOLDER + 'VOC.zip.*')
+    target = os.path.relpath(WEIGHTS_FOLDER + "voc.zip")
+    for zipName in zips:
+        source = zipName
+        with open(target, "ab") as f:
+            with open(source, "rb") as z:
+                f.write(z.read())
+
+    zip_ref = zipfile.ZipFile(target, "r")
+    zip_ref.extractall(WEIGHTS_FOLDER)

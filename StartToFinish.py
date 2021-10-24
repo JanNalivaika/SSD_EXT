@@ -1,7 +1,4 @@
 from Scripts.Slicer import Slicer
-from Scripts.Bar_Remover import Remover
-from Scripts.Combiner import Voxel_Combiner
-from Scripts.PNGfromArray import PNG_Creator
 from Scripts.Segment import Segment
 from Scripts.SSD.test import *
 from Scripts.Visualize import Visualize
