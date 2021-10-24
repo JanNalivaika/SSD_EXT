@@ -189,7 +189,7 @@ def achieve_legal_model_simple(files_dictionary):
     filename = str(filename).replace("\\", "/")
 
     with open(filename, 'rb') as f:
-        model = utils.binvox_rw.read_as_3d_array(f).data
+        model = binvox_rw.read_as_3d_array(f).data
 
     return feature_name, model, filename
 
@@ -249,7 +249,7 @@ def achieve_random_model_simple(files_dictionary, num_features_min, num_features
     # remove first two symbols  ' ,'
     selected_files = selected_files[2:]
 
-    utils.BinvoxSaver.write(ret_model, fileprefix + ".binvox")
+    #BinvoxSaver.write(ret_model, fileprefix + ".binvox")
 
     with open(fileprefix + ".binvox.txt", "w") as text_file:
         text_file.write(selected_files)
