@@ -478,7 +478,7 @@ class VOCDetection(data.Dataset):
             if rotation == 0:
                 filename = self.list_IDs[m_idx]
                 with open(filename, 'rb') as f:
-                    self.cur_model = utils.binvox_rw.read_as_3d_array(f).data
+                    self.cur_model = binvox_rw.read_as_3d_array(f).data
                     self.cur_model_label = get_label_from_csv(str(filename).replace('.binvox', '.csv'))
 
             img, _ = create_img(self.cur_model, rotation)
