@@ -1,10 +1,10 @@
 import unittest
-from simple import simpleA
+from simple import simple
 
 
-class simpleTest(unittest.TestCase):
+class SimpleTest(unittest.TestCase):
     def test_SimpleA(self):
-        self.assertEqual(simpleA('hello'), 'hello')
+        self.assertEqual(simple('hello'), 'hello')
 
 
 if __name__ == '__main__':
