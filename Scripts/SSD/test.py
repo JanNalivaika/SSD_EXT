@@ -1,17 +1,11 @@
 import numpy as np
 import csv
-import utils.binvox_rw
-from utils.augmentations import SSDAugmentation
-from data import *
+from .utils.augmentations import SSDAugmentation
+from .data import *
 import torch
 import torch.backends.cudnn as cudnn
-from ssd import build_ssd
+from .ssd import build_ssd
 from torch.autograd import Variable
-from pathlib import Path
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from math import pow
-import matplotlib.patches as mpatches
 import warnings
 from os import listdir
 from os.path import isfile, join

@@ -23,7 +23,7 @@ else:
     import xml.etree.ElementTree as ET
 
 
-import utils.binvox_rw
+import Scripts.SSD.utils
 import csv
 import random
 #import cupy as cp

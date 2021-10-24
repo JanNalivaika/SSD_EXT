@@ -26,8 +26,8 @@ def deleteOLD():
 
 if __name__ == '__main__':
     t = time.time()  # Starting time to time everything
-    speed = 1  # speed variable: Impacts resolution, dimension, step_size, overlap,
-    file = "STL_files/allinone.stl"  # SELECT STL-FILES HERE
+    speed = 2  # speed variable: Impacts resolution, dimension, step_size, overlap,
+    file = "STL_Files_validation/allinone.stl"  # SELECT STL-FILES HERE
     resolution, dim_start = Set_Resolution(file)
     resolution = max(int(resolution / speed), 64)  # Resolution has to be at least 64
     # !!!ATTENTION!!! low resolution == High detail! a lil bit counterintuitive
