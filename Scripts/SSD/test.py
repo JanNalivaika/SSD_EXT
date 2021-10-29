@@ -47,7 +47,7 @@ def load_pretrained_model():
     ssd_net.load_weights(WEIGHTS_FOLDER + 'VOC.pth')
 
     # print("Replace cup with cuda")
-    return net.cuda()
+    return net.cuda() if (torch.cuda.is_available()) else net.cpu()
 
 
 def tensor_to_float(val):
@@ -166,12 +166,11 @@ def get_predictions(net):
         images = torch.tensor(images).permute(0, 3, 1, 2).float()
 
         # print("Replace cup with cuda")
-        images = Variable(images.cuda())
-        # images = images.cuda()
+        images = Variable(images.cuda() if (torch.cuda.is_available()) else images.cpu())
 
         out = net(images, 'test')
         # print("Replace cup with cuda")
-        out.cuda()
+        out.cuda() if (torch.cuda.is_available()) else out.cpu()
 
         cur_boxes = np.zeros((0, 9))
 
