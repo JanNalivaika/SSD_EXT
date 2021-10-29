@@ -35,7 +35,7 @@ if __name__ == '__main__':
 
     dim_step = int(resolution / 25 * speed)  # Equivalent to step_size; in proportion to speed
     NN_dim = 64  # setting NN Dimension
-    overlap = 2 / 3 / speed  # setting overlap
+    overlap = 2 / 3 / speed   # setting overlap
 
     deleteOLD()  # deleting files from previous runs
 
