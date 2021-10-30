@@ -36,4 +36,4 @@ jobs:
         pytest temp/simpleTest.py
     - name: Run UnitTests
       run: |
-        pytest
+        pytest unit_tests
