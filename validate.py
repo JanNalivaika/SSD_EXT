@@ -461,7 +461,7 @@ img = img.resize((500, 500), Image.ANTIALIAS)
 img.save(selected_image)"""
 
 
-def create_weigths():
+def create_weights():
     #
     file_weights = 'weights/VOC.pth'
     flag = os.path.isfile(file_weights)
@@ -496,7 +496,7 @@ def run_on_folder(folder_stl):
 
     log = ""
 
-    create_weigths()
+    create_weights()
 
     file_weights = 'weights/VOC.pth'
 

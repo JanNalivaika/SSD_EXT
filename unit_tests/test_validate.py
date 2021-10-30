@@ -3,12 +3,12 @@ import os
 import validate
 
 
-class ValidateTest(unittest.TestCase):
+# noinspection PyPep8Naming
+class test_validate(unittest.TestCase):
+    def test_create_weights(self):
+        validate.create_weights()
 
-    def create_weights(self):
-        validate.create_weigths()
-
-        file_weights = 'weights/VOCx.pth'
+        file_weights = 'weights/VOC.pth'
         flag = os.path.isfile(file_weights)
 
         self.assertEqual(True, flag)
