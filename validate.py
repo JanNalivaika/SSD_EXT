@@ -471,14 +471,35 @@ def create_weights():
     import zipfile
 
     zips = glob.glob('weights/VOC.zip.*')
-    target = os.path.relpath("weights/voc.zip")
+    zipFile = os.path.relpath("weights/voc.zip")
     for zipName in zips:
         source = zipName
-        with open(target, "ab") as f:
+        with open(zipFile, "ab") as f:
             with open(source, "rb") as z:
                 f.write(z.read())
 
-    zip_ref = zipfile.ZipFile(target, "r")
+    # HACK:
+    #   see http://bugs.python.org/issue10694
+    #   see https://stackoverflow.com/questions/3083235/unzipping-file-results-in-badzipfile-file-is-not-a-zip-file
+    # The zip file generated is correct, but because of extra data after the 'central directory' section,
+    # Some version of python (and some zip applications) can't read the file. By removing the extra data,
+    # we ensure that all applications can read the zip without issue.
+    # The ZIP format: http://www.pkware.com/documents/APPNOTE/APPNOTE-6.3.0.TXT
+    # Finding the end of the central directory:
+    #   http://stackoverflow.com/questions/8593904/how-to-find-the-position-of-central-directory-in-a-zip-file
+    #   http://stackoverflow.com/questions/20276105/why-cant-python-execute-a-zip-archive-passed-via-stdin
+    # This second link is only losely related, but echos the first, "processing a ZIP archive often requires backwards seeking"
+    f = open(zipFile, 'r+b')
+    content = f.read()
+    pos = content.rfind('\x50\x4b\x05\x06') # reverse find: this string of bytes is the end of the zip's central directory.
+    if pos>0:
+        f.seek(pos+20) # +20: see secion V.I in 'ZIP format' link above.
+        f.truncate()
+        f.write('\x00\x00') # Zip file comment length: 0 byte length; tell zip applications to stop reading.
+        f.seek(0)
+        f.close()
+
+    zip_ref = zipfile.ZipFile(zipFile, "r")
     zip_ref.extractall("weights")
 
 
