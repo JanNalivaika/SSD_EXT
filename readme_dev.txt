@@ -17,6 +17,8 @@ Unit-Tests
 
 # History (newest on top)
 30.10.21
+add unit_tests/__init__.py  and than run command --  pytest unit_tests
+try to get tests running -- https://stackoverflow.com/questions/11452299/import-parent-directory-for-brief-tests
 add folder unit_tests
 remove unused files
 
