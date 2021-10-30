@@ -512,7 +512,7 @@ def run_on_folder(folder_stl):
 
 
 def run():
-    folder_stl = 'data/MulSet/set1/'
+    folder_stl = 'data/MulSet/set20/'
     log = run_on_folder(folder_stl)
     return log
 

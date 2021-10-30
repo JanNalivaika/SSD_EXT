@@ -13,6 +13,9 @@ python.exe -m pip install --upgrade pip
 
 
 # History (newest on top)
+30.10.21
+remove unsued files
+
 11.08.21
 add achieve_legal_model_simple
 
