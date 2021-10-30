@@ -500,8 +500,11 @@ def create_weights():
 
     f.close()
 
-    zip_ref = zipfile.ZipFile(zipFile, "r")
-    zip_ref.extractall("weights")
+    #zip_ref = zipfile.ZipFile(zipFile, "r")
+    #zip_ref.extractall("weights")
+
+    with zipfile.ZipFile(zipFile) as zf:
+        zf.extractall("weights")
 
 
 def remove_files(folder, pattern):
