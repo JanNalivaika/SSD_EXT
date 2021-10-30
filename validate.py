@@ -500,6 +500,8 @@ def create_weights():
             f.write(b'\x00\x00') # Zip file comment length: 0 byte length; tell zip applications to stop reading.
             f.seek(0)
 
+    print("f.closed=", f.closed)
+
     #zip_ref = zipfile.ZipFile(zipFile, "r")
     #zip_ref.extractall("weights")
 
