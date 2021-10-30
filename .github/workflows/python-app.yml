@@ -34,3 +34,6 @@ jobs:
     - name: Test with pytest
       run: |
         pytest temp/simpleTest.py
+    - name: Run UnitTests
+      run: |
+        pytest unit_tests in .
