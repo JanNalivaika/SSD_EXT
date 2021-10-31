@@ -479,6 +479,7 @@ def create_weights():
                 f.write(z.read())
 
     #fix_zip(zipFile)
+    fix_zip_2(zipFile)
 
     with zipfile.ZipFile(zipFile) as zf:
         zf.extractall("weights")
@@ -507,6 +508,13 @@ def fix_zip(zipFile):
             f.truncate()
             f.write(b'\x00\x00') # Zip file comment length: 0 byte length; tell zip applications to stop reading.
 
+def fix_zip_2(zipFile):
+    with open(zipFile, "r+b") as f:
+        content = f.read()
+        pos = content.rfind(b'\x50\x4b\x05\x06')
+        if pos>0:
+            f.seek(pos + 22)
+            f.truncate()
 
 def remove_files(folder, pattern):
     files = glob.glob(folder + '/' + pattern, recursive=True)
