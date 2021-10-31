@@ -478,6 +478,13 @@ def create_weights():
             with open(source, "rb") as z:
                 f.write(z.read())
 
+    #fix_zip(zipFile)
+
+    with zipfile.ZipFile(zipFile) as zf:
+        zf.extractall("weights")
+
+
+def fix_zip(zipFile):
     # HACK:
     #   see http://bugs.python.org/issue10694
     #   see https://stackoverflow.com/questions/3083235/unzipping-file-results-in-badzipfile-file-is-not-a-zip-file
@@ -499,9 +506,6 @@ def create_weights():
             f.seek(pos + 20) # +20: see secion V.I in 'ZIP format' link above.
             f.truncate()
             f.write(b'\x00\x00') # Zip file comment length: 0 byte length; tell zip applications to stop reading.
-
-    with zipfile.ZipFile(zipFile) as zf:
-        zf.extractall("weights")
 
 
 def remove_files(folder, pattern):
