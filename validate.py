@@ -478,8 +478,9 @@ def create_weights():
             with open(source, "rb") as z:
                 f.write(z.read())
 
+    #this fix is not needed on Windows and does not work on unix ...
     #fix_zip(zipFile)
-    fix_zip_2(zipFile)
+    #fix_zip_2(zipFile)
 
     with zipfile.ZipFile(zipFile) as zf:
         zf.extractall("weights")
