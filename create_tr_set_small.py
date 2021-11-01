@@ -12,7 +12,7 @@ def create_validation_set():
 def create_files(targetDir, idxFirst, idxLast):
     BINVOX_DIR = 'data/config_small/binvox/'
 
-    print('create files for ',targetDir)
+    print('create files for', targetDir)
 
     # counter for progress info
     counter = 0
