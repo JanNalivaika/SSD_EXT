@@ -52,7 +52,7 @@ def remove_redudant(imgs, labels):
         if labels[i].shape[0] != 0:
             sel.append(i)
             targets.append(labels[i])
-    return imgs[sel,:,:],targets
+    return imgs[sel, :, :], targets
 
 def get_lvec(labels):
     results = np.zeros(24)
@@ -62,7 +62,7 @@ def get_lvec(labels):
     
     return results
 
-def eval_metric(pre,trul,tp):
+def eval_metric(pre, trul, tp):
     precision = tp/pre
     precision[np.isnan(precision)]=0
     precision[precision>1]=1
@@ -73,7 +73,7 @@ def eval_metric(pre,trul,tp):
     
     return precision, recall
 
-def rg(val,factor):
+def rg(val, factor):
     
     if val < 0:
         val = 0
@@ -87,34 +87,33 @@ def rotate_sample(sample,rotation, reverse = False):
 
     if reverse:
         if rotation == 1:
-            sample = np.rot90(sample, -2, (0,1)).copy()  
+            sample = np.rot90(sample, -2, (0, 1)).copy()
         elif rotation == 2:
-            sample = np.rot90(sample, -1, (0,1)).copy()  
+            sample = np.rot90(sample, -1, (0, 1)).copy()
         elif rotation == 3:
-            sample = np.rot90(sample, -1, (1,0)).copy()  
+            sample = np.rot90(sample, -1, (1, 0)).copy()
         elif rotation == 4:
-            sample = np.rot90(sample, -1, (2,0)).copy()  
+            sample = np.rot90(sample, -1, (2, 0)).copy()
         elif rotation == 5:
-            sample = np.rot90(sample, -1, (0,2)).copy() 
+            sample = np.rot90(sample, -1, (0, 2)).copy()
     else:
         if rotation == 1:
-            sample = np.rot90(sample, 2, (0,1)).copy()  
+            sample = np.rot90(sample, 2, (0, 1)).copy()
         elif rotation == 2:
-            sample = np.rot90(sample, 1, (0,1)).copy()  
+            sample = np.rot90(sample, 1, (0, 1)).copy()
         elif rotation == 3:
-            sample = np.rot90(sample, 1, (1,0)).copy()  
+            sample = np.rot90(sample, 1, (1, 0)).copy()
         elif rotation == 4:
-            sample = np.rot90(sample, 1, (2,0)).copy()  
+            sample = np.rot90(sample, 1, (2, 0)).copy()
         elif rotation == 5:
-            sample = np.rot90(sample, 1, (0,2)).copy() 
+            sample = np.rot90(sample, 1, (0, 2)).copy()
         
     return sample
 
 def val(net, criterion):
     
-    
-    dataset = VOCDetection(None, transform=SSDAugmentation(cfg['min_dim'],MEANS,'val'),phase='val')
-    data_loader = data.DataLoader(dataset, 1,num_workers=1,collate_fn=detection_collate,pin_memory=True)
+    dataset = VOCDetection(None, transform=SSDAugmentation(cfg['min_dim'], MEANS, 'val'), phase='val')
+    data_loader = data.DataLoader(dataset, 1, num_workers=1, collate_fn=detection_collate, pin_memory=True)
     
     data_size = len(dataset)
     
@@ -175,15 +174,17 @@ def train(resume, file_weights):
     net = torch.nn.DataParallel(ssd_net)
     cudnn.benchmark = True
 
-    if args.resume == 'yes':
-        print('Resuming training, loading {}...'.format(args.resume))
-        ssd_net.load_weights(filename, True)
-    else:
-        #random init
+    if args.resume != 'yes':
+        # random init
+        print('Creating new random weights in {} ...'.format(filename))
         ssd_net.vgg.apply(weights_init)
         ssd_net.extras.apply(weights_init)
         ssd_net.loc.apply(weights_init)
         ssd_net.conf.apply(weights_init)
+        torch.save(ssd_net.state_dict(), filename)
+
+    print('Resuming training, loading weights {} ...'.format(filename))
+    ssd_net.load_weights(filename, True)
 
     #net = ssd_net.cuda()
     net = ssd_net
@@ -209,22 +210,24 @@ def train(resume, file_weights):
             pin_memory=True)
 
         print('epoch ', epoch)
-        
+
         loss_all = 0
-        
+
         if epoch <= 1:
             args.lr = 0.0001
             set_lr(args.lr, optimizer)
         elif epoch == 2:
             args.lr = 0.00001
             set_lr(args.lr, optimizer)
-        
+
         print('learning rate:', args.lr)
+
         for iteration, (images, targets) in enumerate(data_loader):
+
             images, targets = remove_redudant(images, targets)
-    
+
             images = Variable(images.cuda())
-            
+
             with torch.no_grad():
                 targets = [ann.cuda() for ann in targets]
 
@@ -234,11 +237,11 @@ def train(resume, file_weights):
             loss = loss_l + loss_c
             loss.backward()
             optimizer.step()
-            
+
             loss_all = loss_all + loss.data
 
             if iteration % 500 == 0:
-                print('iter %4d'%iteration, ' || Loss: %2.4f ||' % (loss.data))
+                print('iter %4d' % iteration, ' || Loss: %2.4f ||' % (loss.data))
 
             if iteration % 2000 == 0 and iteration > 0:
                 print("---total training time: %s seconds ---" % (time.time() - start_time))
@@ -247,7 +250,6 @@ def train(resume, file_weights):
                     torch.save(ssd_net.state_dict(), filename)
                     valloss = curloss
                     print('model saved')
-
 
 def xavier(param):
     init.xavier_uniform_(param)

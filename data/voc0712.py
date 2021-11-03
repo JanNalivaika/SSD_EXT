@@ -457,21 +457,19 @@ class VOCDetection(data.Dataset):
 
         self.transform = transform
         self.list_IDs = list_IDs
-        self.list_IDs = list_IDs
         self.phase = phase
 
         if phase == 'test':
             self.num_samples = len(list_IDs) * 6 #FINDING why '*6'
+            return
 
-        elif phase == 'val':
+        if phase == 'val':
             self.DIR = 'data/ValSet/'
-            amount = len([name for name in os.listdir(self.DIR) if os.path.isfile(os.path.join(self.DIR, name))]) / 2
-            self.num_samples = amount
-
-        elif phase == 'train':
+        else:
             self.DIR = 'data/TrSet/'
-            amount = len([name for name in os.listdir(self.DIR) if os.path.isfile(os.path.join(self.DIR, name))]) / 2
-            self.num_samples = amount
+
+        amount = len([name for name in os.listdir(self.DIR) if os.path.isfile(os.path.join(self.DIR, name))]) / 2
+        self.num_samples = amount
 
 
     def __getitem__(self, idx):
@@ -490,52 +488,21 @@ class VOCDetection(data.Dataset):
 
             img, _, _ = self.transform(img, 0, 0)
 
-
         else:  # train, val
-
             filename = self.DIR + str(idx)
             img = plt.imread(filename + '.png', format='grayscale')
             target = np.load(filename + '.npy')
-
             img = img[:, :, :3]
 
-            # da strategy 3
             if self.phase == 'train' and random.randint(0, 1) == 0:
                 filename2 = self.DIR + str(random.randint(0, self.num_samples - 1))
                 img2 = plt.imread(filename2 + '.png', format='grayscale')
                 target2 = np.load(filename2 + '.npy')
-
                 img2 = img2[:, :, :3]
-
                 target = np.concatenate((target, target2), axis=0)
-
-                #                org_img = img[:,:,0]/255
-                #                tmp = np.ones((66,66))
-                #                tmp[1:65,1:65] = org_img
-                #                fig, ax = plt.subplots(ncols=1, nrows=1, figsize=(6, 6))
-                #                ax.imshow(tmp, cmap='gray', vmin=0, vmax=1)
-                #                plt.show()
-
                 img = np.maximum(img, img2)
 
-            #                org_img = img2[:,:,0]/255
-            #                tmp = np.ones((66,66))
-            #                tmp[1:65,1:65] = org_img
-            #                fig, ax = plt.subplots(ncols=1, nrows=1, figsize=(6, 6))
-            #                ax.imshow(tmp, cmap='gray', vmin=0, vmax=1)
-            #                plt.show()
-            #
-            #                org_img = img[:,:,0]/255
-            #                tmp = np.ones((66,66))
-            #                tmp[1:65,1:65] = org_img
-            #                fig, ax = plt.subplots(ncols=1, nrows=1, figsize=(6, 6))
-            #                ax.imshow(tmp, cmap='gray', vmin=0, vmax=1)
-            #                plt.show()
-            # print(img.max())
-            # print(img.min())
-
             img, boxes, labels = self.transform(img, target[:, :5], target[:, 5])
-
             self.cur_model_label = np.hstack((boxes, np.expand_dims(labels, axis=1)))
 
         return torch.from_numpy(img).permute(2, 0, 1).float(), self.cur_model_label
