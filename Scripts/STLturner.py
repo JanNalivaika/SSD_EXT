@@ -103,7 +103,7 @@ def turnSTL(file_source):
 
     angles_for_turning = []
     for idx, pos in enumerate(wrong_vectors):
-        if wrong_areas_pers[idx] > 0.15:
+        if wrong_areas_pers[idx] > 0.1:
             vector = unique_vectors[pos]
 
             dot = np.dot(x_ax, vector)  # dot product

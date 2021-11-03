@@ -65,7 +65,7 @@ def Reconstruct():
 
 
 
-                    if prop>0.5:
+                    if prop>0.50:
 
                         color = {
                             0: [255, 255, 0, 255],

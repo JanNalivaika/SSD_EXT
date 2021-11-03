@@ -24,7 +24,7 @@ def deleteOLD():
 if __name__ == '__main__':
     t = time.time()  # Starting time to time everything
     speed = 1  # speed variable: Impacts resolution, dimension, step_size, overlap,
-    file = "STL_Files/allinone.stl"  # SELECT STL-FILES HERE
+    file = "STL_Files/paper.stl"  # SELECT STL-FILES HERE
     resolution, dim_start = Set_Resolution(file)
     resolution = max(int(resolution / speed), 64)  # Resolution has to be at least 64
     # !!!ATTENTION!!! low resolution == High detail! a lil bit counterintuitive
@@ -38,8 +38,9 @@ if __name__ == '__main__':
     overlap = 2 / 3 / speed   # setting overlap
 
     deleteOLD()  # deleting files from previous runs
-
+    t1 = time.time()
     turnSTL(file)  # Turning the STL file to face axis
+    print("Slicer Time: " + str(time.time() - t1))
 
     t1 = time.time()  # timing Slicer
     Slicer(resolution)  # ERRORS ARISE HERE !!!!!! NOT WORKING ON CUBES
