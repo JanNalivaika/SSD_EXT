@@ -42,10 +42,10 @@ def Reconstruct():
                 leftover = max(max_y_dim, max_x_dim) - min(max_y_dim, max_x_dim)
 
 
-                if  max_x_dim<max_y_dim :
-                    to_append = np.asarray([[[255, 255, 255] for x in range(max_y_dim)] for y in range(leftover)])
-                    HD_picture = np.append(HD_picture, to_append, axis=0)
-                    HD_picture = HD_picture.astype(np.uint8)
+                #if  max_x_dim<max_y_dim :
+                #    to_append = np.asarray([[[255, 255, 255] for x in range(max_y_dim)] for y in range(leftover)])
+                #    HD_picture = np.append(HD_picture, to_append, axis=0)
+                #    HD_picture = HD_picture.astype(np.uint8)
 
 
                 for prediction in predictions_raw:
@@ -63,7 +63,13 @@ def Reconstruct():
                     Feature = prediction[6]
                     prop = prediction[7]
 
+                    if x2>=max_x_dim:
+                        x2 = max_x_dim-1
+                    if y2>=max_y_dim:
+                        y2 = max_y_dim-1
 
+                    if x1>=max_x_dim or y1 >=max_y_dim or x1>=x2 or y1>=y2:
+                        break
 
                     if prop>0.50:
 
