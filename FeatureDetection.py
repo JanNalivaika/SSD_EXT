@@ -23,7 +23,7 @@ def deleteOLD():
 
 if __name__ == '__main__':
     t = time.time()  # Starting time to time everything
-    speed = 1  # speed variable: Impacts resolution, dimension, step_size, overlap,
+    speed = 3  # speed variable: Impacts resolution, dimension, step_size, overlap,
     file = "STL_Files/paper.stl"  # SELECT STL-FILES HERE
     resolution, dim_start = Set_Resolution(file)
     resolution = max(int(resolution / speed), 64)  # Resolution has to be at least 64
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     print("Recognition Time: " + str(time.time() - t1))
 
     t1 = time.time()  # timing Visualization
-    Visualize()
+    #Visualize()
     print("Visualize Time: " + str(time.time() - t1))
 
     t1 = time.time()  # timing Reconstruction

@@ -38,7 +38,6 @@ def load_pretrained_model():
     ssd_net = build_ssd(cfg['min_dim'], cfg['num_classes'])
 
     net = ssd_net
-
     net = torch.nn.DataParallel(ssd_net)
     cudnn.benchmark = True
 
@@ -154,7 +153,7 @@ def get_predictions(net):
         onlyfiles = [f for f in listdir(path) if isfile(join(path, f))]
 
         images = []
-
+        t1 = time.time()
         for image in onlyfiles:
             image = Image.open(path + "/" + image)
             temp = np.array(image)
@@ -163,14 +162,21 @@ def get_predictions(net):
 
             images.append(img)
 
-        images = torch.tensor(images).permute(0, 3, 1, 2).float()
+        print("Appending images Time: " + str(time.time() - t1))
+
+        images = torch.tensor(images, device="cuda").permute(0, 3, 1, 2).float()
 
         # print("Replace cup with cuda")
         images = Variable(images.cuda() if (torch.cuda.is_available()) else images.cpu())
 
+        t1 = time.time()
         out = net(images, 'test')
+        print("Running images trough NN Time: " + str(time.time() - t1))
+
         # print("Replace cup with cuda")
+        t1 = time.time()
         out.cuda() if (torch.cuda.is_available()) else out.cpu()
+        print("Pushing output to device Time: " + str(time.time() - t1))
 
         cur_boxes = np.zeros((0, 9))
 
@@ -224,9 +230,9 @@ def get_predictions(net):
 def Recognize():
 
     create_weights()
-
+    t1 = time.time()
     net = load_pretrained_model()
-
+    print("Net loading Time Time: " + str(time.time() - t1))
     with torch.no_grad():
         with open(os.devnull, 'w') as devnull:
             get_predictions(net)
