@@ -161,8 +161,9 @@ def Segment(dim_start,dim_step,NN_dim,overlap):
 
                 img = cv2.imread(old_folder + "/" + file, cv2.IMREAD_UNCHANGED)
                 img = cv2.resize(img, (NN_dim, NN_dim))
-
-                if np.sum(np.asarray(img)) != 255*3*64*64 and np.sum(np.asarray(img)) != 0:
+                color = np.asarray(img)[0][0][0]
+                #if np.sum(np.asarray(img)) != 255*3*64*64 and np.sum(np.asarray(img)) != 0 and np.sum(np.asarray(img)) != color*3*64*64 :
+                if not np.all(np.asarray(img) == color):
                     if not os.path.exists(new_folder):
                         os.makedirs(new_folder)
                     #img.save(new_folder + "/" + file)

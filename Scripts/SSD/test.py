@@ -164,31 +164,38 @@ def get_predictions(net):
 
         print("Appending images Time: " + str(time.time() - t1))
 
-        images = torch.tensor(images, device="cuda").permute(0, 3, 1, 2).float()
+        t1 = time.time()
+        images = torch.tensor(images).permute(0, 3, 1, 2).float()
+        #images = torch.tensor(images).float()
+        print("converting images to tensor Time: " + str(time.time() - t1))
 
         # print("Replace cup with cuda")
         images = Variable(images.cuda() if (torch.cuda.is_available()) else images.cpu())
 
         t1 = time.time()
         out = net(images, 'test')
+        del images
         print("Running images trough NN Time: " + str(time.time() - t1))
 
         # print("Replace cup with cuda")
         t1 = time.time()
-        out.cuda() if (torch.cuda.is_available()) else out.cpu()
+        #out.cuda() if (torch.cuda.is_available()) else out.cpu()
+        out = out.detach().cpu()
         print("Pushing output to device Time: " + str(time.time() - t1))
 
         cur_boxes = np.zeros((0, 9))
-
+        t1 = time.time()
         for i in range(len(out)):
 
             for j in range(out.shape[1]):
-                label = out[i, j, 1].detach().cpu()
+                #label = out[i, j, 1].detach().cpu()
+                label = out[i, j, 1]
 
-                # if label == 0:
-                #    continue
+                if label == 0:
+                    continue
 
-                score = out[i, j, 0].detach().cpu()
+                #score = out[i, j, 0].detach().cpu()
+                score = out[i, j, 0]
 
                 x1 = tensor_to_float(out[i, j, 2])
                 y1 = tensor_to_float(out[i, j, 3])
@@ -210,17 +217,20 @@ def get_predictions(net):
                 cur_boxes = np.append(cur_boxes, np.array([a, b, c, d, e, f, label - 1, score, i]).reshape(1, 9),
                                       axis=0)
 
+        print("Tensor to float Time: " + str(time.time() - t1))
         # print("Pay attention here")
+        t1 = time.time()
         keepidx = soft_nms_pytorch(cur_boxes[:, :7], cur_boxes[:, -1])
         cur_boxes = cur_boxes[keepidx, :]
+        print("soft_nms Time: " + str(time.time() - t1))
 
+        t1 = time.time()
         with open(path + '/predictions.pickle', 'wb') as handle:
             pickle.dump(cur_boxes, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        print("pickle dumping Time: " + str(time.time() - t1))
 
         # cur_boxes[:, 0:6] = 10000 * cur_boxes[:, 0:6]
 
-        a = (time.time() - t)
-        b = len(onlyfiles)
         print(
             "Recognition on path " + str(itr) + " took " + str(
                 int(time.time() - t)) + " seconds.   That equals to: " + str(int(
