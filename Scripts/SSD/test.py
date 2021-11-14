@@ -21,6 +21,7 @@ if torch.cuda.is_available():
 
 WEIGHTS_FOLDER = "Scripts/SSD/weights/"
 
+
 def get_gt_label(filename):
     retarr = np.zeros((0, 7))
     with open(filename, newline='') as csvfile:
@@ -166,12 +167,13 @@ def get_predictions(net):
 
         t1 = time.time()
         images = torch.tensor(images).permute(0, 3, 1, 2).float()
-        #images = torch.tensor(images).float()
+        # images = torch.tensor(images).float()
         print("converting images to tensor Time: " + str(time.time() - t1))
 
         # print("Replace cup with cuda")
+        t1 = time.time()
         images = Variable(images.cuda() if (torch.cuda.is_available()) else images.cpu())
-
+        print("Pushing images to device Time: " + str(time.time() - t1))
         t1 = time.time()
         out = net(images, 'test')
         del images
@@ -179,49 +181,80 @@ def get_predictions(net):
 
         # print("Replace cup with cuda")
         t1 = time.time()
-        #out.cuda() if (torch.cuda.is_available()) else out.cpu()
-        out = out.detach().cpu()
-        print("Pushing output to device Time: " + str(time.time() - t1))
+        # out.cuda() if (torch.cuda.is_available()) else out.cpu()
+        out = out.cpu().numpy()
+        print("Pushing output to CPU Time: " + str(time.time() - t1))
 
         cur_boxes = np.zeros((0, 9))
         t1 = time.time()
         for i in range(len(out)):
 
+            pred = out[i, :, :] # getting prediction block for 1 picture
+            pred = np.delete(pred, np.where(pred[:,1] == 0)[0], axis=0)  # deleting all empty predictions
+
+            pred = np.delete(pred, np.where(pred[:, 2] >= pred[:, 4])[0], axis=0)  # deleting wrong x
+            pred = np.delete(pred, np.where(pred[:, 3] >= pred[:, 5])[0], axis=0)  # deleting wrong y
+            pred = np.delete(pred, np.where(pred[:, 1] <= 0)[0], axis=0)  # deleting wrong z
+
+            pred = pred.astype(float)
+            pred[:,2:7] = np.where(pred[:,2:7] < 0, 0, pred[:,2:7])  # normalizing out of bound predictions
+            pred[:,2:7] = np.where(pred[:, 2:7] > 1, 1, pred[:, 2:7])  # normalizing out of bound predictions
+            pred[:, 1] = pred[:, 1]-1
+            pic_num = np.ones((pred.shape[0], 1)) * i
+            z_app = np.zeros((pred.shape[0], 1))
+            pred = np.concatenate((pred, z_app), axis=1)
+            pred = np.concatenate((pred, pic_num), axis=1)
+            cur_boxes = np.concatenate((cur_boxes, pred), axis=0)
+
+
+
+
+
+
+            """
             for j in range(out.shape[1]):
-                #label = out[i, j, 1].detach().cpu()
-                label = out[i, j, 1]
+
+                # label = out[i, j, 1].detach().cpu()
+                #label = out[i, :, 1]
 
                 if label == 0:
                     continue
 
-                #score = out[i, j, 0].detach().cpu()
+                # score = out[i, j, 0].detach().cpu()
                 score = out[i, j, 0]
 
-                x1 = tensor_to_float(out[i, j, 2])
-                y1 = tensor_to_float(out[i, j, 3])
-                x2 = tensor_to_float(out[i, j, 4])
-                y2 = tensor_to_float(out[i, j, 5])
-                z1 = 0.0
-                z2 = tensor_to_float(out[i, j, 6])
+                slice = out[i, j, 2:7].astype(float)
+                slice = np.where(slice < 0, 0, slice)
+                slice = np.where(slice > 1, 1, slice)
 
+                # x1 = tensor_to_float(out[i, j, 2])
+                # y1 = tensor_to_float(out[i, j, 3])
+                # x2 = tensor_to_float(out[i, j, 4])
+                # y2 = tensor_to_float(out[i, j, 5])
+                # z2 = tensor_to_float(out[i, j, 6])
+                z1 = 0.0
+
+                [x1, y1, x2, y2, z2] = slice
                 if x1 >= x2 or y1 >= y2 or z2 <= 0:
                     continue
 
-                a = z1
-                b = y1
-                c = x1
-                d = z2
-                e = y2
-                f = x2
-
-                cur_boxes = np.append(cur_boxes, np.array([a, b, c, d, e, f, label - 1, score, i]).reshape(1, 9),
+                cur_boxes = np.append(cur_boxes, np.array([z1, y1, x1, z2, y2, x2, label - 1, score, i]).reshape(1, 9),
                                       axis=0)
+            """
 
         print("Tensor to float Time: " + str(time.time() - t1))
+        # 2000 img = 14.017673254013062
+        # with numpy = 1.3463826179504395
+        # with giga optimization ==  0.255
+
         # print("Pay attention here")
         t1 = time.time()
-        keepidx = soft_nms_pytorch(cur_boxes[:, :7], cur_boxes[:, -1])
+        # atm =       [score , lable, x1, y1, x2, y2,    z2,    z1, i]
+        # must be =   [    z1,    y1, x1, z2, y2, x2, label, score, i]
+        cur_boxes = cur_boxes[:, [7, 3, 2, 6, 5, 4, 1, 0, 8]]
+        keepidx = soft_nms_pytorch(cur_boxes[:, :7], cur_boxes[:, -2])
         cur_boxes = cur_boxes[keepidx, :]
+        #origimal time = 4
         print("soft_nms Time: " + str(time.time() - t1))
 
         t1 = time.time()
@@ -238,7 +271,6 @@ def get_predictions(net):
 
 
 def Recognize():
-
     create_weights()
     t1 = time.time()
     net = load_pretrained_model()

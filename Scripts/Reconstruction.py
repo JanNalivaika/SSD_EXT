@@ -19,8 +19,16 @@ def Reconstruct():
 
         first = True
         for sec_folder in second_subfolders:
-            print("reconstructing in path " + str(sec_folder) )
+            #print("reconstructing in path " + str(sec_folder) )
             predictions_raw = pd.read_pickle(sec_folder + "/predictions.pickle")
+
+            try:
+                a = len(predictions_raw[0])
+            except:
+                #print("fails here if only one prediction")
+                predictions_raw = np.asarray([predictions_raw])
+
+
             list_of_input_pictures = [f.name for f in os.scandir(sec_folder) if f.is_file()]
             list_of_input_pictures.remove("predictions.pickle")
 
@@ -71,7 +79,7 @@ def Reconstruct():
                     if x1>=max_x_dim or y1 >=max_y_dim or x1>=x2 or y1>=y2:
                         break
 
-                    if prop>0.50:
+                    if prop>0.99:
 
                         color = {
                             0: [255, 255, 0, 255],

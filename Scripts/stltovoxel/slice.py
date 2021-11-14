@@ -30,7 +30,7 @@ def mesh_to_plane(Fname, output_file_path, mesh, bounding_box, parallel, resolut
                 result_id = pool.apply_async(paint_z_plane, args=(mesh_subset, z, bounding_box[:2]))
                 result_ids.append(result_id)
             else:
-                print('Processing layer %d/%d' % (z, bounding_box[2]))
+                #print('Processing layer %d/%d' % (z, bounding_box[2]))
                 _, pixels = paint_z_plane(mesh_subset, z, bounding_box[:2])
                 #vol[z] = pixels
                 if z > 0:
@@ -65,12 +65,12 @@ def mesh_to_plane(Fname, output_file_path, mesh, bounding_box, parallel, resolut
             current_mesh_indices.remove(tri_ind)
 
     #removing unused bar
-    print(final_bar)
+    #print(final_bar)
     original_len= len(BOOL[0][0])
     leave = original_len-final_bar
-    print('Removing empty space from layers')
+    #print('Removing empty space from layers')
     for x in range(len(BOOL)):
-        print('Removing empty space from layer %d/%d' % (x, len(BOOL)))
+        #print('Removing empty space from layer %d/%d' % (x, len(BOOL)))
         BOOL[x] = BOOL[x][:leave]
 
 

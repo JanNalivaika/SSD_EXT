@@ -28,7 +28,7 @@ def Visualize():
 
     for itr in range(len(paths)):
         path = paths[itr]
-        print("Working on Visualization on path " + str(itr) + " out of " + str(len(paths)))
+        #print("Working on Visualization on path " + str(itr) + " out of " + str(len(paths)))
 
 
 
@@ -36,8 +36,11 @@ def Visualize():
         with open(path + '/predictions.pickle', 'rb') as handle:
             predictions = pickle.load(handle)
 
-
-
+        try:
+            a = len(predictions[0])
+        except:
+            #print("fails here if only one prediction")
+            predictions = [predictions]
 
         files = [f for f in listdir(path) if isfile(join(path, f))]
         files.remove('predictions.pickle')
@@ -62,7 +65,7 @@ def Visualize():
             Feature = data[6]
             prop = data[7]
 
-            if prop >= 0.5:
+            if prop >= 0.99:
 
                 path_out = path.replace("sliced_IS_resized", "Visualized")
                 if not os.path.exists(path_out):
