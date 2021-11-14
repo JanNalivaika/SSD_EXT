@@ -456,12 +456,34 @@ def visualize(folder_stl, log):
     return log
 
 
-""" img = Image.open(selected_image)
-img = img.resize((500, 500), Image.ANTIALIAS)
-img.save(selected_image)"""
+def splitt_file(filename, chunk_size):
+    file_number = 1
+    with open(filename, 'rb') as f:
+        chunk = f.read(chunk_size)
+        while chunk:
+            with open(filename + '.' + str(file_number), 'wb') as chunk_file:
+                chunk_file.write(chunk)
+            file_number += 1
+            chunk = f.read(chunk_size)
 
+
+def merge_files(pattern, target):
+    files = glob.glob(pattern)
+    with open(target, 'ab') as outfile:
+        for file in files:
+            with open(file, 'rb') as f:
+                outfile.write(f.read())
 
 def create_weights():
+    file_weights = 'weights/VOC.pth'
+    flag = os.path.isfile(file_weights)
+    if (flag):
+        return
+
+    file_weights_pattern = 'weights/VOC.pth.*'
+    merge_files(file_weights_pattern, file_weights);
+
+def create_weights_with_zip():
     #
     file_weights = 'weights/VOC.pth'
     flag = os.path.isfile(file_weights)
@@ -509,6 +531,7 @@ def fix_zip(zipFile):
             f.truncate()
             f.write(b'\x00\x00') # Zip file comment length: 0 byte length; tell zip applications to stop reading.
 
+
 def fix_zip_2(zipFile):
     with open(zipFile, "r+b") as f:
         content = f.read()
@@ -516,6 +539,7 @@ def fix_zip_2(zipFile):
         if pos>0:
             f.seek(pos + 22)
             f.truncate()
+
 
 def remove_files(folder, pattern):
     files = glob.glob(folder + '/' + pattern, recursive=True)
