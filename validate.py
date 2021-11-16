@@ -264,7 +264,7 @@ def get_predicted_information(filename, net, folder_stl):
 
             cur_boxes = np.append(cur_boxes, np.array([a, b, c, d, e, f, label - 1, score, i]).reshape(1, 9), axis=0)
 
-    keepidx = soft_nms_pytorch(cur_boxes[:, :7], cur_boxes[:, -1])
+    keepidx = soft_nms_pytorch(cur_boxes[:, :7], cur_boxes[:, -2])
     cur_boxes = cur_boxes[keepidx, :]
     cur_boxes[:, 0:6] = 10000 * cur_boxes[:, 0:6]
 
