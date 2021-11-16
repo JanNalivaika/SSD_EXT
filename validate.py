@@ -456,12 +456,34 @@ def visualize(folder_stl, log):
     return log
 
 
-""" img = Image.open(selected_image)
-img = img.resize((500, 500), Image.ANTIALIAS)
-img.save(selected_image)"""
+def splitt_file(filename, chunk_size):
+    file_number = 1
+    with open(filename, 'rb') as f:
+        chunk = f.read(chunk_size)
+        while chunk:
+            with open(filename + '.' + str(file_number), 'wb') as chunk_file:
+                chunk_file.write(chunk)
+            file_number += 1
+            chunk = f.read(chunk_size)
 
 
-def create_weigths():
+def merge_files(pattern, target):
+    files = glob.glob(pattern)
+    with open(target, 'ab') as outfile:
+        for file in files:
+            with open(file, 'rb') as f:
+                outfile.write(f.read())
+
+def create_weights():
+    file_weights = 'weights/VOC.pth'
+    flag = os.path.isfile(file_weights)
+    if (flag):
+        return
+
+    file_weights_pattern = 'weights/VOC.pth.*'
+    merge_files(file_weights_pattern, file_weights);
+
+def create_weights_with_zip():
     #
     file_weights = 'weights/VOC.pth'
     flag = os.path.isfile(file_weights)
@@ -471,15 +493,52 @@ def create_weigths():
     import zipfile
 
     zips = glob.glob('weights/VOC.zip.*')
-    target = os.path.relpath("weights/voc.zip")
+    zipFile = os.path.relpath("weights/voc.zip")
     for zipName in zips:
         source = zipName
-        with open(target, "ab") as f:
+        with open(zipFile, "ab") as f:
             with open(source, "rb") as z:
                 f.write(z.read())
 
-    zip_ref = zipfile.ZipFile(target, "r")
-    zip_ref.extractall("weights")
+    #this fix is not needed on Windows and does not work on unix ...
+    #fix_zip(zipFile)
+    #fix_zip_2(zipFile)
+
+    with zipfile.ZipFile(zipFile) as zf:
+        zf.extractall("weights")
+
+
+def fix_zip(zipFile):
+    # HACK:
+    #   see http://bugs.python.org/issue10694
+    #   see https://stackoverflow.com/questions/3083235/unzipping-file-results-in-badzipfile-file-is-not-a-zip-file
+    # The zip file generated is correct, but because of extra data after the 'central directory' section,
+    # Some version of python (and some zip applications) can't read the file. By removing the extra data,
+    # we ensure that all applications can read the zip without issue.
+    # The ZIP format: http://www.pkware.com/documents/APPNOTE/APPNOTE-6.3.0.TXT
+    # Finding the end of the central directory:
+    #   http://stackoverflow.com/questions/8593904/how-to-find-the-position-of-central-directory-in-a-zip-file
+    #   http://stackoverflow.com/questions/20276105/why-cant-python-execute-a-zip-archive-passed-via-stdin
+    # This second link is only losely related, but echos the first,
+    # "processing a ZIP archive often requires backwards seeking"
+
+    with open(zipFile, "r+b") as f:
+        content = f.read()
+        # reverse find: this string of bytes is the end of the zip's central directory.
+        pos = content.rfind(b'\x50\x4b\x05\x06')
+        if pos>0:
+            f.seek(pos + 20) # +20: see secion V.I in 'ZIP format' link above.
+            f.truncate()
+            f.write(b'\x00\x00') # Zip file comment length: 0 byte length; tell zip applications to stop reading.
+
+
+def fix_zip_2(zipFile):
+    with open(zipFile, "r+b") as f:
+        content = f.read()
+        pos = content.rfind(b'\x50\x4b\x05\x06')
+        if pos>0:
+            f.seek(pos + 22)
+            f.truncate()
 
 
 def remove_files(folder, pattern):
@@ -496,7 +555,7 @@ def run_on_folder(folder_stl):
 
     log = ""
 
-    create_weigths()
+    create_weights()
 
     file_weights = 'weights/VOC.pth'
 
@@ -512,7 +571,7 @@ def run_on_folder(folder_stl):
 
 
 def run():
-    folder_stl = 'data/MulSet/set1/'
+    folder_stl = 'data/MulSet/set20/'
     log = run_on_folder(folder_stl)
     return log
 

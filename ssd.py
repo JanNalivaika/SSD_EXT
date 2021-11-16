@@ -1,9 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.autograd import Variable
 from layers import *
-from data import cfg#, coco
+from data import cfg
 import os
 
 
@@ -27,9 +26,8 @@ class SSD(nn.Module):
 
     def __init__(self, size, base, extras, head, num_classes):
         super(SSD, self).__init__()
-        #self.phase = phase
         self.num_classes = num_classes
-        self.cfg = cfg#[num_classes == 21]
+        self.cfg = cfg
         self.priorbox = PriorBox(self.cfg)
         with torch.no_grad():
             self.priors = self.priorbox.forward()
@@ -154,13 +152,11 @@ class SSD(nn.Module):
             )
         return output
 
-    def load_weights(self, base_file, remove_layers = False):
+    def load_weights(self, base_file, remove_layers=False):
         #
         other, ext = os.path.splitext(base_file)
         if ext == '.pkl' or '.pth':
             print('Loading weights into state dict...')
-#            self.load_state_dict(torch.load(base_file,
-#                                 map_location=lambda storage, loc: storage),strict=False)
             if torch.cuda.is_available():
                 checkpoint = torch.load(base_file, map_location=torch.device('cuda'))
             else:
@@ -260,19 +256,17 @@ def multibox(vgg, extra_layers, cfg, num_classes):
 
 
 base = {
-    '64': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'C', 512, 512, 512, 'M',
-            512, 512, 512],
-    '300': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'C', 512, 512, 512, 'M',
-            512, 512, 512],
+    '64':  [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'C', 512, 512, 512, 'M', 512, 512, 512],
+    '300': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'C', 512, 512, 512, 'M', 512, 512, 512],
     '512': [],
 }
 extras = {
-    '64': [256, 'S', 512, 128, 'S', 256],
+    '64':  [256, 'S', 512, 128, 'S', 256],
     '300': [256, 'S', 512, 128, 'S', 256, 128, 256, 128, 256],
     '512': [],
 }
 mbox = {
-    '64': [6, 6, 6, 6, 6, 6], 
+    '64':  [6, 6, 6, 6, 6, 6],
     '300': [4, 6, 6, 6, 4, 4],  # number of boxes per feature map location
     '512': [],
 }
