@@ -58,8 +58,14 @@ def PNG_Creator_from_BOOL(png_precision):
 
                 test = block[x,y,:]
                 test = np.where(test == True)
-                front = test[0][0]
-                back = d - test[-1][-1]
+
+                try:
+                    front = test[0][0]
+                    back = d - test[-1][-1]
+                except:
+                    front = d
+                    back = d
+
                 new_colorF = inc * front
 
 
