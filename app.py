@@ -11,22 +11,22 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello_world():
-    str: str = """
-    <h2> docker_ssd v.0.4.0 is running ... </h2>
+    ret = """
+    <h2> docker_ssd v.0.4.1 is running ... </h2>
     Execute <a href='./validate'>validate</a>
     <br><br><br>
     Execute <a href='./test'>test</a>
     <br><br><br>
     Show <a href='./debug'>debug</a>
     <br><br><br>
-    <img src='.\static\docker_001.png'/>
+    <img src='./static/docker_001.png'/>
     """
-    return str
+    return ret
 
 
 @app.route('/debug')
 def debug():
-    str: str = """
+    ret = """
     <a href='/'>home</a>
     <h2> Debug Info </h2>
     ...
@@ -38,7 +38,7 @@ def debug():
     <br><strong>03.09.21</strong> try to fix issue with Create Folder
     <br><strong>03.09.21</strong> add --show result PNG-Files    
     """
-    return str
+    return ret
 
 
 @app.route('/validate')
@@ -47,12 +47,12 @@ def run_validate():
     ret = "<a href='/'> home </a>"
     try:
         ret += run_validate_internal()
-    except:
+    except BaseException as err:
         ret += """
         <h1>Error</h1>
         """
-        print("Unexpected error:", sys.exc_info()[0])
-        ret += str(sys.exc_info()[0])  # TODO encode the string ...
+        print(f"Unexpected error: {err=}, {type(err)=}")
+        ret += str(err)  # TODO encode the string ...
 
     return ret
 
