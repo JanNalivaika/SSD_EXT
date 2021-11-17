@@ -4,6 +4,7 @@
 import utils.binvox_rw
 from utils.augmentations import SSDAugmentation
 from data import *
+from helper import *
 import time
 import torch
 import torch.backends.cudnn as cudnn
@@ -264,7 +265,7 @@ def get_predicted_information(filename, net, folder_stl):
 
             cur_boxes = np.append(cur_boxes, np.array([a, b, c, d, e, f, label - 1, score, i]).reshape(1, 9), axis=0)
 
-    keepidx = soft_nms_pytorch(cur_boxes[:, :7], cur_boxes[:, -1])
+    keepidx = soft_nms_pytorch(cur_boxes[:, :7], cur_boxes[:, -2])
     cur_boxes = cur_boxes[keepidx, :]
     cur_boxes[:, 0:6] = 10000 * cur_boxes[:, 0:6]
 
@@ -456,47 +457,12 @@ def visualize(folder_stl, log):
     return log
 
 
-""" img = Image.open(selected_image)
-img = img.resize((500, 500), Image.ANTIALIAS)
-img.save(selected_image)"""
-
-
-def create_weigths():
-    #
-    file_weights = 'weights/VOC.pth'
-    flag = os.path.isfile(file_weights)
-    if (flag):
-        return
-
-    import zipfile
-
-    zips = glob.glob('weights/VOC.zip.*')
-    target = os.path.relpath("weights/voc.zip")
-    for zipName in zips:
-        source = zipName
-        with open(target, "ab") as f:
-            with open(source, "rb") as z:
-                f.write(z.read())
-
-    zip_ref = zipfile.ZipFile(target, "r")
-    zip_ref.extractall("weights")
-
-
-def remove_files(folder, pattern):
-    files = glob.glob(folder + '/' + pattern, recursive=True)
-    for f in files:
-        try:
-            os.remove(f)
-        except OSError as e:
-            print("Error: %s : %s" % (f, e.strerror))
-
-
 def run_on_folder(folder_stl):
     start_time = time.time()
 
     log = ""
 
-    create_weigths()
+    create_weights()
 
     file_weights = 'weights/VOC.pth'
 
