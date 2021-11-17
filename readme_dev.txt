@@ -16,6 +16,10 @@ Unit-Tests
  https://docs.python.org/3/library/unittest.html
 
 # History (newest on top)
+17.11.21
+adapt version to v.0.4.0
+merge into main (v.0.3.0)
+
 14.11.21
 simplify - remove folder 'temp'
 solve issue with creating of voc.pth. Just splitt voc.pth by using splitt_files(),

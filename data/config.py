@@ -18,7 +18,7 @@ MEANS = (104, 117, 123)
 
 # SSD300 CONFIGS
 cfg = {
-    'num_classes': 24,
+    'num_classes': 25,
     #'lr_steps': (80000, 100000, 120000),
     #'max_iter': 120000,
     'feature_maps': [32, 16, 8, 4, 2, 1],

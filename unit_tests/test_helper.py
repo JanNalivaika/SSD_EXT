@@ -7,7 +7,7 @@ import helper
 
 
 # noinspection PyPep8Naming
-class test_validate(unittest.TestCase):
+class test_helper(unittest.TestCase):
     def test_create_weights(self):
         helper.create_weights()
         file_weights = 'weights/VOC.pth'
