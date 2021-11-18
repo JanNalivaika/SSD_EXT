@@ -15,9 +15,10 @@ def splitt_file(filename, chunk_size):
 
 
 def merge_files(pattern, target):
-    files = glob.glob(pattern)
+    files = sorted(glob.glob(pattern))
     with open(target, 'ab') as outfile:
         for file in files:
+            print("process file", file)
             with open(file, 'rb') as f:
                 outfile.write(f.read())
 
