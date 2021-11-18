@@ -10,10 +10,8 @@ app = Flask(__name__)
 @app.route('/')
 def hello_world():
     ret = """
-    <h2> docker_ssd v.0.4.1 is running ... </h2>
+    <h2> docker_ssd v.0.4.2 is running ... </h2>
     Execute <a href='./validate'>validate</a>
-    <br><br><br>
-    Execute <a href='./test'>test</a>
     <br><br><br>
     Show <a href='./debug'>debug</a>
     <br><br><br>
@@ -30,6 +28,7 @@ def debug():
     ...
 
     <h2> History </h2>
+    <br><strong>18.11.21</strong> v.0.4.2 published. fix error by merge of voc.pth.*
     <br><strong>17.11.21</strong> v.0.3.0 published. Replace voc.zip.* by 'split & merge'    
     <br><strong>08.10.21</strong> add Docker and app.py into SSD_EXT repo
     <br><strong>04.09.21</strong> show images as 200x200, sort resulting png-files, fix docker port
@@ -50,7 +49,7 @@ def run_validate():
         <h1>Error</h1>
         """
         print(f"Unexpected error: {err=}, {type(err)=}")
-        ret += str(err)  # TODO encode the string ...
+        ret += str(err)
 
     return ret
 
@@ -61,8 +60,6 @@ def run_validate_internal():
     ret = """
     <h1>OK</h1>
     """
-
-    # TODO get and present results (generated PNGs)
 
     folder_res = 'data/MulSet/set20'  # TODO magic string, managed outside of this func
     folder_static = 'static/generated'
