@@ -12,7 +12,7 @@ app = Flask(__name__)
 @app.route('/')
 def hello_world():
     str: str = """
-    <h2> docker_ssd v.0.4.0 is running ... </h2>
+    <h2> docker_ssd v.0.5.0 is running ... </h2>
     Execute <a href='./validate'>validate</a>
     <br><br><br>
     Execute <a href='./test'>test</a>
@@ -32,6 +32,7 @@ def debug():
     ...
 
     <h2> History </h2>
+    <br><strong>17.11.21</strong> v.0.4.0 published. fix run-time error
     <br><strong>17.11.21</strong> v.0.3.0 published. Replace voc.zip.* by 'split & merge'    
     <br><strong>08.10.21</strong> add Docker and app.py into SSD_EXT repo
     <br><strong>04.09.21</strong> show images as 200x200, sort resulting png-files, fix docker port

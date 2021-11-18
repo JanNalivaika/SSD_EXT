@@ -17,6 +17,8 @@ Unit-Tests
 
 # History (newest on top)
 17.11.21
+merge into main (v.0.4.0)
+fix run-time errors
 adapt version to v.0.4.0
 merge into main (v.0.3.0)
 
