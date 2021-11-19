@@ -9,16 +9,16 @@ import os
 from os import listdir
 from os.path import isfile, join
 
-def PNG_Creator_from_BOOL(png_precision):
 
+def PNG_Creator_from_BOOL(png_precision):
     def XRay(block, file, png_precision, rot):
         l, w, d = len(block), len(block[0]), len(block[0][0])
         data = np.zeros((l, w, 3), dtype=np.uint8)
-        #, dtype=np.uint8
+        # , dtype=np.uint8
         inc = (255 / d)
-        #print(l)
+        # print(l)
         for x in range(l):
-            #print(x)
+            # print(x)
             for y in range(w):
                 new_color = 0
                 for z in range(0, d, png_precision):
@@ -28,13 +28,11 @@ def PNG_Creator_from_BOOL(png_precision):
                 data[x][y][1] = new_color
                 data[x][y][2] = new_color
 
-
-        #data = np.array(data).astype(int)
+        # data = np.array(data).astype(int)
         img = Image.fromarray(data, 'RGB')
-        filename = file + "\HD_xray_rotation_" +str(rot) +".png"
+        filename = file + "\HD_xray_rotation_" + str(rot) + ".png"
         img.save(filename)
         # img.show()
-
 
     def MakeAPicture_1_2(block, file, png_precision, rot):
         l, w, d = len(block), len(block[0]), len(block[0][0])
@@ -56,7 +54,7 @@ def PNG_Creator_from_BOOL(png_precision):
 
                 """
 
-                test = block[x,y,:]
+                test = block[x, y, :]
                 test = np.where(test == True)
 
                 try:
@@ -67,7 +65,6 @@ def PNG_Creator_from_BOOL(png_precision):
                     back = d
 
                 new_colorF = inc * front
-
 
                 if new_color > 255:
                     new_color = 255
@@ -89,12 +86,11 @@ def PNG_Creator_from_BOOL(png_precision):
         # img.show()
 
         img = Image.fromarray(dataF, 'RGB')
-        filename = file + "\HD_bottom_rotation_" +str(rot) +".png"
+        filename = file + "\HD_bottom_rotation_" + str(rot) + ".png"
         img.save(filename)
         # img.show()
 
-
-    def MakeAPicture2(block, file, png_precision,rot):
+    def MakeAPicture2(block, file, png_precision, rot):
         l, w, d = len(block), len(block[0]), len(block[0][0])
         data = np.zeros((l, w, 3), dtype=np.uint8)
         inc = 255 / d
@@ -110,7 +106,7 @@ def PNG_Creator_from_BOOL(png_precision):
 
                 test = block[x, y, :]
                 test = np.where(test == True)
-                test = d-test[-1][-1]
+                test = d - test[-1][-1]
                 new_color = inc * test
 
                 if new_color > 255:
@@ -120,12 +116,11 @@ def PNG_Creator_from_BOOL(png_precision):
                 data[x][y][2] = new_color
 
         img = Image.fromarray(data, 'RGB')
-        filename = file + "\HD_top_rotation_" +str(rot) +".png"
+        filename = file + "\HD_top_rotation_" + str(rot) + ".png"
         img.save(filename)
         # img.show()
 
-
-    def MakeAPicture_3_4(block, file, png_precision,rot):
+    def MakeAPicture_3_4(block, file, png_precision, rot):
         l, w, d = len(block), len(block[0]), len(block[0][0])
         dataF = np.zeros((w, d, 3), dtype=np.uint8)
         dataB = np.zeros((w, d, 3), dtype=np.uint8)
@@ -169,7 +164,7 @@ def PNG_Creator_from_BOOL(png_precision):
 
         if rot == 0:
             img = Image.fromarray(dataF, 'RGB')
-            filename = file + "\HD_left_rotation_" +str(rot) +".png"
+            filename = file + "\HD_left_rotation_" + str(rot) + ".png"
             img.save(filename)
             # img.show()
 
@@ -177,8 +172,7 @@ def PNG_Creator_from_BOOL(png_precision):
         filename = file + "\HD_right_rotation_" + str(rot) + ".png"
         img.save(filename)
 
-
-    def MakeAPicture4(block, file, png_precision,rot):
+    def MakeAPicture4(block, file, png_precision, rot):
         l, w, d = len(block), len(block[0]), len(block[0][0])
         data = np.zeros((w, d, 3), dtype=np.uint8)
         inc = 255 / l
@@ -199,12 +193,11 @@ def PNG_Creator_from_BOOL(png_precision):
                 data[x][y][2] = new_color
 
         img = Image.fromarray(data, 'RGB')
-        filename = file + "\HD_right_rotation_" +str(rot) +".png"
+        filename = file + "\HD_right_rotation_" + str(rot) + ".png"
         img.save(filename)
         # img.show()
 
-
-    def MakeAPicture_5_6(block, file, png_precision,rot):
+    def MakeAPicture_5_6(block, file, png_precision, rot):
         l, w, d = len(block), len(block[0]), len(block[0][0])
         dataF = np.zeros((l, d, 3), dtype=np.uint8)
         dataB = np.zeros((l, d, 3), dtype=np.uint8)
@@ -213,8 +206,6 @@ def PNG_Creator_from_BOOL(png_precision):
         for x in range(0, (l), 1):
             for y in range(0, (d), 1):
                 new_color = 0
-
-
 
                 """for z in range(0, (w), png_precision):
                     if block[x][z][y]:
@@ -231,7 +222,6 @@ def PNG_Creator_from_BOOL(png_precision):
                     front = w
                     back = w
 
-
                 new_colorF = inc * front
 
                 if new_color > 255:
@@ -242,7 +232,6 @@ def PNG_Creator_from_BOOL(png_precision):
 
                 new_colorB = inc * back
 
-
                 if new_colorB > 255:
                     new_colorB = 255
                 dataB[x][y][0] = new_colorB
@@ -250,18 +239,16 @@ def PNG_Creator_from_BOOL(png_precision):
                 dataB[x][y][2] = new_colorB
 
         img = Image.fromarray(dataF, 'RGB')
-        filename = file + "\HD_front_rotation_" +str(rot) +".png"
+        filename = file + "\HD_front_rotation_" + str(rot) + ".png"
         img.save(filename)
-        #img.show()
+        # img.show()
 
         img = Image.fromarray(dataB, 'RGB')
-        filename = file + "\HD_back_rotation_" +str(rot) +".png"
+        filename = file + "\HD_back_rotation_" + str(rot) + ".png"
         img.save(filename)
-        #img.show()
+        # img.show()
 
-
-
-    def MakeAPicture6(block, file, png_precision,rot):
+    def MakeAPicture6(block, file, png_precision, rot):
         l, w, d = len(block), len(block[0]), len(block[0][0])
         data = np.zeros((l, d, 3), dtype=np.uint8)
         inc = 255 / w
@@ -270,7 +257,7 @@ def PNG_Creator_from_BOOL(png_precision):
             for y in range(0, (d), 1):
                 new_color = 0
                 for z in range(0, (w), png_precision):
-                    if block[x][w-1-z][y]:
+                    if block[x][w - 1 - z][y]:
                         break
                     else:
                         new_color += inc * png_precision
@@ -282,12 +269,9 @@ def PNG_Creator_from_BOOL(png_precision):
                 data[x][y][2] = new_color
 
         img = Image.fromarray(data, 'RGB')
-        filename = file + "\HD_back_rotation_" +str(rot) +".png"
+        filename = file + "\HD_back_rotation_" + str(rot) + ".png"
         img.save(filename)
-        #img.show()
-
-
-
+        # img.show()
 
     path = 'Output/Combined_Voxel'
     STLfiles = [f for f in listdir(path) if f.endswith('.pickle')]
@@ -302,43 +286,42 @@ def PNG_Creator_from_BOOL(png_precision):
         if not os.path.exists(output_path):
             os.makedirs(output_path)
 
-        block =np.asarray(block)
+        block = np.asarray(block)
 
-
-        #t1 = time.time()
-        #print("Working on Picture 0" )
-        #XRay(block, output_path, png_precision, rot)
-        #print(time.time()-t1)
+        # t1 = time.time()
+        # print("Working on Picture 0" )
+        # XRay(block, output_path, png_precision, rot)
+        # print(time.time()-t1)
 
         # takes around 400 sec per picture
 
-        if rot>0:
+        if rot > 0:
             t1 = time.time()
-            #print("Working on Picture 4")
+            # print("Working on Picture 4")
             MakeAPicture_3_4(block, output_path, png_precision, rot)  # right
-            #print(time.time() - t1)
+            # print(time.time() - t1)
         else:
             t1 = time.time()
-            #print("Working on Picture 1 + 2")
+            # print("Working on Picture 1 + 2")
             MakeAPicture_1_2(block, output_path, png_precision, rot)  # under side
-            #print(time.time() - t1)
-            #t1 = time.time()
-            #print("Working on Picture 2")
-            #MakeAPicture2(block, output_path, png_precision, rot)  # top side
-            #print(time.time() - t1)
+            # print(time.time() - t1)
+            # t1 = time.time()
+            # print("Working on Picture 2")
+            # MakeAPicture2(block, output_path, png_precision, rot)  # top side
+            # print(time.time() - t1)
             t1 = time.time()
-            #print("Working on Picture 3 + 4")
+            # print("Working on Picture 3 + 4")
             MakeAPicture_3_4(block, output_path, png_precision, rot)  # left
-            #print(time.time() - t1)
+            # print(time.time() - t1)
             t1 = time.time()
-            #print("Working on Picture 4")
-            #MakeAPicture4(block, output_path, png_precision, rot)  # right
-            #print(time.time() - t1)
+            # print("Working on Picture 4")
+            # MakeAPicture4(block, output_path, png_precision, rot)  # right
+            # print(time.time() - t1)
             t1 = time.time()
-            #print("Working on Picture 5 + 6")
+            # print("Working on Picture 5 + 6")
             MakeAPicture_5_6(block, output_path, png_precision, rot)
-            #print(time.time() - t1)
-            #t1 = time.time()
-            #print("Working on Picture 6")
-            #MakeAPicture6(block, output_path, png_precision, rot)
-            #print(time.time() - t1)
+            # print(time.time() - t1)
+            # t1 = time.time()
+            # print("Working on Picture 6")
+            # MakeAPicture6(block, output_path, png_precision, rot)
+            # print(time.time() - t1)

@@ -193,7 +193,7 @@ def get_predictions(net):
     t1 = time.time()
     images = torch.tensor(images).permute(0, 3, 1, 2).float()
     # images = torch.tensor(images).float()
-    #print("converting images to tensor Time: " + str(time.time() - t1))
+    print("converting images to tensor Time: " + str(time.time() - t1))
 
     # print("Replace cup with cuda")
     t1 = time.time()
@@ -202,7 +202,7 @@ def get_predictions(net):
     t1 = time.time()
     out = net(images, 'test')
     del images
-    #print("Running images trough NN Time: " + str(time.time() - t1))
+    print("Running images trough NN Time: " + str(time.time() - t1))
 
     # print("Replace cup with cuda")
     t1 = time.time()
@@ -280,7 +280,7 @@ def get_predictions(net):
     cur_boxes = soft_nms_pytorch(cur_boxes)
     #cur_boxes = cur_boxes[keepidx, :]
     #origimal time = 4
-    #print("soft_nms Time: " + str(time.time() - t1))
+    print("soft_nms Time: " + str(time.time() - t1))
 
     t1 = time.time()
     with open(p1 + '/predictions.pickle', 'wb') as handle:

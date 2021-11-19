@@ -64,7 +64,7 @@ if __name__ == '__main__':
     #print("Visualize Time: " + str(time.time() - t1))
 
     t1 = time.time()  # timing Reconstruction
-    Reconstruct(0.995)
+    Reconstruct(0.99)
     print("Reconstruct Time: " + str(time.time() - t1))
 
     print("OVERALL Time: " + str(time.time() - t))
