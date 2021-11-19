@@ -1,8 +1,6 @@
 import os
 from flask import Flask
 import validate
-import sys
-import pathlib
 import glob
 import shutil
 
@@ -11,35 +9,33 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello_world():
-    str: str = """
-    <h2> docker_ssd v.0.5.0 is running ... </h2>
+    ret = """
+    <h2> docker_ssd v.0.4.2 is running ... </h2>
     Execute <a href='./validate'>validate</a>
-    <br><br><br>
-    Execute <a href='./test'>test</a>
     <br><br><br>
     Show <a href='./debug'>debug</a>
     <br><br><br>
-    <img src='.\static\docker_001.png'/>
+    <img src='./static/docker_001.png'/>
     """
-    return str
+    return ret
 
 
 @app.route('/debug')
 def debug():
-    str: str = """
+    ret = """
     <a href='/'>home</a>
     <h2> Debug Info </h2>
     ...
 
     <h2> History </h2>
-    <br><strong>17.11.21</strong> v.0.4.0 published. fix run-time error
+    <br><strong>18.11.21</strong> v.0.4.2 published. fix error by merge of voc.pth.*
     <br><strong>17.11.21</strong> v.0.3.0 published. Replace voc.zip.* by 'split & merge'    
     <br><strong>08.10.21</strong> add Docker and app.py into SSD_EXT repo
     <br><strong>04.09.21</strong> show images as 200x200, sort resulting png-files, fix docker port
     <br><strong>03.09.21</strong> try to fix issue with Create Folder
     <br><strong>03.09.21</strong> add --show result PNG-Files    
     """
-    return str
+    return ret
 
 
 @app.route('/validate')
@@ -48,28 +44,12 @@ def run_validate():
     ret = "<a href='/'> home </a>"
     try:
         ret += run_validate_internal()
-    except:
+    except BaseException as err:
         ret += """
         <h1>Error</h1>
         """
-        print("Unexpected error:", sys.exc_info()[0])
-        ret += str(sys.exc_info()[0])  # TODO encode the string ...
-
-    return ret
-
-
-@app.route('/test')
-def run_test():
-    #
-    ret = "<a href='/'> home </a>"
-    try:
-        ret += run_validate_internal()
-    except:
-        ret += """
-        <h1>Error</h1>
-        """
-        print("Unexpected error:", sys.exc_info()[0])
-        ret += str(sys.exc_info()[0])  # TODO encode the string ...
+        print(f"Unexpected error: {err=}, {type(err)=}")
+        ret += str(err)
 
     return ret
 
@@ -81,13 +61,9 @@ def run_validate_internal():
     <h1>OK</h1>
     """
 
-    # TODO get and present results (generated PNGs)
-
     folder_res = 'data/MulSet/set20'  # TODO magic string, managed outside of this func
     folder_static = 'static/generated'
     pattern = "*.png"
-
-    # pathlib.Path(folder_static).mkdir(parents=True, exist_ok=True)
 
     if not os.path.exists(folder_static):
         os.makedirs(folder_static)
@@ -99,14 +75,12 @@ def run_validate_internal():
 
     files = glob.glob(folder_res + '/' + pattern)
     for f in files:
-        # ret += "<br> copy file" + folder_res + '/' + os.path.basename(f)
         shutil.copy(f, folder_static)
 
     print("Copy done")
 
     files = glob.glob(folder_static + '/' + pattern)
     sorted_files = sorted(files)
-
 
     ret += "<div style='display:flex'>"
     for f in sorted_files:
