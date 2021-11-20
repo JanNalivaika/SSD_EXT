@@ -77,12 +77,14 @@ def mesh_to_plane(Fname, output_file_path, mesh, bounding_box, parallel, resolut
     output_path = r'Output/Combined_Voxel'
     if not os.path.exists(output_path):
         os.makedirs(output_path)
-
+    t1 = time.time()
     with open("Output/Combined_Voxel/" + Fname +".pickle", 'wb') as handle:
         pickle.dump(BOOL, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-    with open("Output/Combined_Voxel/" + Fname +".npy", 'wb') as f:
-        np.save(f, BOOL)
+    #print(time.time() - t1)
+    #t1 = time.time()
+    #with open("Output/Combined_Voxel/" + Fname +".npy", 'wb') as f:
+    #    np.save(f, BOOL)
+    #print(time.time() - t1)
 
 
     if parallel:

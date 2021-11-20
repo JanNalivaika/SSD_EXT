@@ -17,7 +17,7 @@ def Slicer(resolution):
         output_path = 'Output/Sliced/' + str(x)
         file = 'Output/STLs/' + STLfiles[x]
         Fname = STLfiles[x].replace('.stl',"")
-        if not os.path.exists(output_path):
-            os.makedirs(output_path)
+        #if not os.path.exists(output_path):
+        #    os.makedirs(output_path)
 
         convert_file(file, output_path + '/HD', resolution, Fname)

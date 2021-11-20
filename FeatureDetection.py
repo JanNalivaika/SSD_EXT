@@ -64,29 +64,26 @@ if __name__ == '__main__':
     #print("Visualize Time: " + str(time.time() - t1))
 
     t1 = time.time()  # timing Reconstruction
-    Reconstruct(0.99)
+    Reconstruct(0.9)
     print("Reconstruct Time: " + str(time.time() - t1))
 
     print("OVERALL Time: " + str(time.time() - t))
 
     """
-    CPU 
-    Turning  Time: 0.13962793350219727
-    Slicer Time: 20.721684455871582
-    PNG creator time Time 15.659171342849731
-    Segmentation Time: 33.39087700843811
-    Recognition Time: 85.50972890853882
-    Reconstruct Time: 0.510636568069458
-    OVERALL Time: 157.3928234577179
+    CPU
+    Slicer Time: 21.351773262023926
+    Segmentation Time: 33.19246053695679
+    soft_nms Time: 6.051922559738159
+    Recognition Time: 61.89138746261597
+    OVERALL Time: 134.76822209358215
+
     
     
     GPU
-    Turning  Time: 0.08477282524108887
-    Slicer Time: 22.21677875518799
-    PNG creator time Time 16.4051513671875
-    Segmentation Time: 33.71016716957092
-    Recognition Time: 41.68975520133972
-    Reconstruct Time: 0.42287182807922363
-    OVERALL Time: 116.05442452430725
+    Slicer Time: 22.73965311050415
+    Segmentation Time: 33.34360313415527
+    soft_nms Time: 8.988976955413818
+    Recognition Time: 28.970014810562134
+    OVERALL Time: 103.87650156021118
     
     """

@@ -12,7 +12,7 @@ from os.path import isfile, join
 
 
 def Reconstruct(perc):
-    path = "Output\sliced_IS_resized"
+    path = "Output\sliced_and_resized"
     predictions_raw = pd.read_pickle(path + "/predictions.pickle")
 
     predictions_raw = np.delete(predictions_raw, np.where(predictions_raw[:, 7] <= perc)[0], axis=0)

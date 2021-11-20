@@ -35,50 +35,36 @@ def PNG_Creator_from_BOOL(png_precision):
         # img.show()
 
     def MakeAPicture_1_2(block, file, png_precision, rot):
-        l, w, d = len(block), len(block[0]), len(block[0][0])
+        [l, w, d] = block.shape
         dataF = np.zeros((l, w, 3), dtype=np.uint8)
         dataB = np.zeros((l, w, 3), dtype=np.uint8)
         inc = 255 / d
 
-        for x in range(0, (l), 1):
-            for y in range(0, (w), 1):
-                new_color = 0
-                """
-                for z in range(0, (d), png_precision):
-
-
-                    if block[x][y][z]:
-                        break
-                    else:
-                        new_color += inc * png_precision
-
-                """
-
+        for x in range(l):
+            for y in range(w):
                 test = block[x, y, :]
                 test = np.where(test == True)
 
                 try:
                     front = test[0][0]
-                    back = d - test[-1][-1]
+                    back = d - test[0][-1]
                 except:
                     front = d
                     back = d
 
                 new_colorF = inc * front
 
-                if new_color > 255:
-                    new_color = 255
-                dataF[x][y][0] = new_colorF
-                dataF[x][y][1] = new_colorF
-                dataF[x][y][2] = new_colorF
+                if new_colorF > 255:
+                    new_colorF = 255
+                dataF[x][y] = [new_colorF, new_colorF, new_colorF]
+
 
                 new_colorB = inc * back
 
-                if new_color > 255:
-                    new_color = 255
-                dataB[x][y][0] = new_colorB
-                dataB[x][y][1] = new_colorB
-                dataB[x][y][2] = new_colorB
+                if new_colorB > 255:
+                    new_colorB = 255
+
+                dataB[x][y] = [new_colorB,new_colorB,new_colorB]
 
         img = Image.fromarray(dataB, 'RGB')
         filename = file + "\HD_top_rotation_" + str(rot) + ".png"
@@ -121,7 +107,7 @@ def PNG_Creator_from_BOOL(png_precision):
         # img.show()
 
     def MakeAPicture_3_4(block, file, png_precision, rot):
-        l, w, d = len(block), len(block[0]), len(block[0][0])
+        [l, w, d] = block.shape
         dataF = np.zeros((w, d, 3), dtype=np.uint8)
         dataB = np.zeros((w, d, 3), dtype=np.uint8)
         inc = 255 / l
@@ -141,26 +127,23 @@ def PNG_Creator_from_BOOL(png_precision):
 
                 try:
                     front = test[0][0]
-                    back = l - test[-1][-1]
+                    back = l - test[0][-1]
                 except:
                     front = l
                     back = l
 
                 new_colorF = inc * front
 
-                if new_color > 255:
-                    new_color = 255
-                dataF[x][y][0] = new_colorF
-                dataF[x][y][1] = new_colorF
-                dataF[x][y][2] = new_colorF
+                if new_colorF > 255:
+                    new_colorF = 255
+                dataF[x][y] = [new_colorF, new_colorF, new_colorF]
 
                 new_colorB = inc * back
 
                 if new_colorB > 255:
                     new_colorB = 255
-                dataB[x][y][0] = new_colorB
-                dataB[x][y][1] = new_colorB
-                dataB[x][y][2] = new_colorB
+
+                dataB[x][y] = [new_colorB, new_colorB, new_colorB]
 
         if rot == 0:
             img = Image.fromarray(dataF, 'RGB')
@@ -198,7 +181,7 @@ def PNG_Creator_from_BOOL(png_precision):
         # img.show()
 
     def MakeAPicture_5_6(block, file, png_precision, rot):
-        l, w, d = len(block), len(block[0]), len(block[0][0])
+        [l, w, d] = block.shape
         dataF = np.zeros((l, d, 3), dtype=np.uint8)
         dataB = np.zeros((l, d, 3), dtype=np.uint8)
         inc = 255 / w
@@ -217,26 +200,23 @@ def PNG_Creator_from_BOOL(png_precision):
                 test = np.where(test == True)
                 try:
                     front = test[0][0]
-                    back = w - test[-1][-1]
+                    back = w - test[0][-1]
                 except:
                     front = w
                     back = w
 
                 new_colorF = inc * front
 
-                if new_color > 255:
-                    new_color = 255
-                dataF[x][y][0] = new_colorF
-                dataF[x][y][1] = new_colorF
-                dataF[x][y][2] = new_colorF
+                if new_colorF > 255:
+                    new_colorF = 255
+                dataF[x][y] = [new_colorF, new_colorF, new_colorF]
 
                 new_colorB = inc * back
 
                 if new_colorB > 255:
                     new_colorB = 255
-                dataB[x][y][0] = new_colorB
-                dataB[x][y][1] = new_colorB
-                dataB[x][y][2] = new_colorB
+
+                dataB[x][y] = [new_colorB, new_colorB, new_colorB]
 
         img = Image.fromarray(dataF, 'RGB')
         filename = file + "\HD_front_rotation_" + str(rot) + ".png"
@@ -276,15 +256,19 @@ def PNG_Creator_from_BOOL(png_precision):
     path = 'Output/Combined_Voxel'
     STLfiles = [f for f in listdir(path) if f.endswith('.pickle')]
 
+
+
+    output_path = r'Output/HD_pictures'
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+
     for rot in range(len(STLfiles)):
         file = "Output/Combined_Voxel/" + STLfiles[rot]
-
+        t1 = time.time()
         with open(file, 'rb') as handle:
             block = pickle.load(handle)
+        #print(time.time() - t1)
 
-        output_path = r'Output/HD_pictures'
-        if not os.path.exists(output_path):
-            os.makedirs(output_path)
 
         block = np.asarray(block)
 

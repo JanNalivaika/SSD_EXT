@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 from PIL import Image
 from os import listdir
@@ -47,7 +49,7 @@ import cv2
     return 0"""
 
 
-def Segment(dim_start,dim_step,NN_dim,overlap):
+def Segment(dim_start,dim_step,NN_dim,overlap): # 3926
 
     path = "Output\HD_pictures"
     pictures = [f for f in listdir(path) if isfile(join(path, f))]
@@ -83,7 +85,7 @@ def Segment(dim_start,dim_step,NN_dim,overlap):
 
             prefix = suffix.replace("/", "")
 
-            newpath = "Output/sliced_NON_resized/" + suffix  + prefix+ "_" + str(dim)
+            newpath = "Output/sliced_and_resized/" + suffix  + prefix+ "_" + str(dim)
             if not os.path.exists(newpath):
                 os.makedirs(newpath)
 
@@ -91,15 +93,20 @@ def Segment(dim_start,dim_step,NN_dim,overlap):
                 xpos = 0
                 while (xpos <= max_x_dim - dim):
                     segment = picture[xpos:xpos + dim, ypos:ypos + dim]
-                    img = Image.fromarray(segment, 'RGB')
-                    img.save(newpath + "/" + str(prefix) + "_" + str(xpos) + "_" + str(ypos) + "_" + str(dim) + '.png')
+
+                    if not np.all(segment == segment[0][0]):
+                        img = Image.fromarray(segment, 'RGB').resize((NN_dim,NN_dim))
+                        img.save(newpath + "/" + str(prefix) + "_" + str(xpos) + "_" + str(ypos) + "_" + str(dim) + '.png')
+
                     xpos += int(dim * (1-overlap))
 
                 # hanging picture at the end
                 segment = picture[max_x_dim - dim:max_x_dim, ypos:ypos + dim]
-                img = Image.fromarray(segment, 'RGB')
+
                 xpos = max_x_dim - dim
-                img.save(newpath + "/" + str(prefix) + "_" + str(xpos) + "_" + str(ypos) + "_" + str(dim) + '.png')
+                if not np.all(segment == segment[0][0]):
+                    img = Image.fromarray(segment, 'RGB').resize((NN_dim,NN_dim))
+                    img.save(newpath + "/" + str(prefix) + "_" + str(xpos) + "_" + str(ypos) + "_" + str(dim) + '.png')
                 ypos += int(dim * (1-overlap))
 
             # loop for hanging pictures at the side
@@ -108,16 +115,19 @@ def Segment(dim_start,dim_step,NN_dim,overlap):
             while (xpos <= max_x_dim - dim):
                 segment = picture[xpos:xpos + dim, max_y_dim - dim:max_y_dim]
                 ypos = max_y_dim - dim
-                img = Image.fromarray(segment, 'RGB')
-                img.save(newpath + "/" + str(prefix) + "_" + str(xpos) + "_" + str(ypos) + "_" + str(dim) + '.png')
+                if not np.all(segment == segment[0][0]):
+                    img = Image.fromarray(segment, 'RGB').resize((NN_dim,NN_dim))
+                    img.save(newpath + "/" + str(prefix) + "_" + str(xpos) + "_" + str(ypos) + "_" + str(dim) + '.png')
                 xpos += int(dim * (1-overlap))
 
             # hanging picture at the end on the side
             segment = picture[max_x_dim - dim:max_x_dim, max_y_dim - dim:max_y_dim]
-            img = Image.fromarray(segment, 'RGB')
+
             xpos = max_x_dim - dim
             ypos = max_y_dim - dim
-            img.save(newpath + "/" + str(prefix) + "_" + str(xpos) + "_" + str(ypos) + "_" + str(dim) + '.png')
+            if not np.all(segment == segment[0][0]):
+                img = Image.fromarray(segment, 'RGB').resize((NN_dim,NN_dim))
+                img.save(newpath + "/" + str(prefix) + "_" + str(xpos) + "_" + str(ypos) + "_" + str(dim) + '.png')
             xpos += int(dim * (1-overlap))
 
             if now_Special is True:
@@ -143,13 +153,18 @@ def Segment(dim_start,dim_step,NN_dim,overlap):
             xpos = 0
             ypos = 0
 
+
+        '''
         # this is the special part
 
         #do_special_images(file, max_y_dim, max_x_dim)
 
         # this is the RESIZING
+        
         place = [x[0] for x in os.walk("Output/sliced_NON_resized/")]
 
+
+        t1 = time.time()
         for old_folder in place:
             #print("resizing " + str(old_folder))
             new_folder = old_folder.replace("NON", "IS")
@@ -161,14 +176,13 @@ def Segment(dim_start,dim_step,NN_dim,overlap):
 
                 img = cv2.imread(old_folder + "/" + file, cv2.IMREAD_UNCHANGED)
                 img = cv2.resize(img, (NN_dim, NN_dim))
-                color = np.asarray(img)[0][0][0]
                 #if np.sum(np.asarray(img)) != 255*3*64*64 and np.sum(np.asarray(img)) != 0 and np.sum(np.asarray(img)) != color*3*64*64 :
-                if not np.all(np.asarray(img) == color):
-                    if not os.path.exists(new_folder):
-                        os.makedirs(new_folder)
+                if not os.path.exists(new_folder):
+                    os.makedirs(new_folder)
                     #img.save(new_folder + "/" + file)
-                    cv2.imwrite(new_folder + "/" + file, img)
-
+                cv2.imwrite(new_folder + "/" + file, img)
+        print('rtesizxe time = ' + str(time.time() - t1))
+        '''
 
 
 
