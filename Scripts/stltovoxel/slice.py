@@ -12,13 +12,13 @@ from tqdm import tqdm
 
 
 def mesh_to_plane(Fname, output_file_path, mesh, bounding_box, parallel, resolution):
-    if parallel:
-        pool = mp.Pool(mp.cpu_count())
-        result_ids = []
+    # if parallel:
+    #    pool = mp.Pool(mp.cpu_count())
+    #    result_ids = []
 
     # Note: vol should be addressed with vol[z][y][x]
-    #vol = np.zeros(bounding_box[::-1], dtype=bool)
-    vol = np.zeros([resolution,resolution], dtype=bool)
+    # vol = np.zeros(bounding_box[::-1], dtype=bool)
+    # vol = np.zeros([resolution,resolution], dtype=bool)
     current_mesh_indices = set()
     z = 0
     BOOL = []
@@ -26,36 +26,46 @@ def mesh_to_plane(Fname, output_file_path, mesh, bounding_box, parallel, resolut
     for event_z, status, tri_ind in generate_tri_events(mesh):
         while event_z - z >= 0:
             mesh_subset = [mesh[ind] for ind in current_mesh_indices]
-            if parallel:
-                result_id = pool.apply_async(paint_z_plane, args=(mesh_subset, z, bounding_box[:2]))
-                result_ids.append(result_id)
-            else:
-                #print('Processing layer %d/%d' % (z, bounding_box[2]))
-                _, pixels = paint_z_plane(mesh_subset, z, bounding_box[:2])
-                #vol[z] = pixels
-                if z > 0:
-                    #plt.imsave(output_file_path+str(z) + '.png', pixels, cmap=cm.gray)
-                    BOOL.append(pixels)
+            # if parallel:
+            #    result_id = pool.apply_async(paint_z_plane, args=(mesh_subset, z, bounding_box[:2]))
+            #    result_ids.append(result_id)
+            # else:
+            # print('Processing layer %d/%d' % (z, bounding_box[2]))
+            _, pixels = paint_z_plane(mesh_subset, z, bounding_box[:2])
+            # vol[z] = pixels
+            if z > 0:
+                # plt.imsave(output_file_path+str(z) + '.png', pixels, cmap=cm.gray)
+                BOOL.append(pixels)
+
+                # finding unused bars
+                test = np.zeros(len(pixels))
+                test = np.where((pixels == test).all(axis=1))
+                step = 1
+                bar = 0
 
 
-                    # finding unused bars
-                    bar = 0
-                    for x in range(len(pixels)):
-                        arr = np.zeros(len(pixels))
-                        arr1 = pixels[- 1 - x]
-                        if np.array_equiv(arr, arr1):
-                            bar += 1
-                        else:
-                            break
-                    if bar<final_bar:
-                        final_bar = bar
-                        #print(final_bar)
+                try:
+                    while test[0][-step] == (len(pixels) - step):
+                        bar += 1
+                        step += 1
+                except:
+                    pass
 
+                """bar = 0
 
+                for x in range(len(pixels)):
+                    arr = np.zeros(len(pixels))
+                    arr1 = np.asarray(pixels[- 1 - x])
+                    if np.array_equiv(arr, arr1):
+                        bar += 1
+                    else:
+                        break"""
+
+                if bar < final_bar:
+                    final_bar = bar
+                    # print(final_bar)
 
             z += 1
-
-
 
         if status == 'start':
             assert tri_ind not in current_mesh_indices
@@ -64,29 +74,29 @@ def mesh_to_plane(Fname, output_file_path, mesh, bounding_box, parallel, resolut
             assert tri_ind in current_mesh_indices
             current_mesh_indices.remove(tri_ind)
 
-    #removing unused bar
-    #print(final_bar)
-    original_len= len(BOOL[0][0])
-    leave = original_len-final_bar
-    #print('Removing empty space from layers')
+    # removing unused bar
+    # print(final_bar)
+    original_len = len(BOOL[0][0])
+    leave = original_len - final_bar
+    # print('Removing empty space from layers')
     for x in range(len(BOOL)):
-        #print('Removing empty space from layer %d/%d' % (x, len(BOOL)))
+        # print('Removing empty space from layer %d/%d' % (x, len(BOOL)))
         BOOL[x] = BOOL[x][:leave]
-
 
     output_path = r'Output/Combined_Voxel'
     if not os.path.exists(output_path):
         os.makedirs(output_path)
     t1 = time.time()
-    with open("Output/Combined_Voxel/" + Fname +".pickle", 'wb') as handle:
+    with open("Output/Combined_Voxel/" + Fname + ".pickle", 'wb') as handle:
         pickle.dump(BOOL, handle, protocol=pickle.HIGHEST_PROTOCOL)
-    #print(time.time() - t1)
-    #t1 = time.time()
-    #with open("Output/Combined_Voxel/" + Fname +".npy", 'wb') as f:
+
+    # print(time.time() - t1)
+    # t1 = time.time()
+    # with open("Output/Combined_Voxel/" + Fname +".npy", 'wb') as f:
     #    np.save(f, BOOL)
-    #print(time.time() - t1)
+    # print(time.time() - t1)
 
-
+    """
     if parallel:
         results = [r.get() for r in result_ids]
 
@@ -94,9 +104,9 @@ def mesh_to_plane(Fname, output_file_path, mesh, bounding_box, parallel, resolut
             vol[z] = pixels
 
         pool.close()
-        pool.join()
+        pool.join()"""
 
-    return vol
+    pass
 
 
 def paint_z_plane(mesh, height, plane_shape):
@@ -117,7 +127,7 @@ def linear_interpolation(p1, p2, distance):
     :param distance: Between 0 and 1, Lower numbers return points closer to p1.
     :return: A point on the line between p1 and p2
     '''
-    return p1 * (1-distance) + p2 * distance
+    return p1 * (1 - distance) + p2 * distance
 
 
 def triangle_to_intersecting_lines(triangle, height, pixels, lines):

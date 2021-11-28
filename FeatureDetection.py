@@ -29,6 +29,7 @@ if __name__ == '__main__':
     resolution = max(int(resolution / speed), 64) # Resolution has to be at least 64
     # !!!ATTENTION!!! low resolution == High detail! a lil bit counterintuitive
     dim_start = int(dim_start * speed)  # can be impacted by speed variable
+
     print("NOT WORKING ON CUBES!!!!")  # this is a problem
     print("NOT WORKING ON CUBES!!!!")  # this is a problem
     print("NOT WORKING ON CUBES!!!!")  # this is a problem
@@ -37,7 +38,10 @@ if __name__ == '__main__':
     NN_dim = 64  # setting NN Dimension
     overlap = 2 / 4 / speed   # setting overlap
 
-    deleteOLD()  # deleting files from previous runs
+    t1 = time.time()
+    deleteOLD()# deleting files from previous runs
+    print("deleting Time: " + str(time.time() - t1))
+
     t1 = time.time()
     turnSTL(file)  # Turning the STL file to face axis
     print("Turning  Time: " + str(time.time() - t1))
@@ -59,15 +63,17 @@ if __name__ == '__main__':
     Recognize()  # Running recognition 99% of time is spend here
     print("Recognition Time: " + str(time.time() - t1))
 
-    t1 = time.time()  # timing Visualization
-    #Visualize()
-    #print("Visualize Time: " + str(time.time() - t1))
+
 
     t1 = time.time()  # timing Reconstruction
     Reconstruct(0.9)
     print("Reconstruct Time: " + str(time.time() - t1))
 
     print("OVERALL Time: " + str(time.time() - t))
+
+
+
+
 
     """
     CPU
@@ -87,3 +93,12 @@ if __name__ == '__main__':
     OVERALL Time: 103.87650156021118
     
     """
+
+
+"""
+old stuff:
+
+    #t1 = time.time()  # timing Visualization
+    #Visualize()
+    #print("Visualize Time: " + str(time.time() - t1))
+"""

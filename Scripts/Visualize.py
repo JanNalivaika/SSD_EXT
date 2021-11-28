@@ -19,7 +19,7 @@ def Visualize():
         i = image """
 
     paths = []
-    p1 = "Output/sliced_IS_resized"
+    p1 = "Output/sliced_and_resized"
     path_pos = [f.path for f in os.scandir(p1) if f.is_dir()]
     for x in path_pos:
         # p = x.repace("\\" ,"/")

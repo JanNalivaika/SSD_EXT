@@ -7,7 +7,7 @@ from stl import mesh
 import xml.etree.cElementTree as ETree
 import zipfile
 import numpy as np
-
+import time
 from . import slice
 
 
@@ -16,29 +16,35 @@ def convert_mesh(mesh, resolution=100, parallel=True):
 
 
 def convert_meshes(Fname, output_file_path, meshes, resolution=100, parallel=True, ):
+    t1 = time.time()
     scale, shift, shape = slice.calculate_scale_shift(meshes, resolution)
-
+    #print("convert_meshes 1 in slicer  Time: " + str(time.time() - t1))
     #vol = np.zeros(shape[::-1], dtype=np.int8)
 
-    for mesh_ind, org_mesh in enumerate(meshes):
-        slice.scale_and_shift_mesh(org_mesh, scale, shift)
-        cur_vol = slice.mesh_to_plane(Fname, output_file_path,org_mesh, shape, parallel,resolution)
-        #vol[cur_vol] = mesh_ind + 1
-    #return vol, scale, shift
-    #return  scale, shift
+    mesh_ind = 0
+    org_mesh = meshes[0]
+
+    t1 = time.time()
+    slice.scale_and_shift_mesh(org_mesh, scale, shift)
+    #print("scale_and_shift_mesh WHAT IS THIS  in slicer  Time: " + str(time.time() - t1))
+
+    slice.mesh_to_plane(Fname, output_file_path,org_mesh, shape, parallel, resolution)
+
 
 
 def convert_file(input_file_path, output_file_path, resolution, Fname, pad=0, parallel=False):
     convert_files([input_file_path], output_file_path, Fname, resolution=resolution, pad=pad, parallel=parallel)
 
 
-def convert_files(input_file_paths, output_file_path, Fname, colors=[(255, 255, 255)], resolution=100,  pad=1, parallel=False):
+def convert_files(input_file_path, output_file_path, Fname, colors=[(255, 255, 255)], resolution=100,  pad=1, parallel=False):
     meshes = []
-    for input_file_path in input_file_paths:
-        mesh_obj = mesh.Mesh.from_file(input_file_path)
-        org_mesh = np.hstack((mesh_obj.v0[:, np.newaxis], mesh_obj.v1[:, np.newaxis], mesh_obj.v2[:, np.newaxis]))
-        meshes.append(org_mesh)
-    convert_meshes(Fname, output_file_path,meshes, resolution, parallel)
+    t1 = time.time()
+    mesh_obj = mesh.Mesh.from_file(input_file_path[0])
+    org_mesh = np.hstack((mesh_obj.v0[:, np.newaxis], mesh_obj.v1[:, np.newaxis], mesh_obj.v2[:, np.newaxis]))
+    meshes.append(org_mesh)
+    #print("convert_files in slicer  Time: " + str(time.time() - t1))
+
+    convert_meshes(Fname, output_file_path, meshes, resolution, parallel)
     """vol, scale, shift = convert_meshes(meshes, resolution, parallel)
     output_file_pattern, output_file_extension = os.path.splitext(output_file_path)
     if output_file_extension == '.png':

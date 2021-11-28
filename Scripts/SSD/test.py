@@ -81,7 +81,8 @@ def soft_nms_pytorch(cur_boxes, sigma=0.5):
             box_scores =  np.asarray(section[:, -2])
 
 
-            dets = boxes[:, 0:6].copy() * 1000
+            #dets = boxes[:, 0:6].copy() * 1000
+            dets = boxes[:, 0:6] * 1000
 
             N = dets.shape[0]
 
@@ -119,9 +120,14 @@ def soft_nms_pytorch(cur_boxes, sigma=0.5):
                 yy2 = np.minimum(dets[i, 4].to("cpu").numpy(), dets[pos:, 4].to("cpu").numpy())
                 xx2 = np.minimum(dets[i, 5].to("cpu").numpy(), dets[pos:, 5].to("cpu").numpy())
 
-                w = np.maximum(0.0, xx2 - xx1 + 1)
-                h = np.maximum(0.0, yy2 - yy1 + 1)
-                l = np.maximum(0.0, zz2 - zz1 + 1)
+                #w = np.maximum(0.0, xx2 - xx1 + 1)
+                #h = np.maximum(0.0, yy2 - yy1 + 1)
+                #l = np.maximum(0.0, zz2 - zz1 + 1)
+
+                w = np.asarray(xx2 - xx1 + 1)
+                h = np.asarray(yy2 - yy1 + 1)
+                l = np.asarray(zz2 - zz1 + 1)
+
                 inter = torch.tensor(w * h * l).cpu()
                 ovr = torch.div(inter, (areas[i] + areas[pos:] - inter)).cpu()
 
