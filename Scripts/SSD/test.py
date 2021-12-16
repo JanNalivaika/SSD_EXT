@@ -168,7 +168,7 @@ def get_predictions(net):
     #for root, dirs, files in os.walk(p1):
     #    for file in files:
     #        filelist.append(os.path.join(root, file))
-    estimated_time = len(filelist) / 4
+    #estimated_time = len(filelist) / 4
     #print("estmated time " + str(estimated_time) + " seconds")
 
     path_pos = [f.path for f in os.scandir(p1) if f.is_dir()]
@@ -190,7 +190,6 @@ def get_predictions(net):
     for image in onlyfiles:
         image = Image.open(image)
         temp = np.array(image)
-        # img = np.negative(temp)
         img, _, _ = transform(temp, 0, 0)
         images.append(img)
 
