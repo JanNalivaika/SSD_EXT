@@ -1,10 +1,11 @@
 import os
-from flask import Flask
+from flask import Flask, render_template, request
 import validate
 import glob
 import shutil
 
-app = Flask(__name__)
+
+app = Flask(__name__, template_folder='web')
 
 
 @app.route('/')
@@ -94,6 +95,19 @@ def run_validate_internal():
     ret += "<div>" + log + "</div>"
     return ret
 
+
+@app.route('/upload')
+def upload_file():
+    ret = render_template('upload.html')
+    return ret
+
+
+@app.route('/uploader', methods=['GET', 'POST'])
+def uploader():
+    if request.method == 'POST':
+        file_storage = request.files['file']
+        file_storage.save('web/' + file_storage.filename)
+        return 'file uploaded successfully'
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0')

@@ -17,6 +17,9 @@ Unit-Tests
 
 # History (newest on top)
 19.11.21
+add upload func into app.py, add folder 'web'
+pip3 install -r requirements.txt
+install python-3.9.9-amd64.exe into C:\Program Files\Python39
 
 17.11.21
 merge into main (v.0.4.0)
