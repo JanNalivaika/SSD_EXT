@@ -482,6 +482,11 @@ def run():
     log = run_on_folder(folder_stl)
     return log
 
+def run2(folderprefix):
+    folder_stl = folderprefix + 'data/MulSet/set20/'
+    log = run_on_folder(folder_stl)
+    return log
+
 
 if __name__ == '__main__':
     run()

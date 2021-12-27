@@ -1,0 +1,12 @@
+
+body { max-width: 1280px; margin: 0 auto; background: white; }
+
+.ssd-top-line{
+    background-color: aliceblue;
+    padding: 10px;
+}
+
+.ssd-footer{
+    background-color: aliceblue;
+    margin-top: 10px;
+}
