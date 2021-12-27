@@ -5,44 +5,36 @@ import glob
 import shutil
 
 
-app = Flask(__name__, template_folder='web')
+app = Flask(__name__, template_folder='templates', static_url_path="/web/static", static_folder='static')
 
 
 @app.route('/')
 def hello_world():
     ret = """
-    <h2> docker_ssd v.0.5.0 is running ... </h2>
-    Execute <a href='./validate'>validate</a>
+    <h2> v.0.5.0 is running ... </h2>
     <br><br><br>
-    Show <a href='./debug'>debug</a>
-    <br><br><br>
-    <img src='./static/docker_001.png'/>
+    <img src='web/static/docker_001.png'/>
     """
-    return ret
+
+    cwd = os.getcwd()
+    
+    ret += "<br>" + cwd
+
+    items = [ret]
+    return render_template('home.html', items=items)
 
 
 @app.route('/debug')
 def debug():
-    ret = """
-    <a href='/'>home</a>
-    <h2> Debug Info </h2>
-    ...
-
-    <h2> History </h2>
-    <br><strong>18.11.21</strong> v.0.4.2 published. fix error by merge of voc.pth.*
-    <br><strong>17.11.21</strong> v.0.3.0 published. Replace voc.zip.* by 'split & merge'    
-    <br><strong>08.10.21</strong> add Docker and app.py into SSD_EXT repo
-    <br><strong>04.09.21</strong> show images as 200x200, sort resulting png-files, fix docker port
-    <br><strong>03.09.21</strong> try to fix issue with Create Folder
-    <br><strong>03.09.21</strong> add --show result PNG-Files    
-    """
-    return ret
+    ret = "..."
+    items = [ret]
+    return render_template('debug.html', items=items)
 
 
 @app.route('/validate')
 def run_validate():
     #
-    ret = "<a href='/'> home </a>"
+    ret = ""
     try:
         ret += run_validate_internal()
     except BaseException as err:
@@ -52,7 +44,9 @@ def run_validate():
         print(f"Unexpected error: {err=}, {type(err)=}")
         ret += str(err)
 
-    return ret
+    items = [ret]
+    return render_template('validate.html', items=items)
+
 
 
 def run_validate_internal():
@@ -63,7 +57,7 @@ def run_validate_internal():
     """
 
     folder_res = 'data/MulSet/set20'  # TODO magic string, managed outside of this func
-    folder_static = 'static/generated'
+    folder_static = 'web/static/generated'
     pattern = "*.png"
 
     if not os.path.exists(folder_static):
@@ -93,6 +87,7 @@ def run_validate_internal():
     ret += "</div>"
 
     ret += "<div>" + log + "</div>"
+
     return ret
 
 

@@ -17,5 +17,7 @@ COPY . .
 # create weights
 RUN python helper.py
 
+ENV FLASK_APP=web/app.py
+
 #start web app
 CMD ["python", "-m" , "flask", "run", "--host=0.0.0.0"]

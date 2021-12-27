@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>SSD-{% block title %}{% endblock %}</title>
+  </head>
+  <body>
+    <div class="ssd-top-line">
+      <a href="./">Home</a>
+      <a href="./validate">Validate</a>
+      <a href="./upload">Upload</a>
+      <a href="./debug">Debug</a>
+    </div>
+    <div id="content">{% block content %}{% endblock %}</div>
+    <div id="footer" class="ssd-footer">
+      the footer ...
+    </div>
+  </body>
+</html>

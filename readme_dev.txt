@@ -30,10 +30,10 @@ merge into main (v.0.3.0)
 14.11.21
 simplify - remove folder 'temp'
 solve issue with creating of voc.pth. Just splitt voc.pth by using splitt_files(),
-than commit the parts, and finaly merge the parts into voc.pth
+then commit the parts, and finally merge the parts into voc.pth
 
 30.10.21
-add unit_tests/__init__.py  and than run command --  pytest unit_tests
+add unit_tests/__init__.py  and then run command --  pytest unit_tests
 try to get tests running -- https://stackoverflow.com/questions/11452299/import-parent-directory-for-brief-tests
 add folder unit_tests
 remove unused files
