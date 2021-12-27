@@ -36,7 +36,7 @@ def run_validate():
     #
     ret = ""
     try:
-        ret += run_validate_internal()
+        ret += run_validate_internal('data/MulSet/set20/')  # default folder
     except BaseException as err:
         ret += """
         <h1>Error</h1>
@@ -49,14 +49,14 @@ def run_validate():
 
 
 
-def run_validate_internal():
+def run_validate_internal(folder):
     #
-    log = validate.run()
+    log = validate.run_on_folder(folder)
     ret = """
     <h1>OK</h1>
     """
 
-    folder_res = 'data/MulSet/set20'  # TODO magic string, managed outside of this func
+    folder_res = folder
     folder_static = 'web/static/generated'
     pattern = "*.png"
 
@@ -91,18 +91,29 @@ def run_validate_internal():
     return ret
 
 
-@app.route('/upload')
-def upload_file():
-    ret = render_template('upload.html')
-    return ret
-
-
-@app.route('/uploader', methods=['GET', 'POST'])
+@app.route('/upload', methods=['GET', 'POST'])
 def uploader():
+    ret = ""
     if request.method == 'POST':
         file_storage = request.files['file']
         file_storage.save('web/' + file_storage.filename)
-        return 'file uploaded successfully'
+        ret += 'file uploaded successfully'
+
+        try:
+            ret += run_validate_internal('web/')
+        except BaseException as err:
+            ret += """
+               <h1>Error</h1>
+               """
+            print(f"Unexpected error: {err=}, {type(err)=}")
+            ret += str(err)
+
+        items = [ret]
+
+    items = [ret]
+    ret = render_template('upload.html', items=items)
+    return ret
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0')

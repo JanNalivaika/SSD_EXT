@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>SSD-{% block title %}{% endblock %}</title>
   </head>
@@ -14,7 +15,7 @@
     </div>
     <div id="content">{% block content %}{% endblock %}</div>
     <div id="footer" class="ssd-footer">
-      the footer ...
+      v. 0.5.1
     </div>
   </body>
 </html>
