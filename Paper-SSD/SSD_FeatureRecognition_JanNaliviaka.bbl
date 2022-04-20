@@ -1,0 +1,49 @@
+\begin{thebibliography}{1}
+
+\bibitem{CHAN}
+{\sc CHAN, A. K.~W., and CASE, K.}
+\newblock Process planning by recognizing and learning machining features.
+\newblock {\em International Journal of Computer Integrated Manufacturing 7}, 2
+  (1994), 77--99.
+
+\bibitem{Gapinski.2009}
+{\sc Gapinski, A.}
+\newblock Automated manufacturing: Processes and technologies.
+
+\bibitem{Oliveira.}
+{\sc Oliveira, M.~M.}
+\newblock Setup processes improvement and organisation project: Setup processes
+  improvement and organisation project.
+\newblock {\em Setup Processes Improvement and Organisation Project\/}.
+
+\bibitem{safi.2017}
+{\sc safi}.
+\newblock {\em 2017 IEEE International Conference on Industrial Engineering
+  {\&} Engineering Management: IEEE IEEM2017 : 10-13 Dec, Singapore}.
+\newblock IEEE, Piscataway, NJ, 2017.
+
+\bibitem{SalehM}
+{\sc {Saleh M. Amaitik}}.
+\newblock Automatic generation of cnc codes based on machining features.
+\newblock {\em 1st Conference of Industrial Technology ( CIT2017)\/} (2017).
+
+\bibitem{Shi.2020}
+{\sc Shi, P., Qi, Q., Qin, Y., Scott, P.~J., and Jiang, X.}
+\newblock A novel learning-based feature recognition method using multiple
+  sectional view representation.
+\newblock {\em Journal of Intelligent Manufacturing 31}, 5 (2020), 1291--1309.
+
+\bibitem{Shi.2021}
+{\sc Shi, P., Qi, Q., Qin, Y., Scott, P.~J., and Jiang, X.}
+\newblock Intersecting machining feature localization and recognition via
+  single shot multibox detector.
+\newblock {\em IEEE Transactions on Industrial Informatics 17}, 5 (2021),
+  3292--3302.
+
+\bibitem{Zhang.2018}
+{\sc Zhang, Z., Jaiswal, P., and Rai, R.}
+\newblock Featurenet: Machining feature recognition based on 3d convolution
+  neural network.
+\newblock {\em Computer-Aided Design 101\/} (2018), 12--22.
+
+\end{thebibliography}
