@@ -192,37 +192,35 @@ def get_predictions(net):
         temp = np.array(image)
         img, _, _ = transform(temp, 0, 0)
         images.append(img)
-
-    #print("Appending images Time: " + str(time.time() - t1))
-
-    images = np.asarray(images)
+    print("     Appending images Time: " + str(time.time() - t1))
 
     t1 = time.time()
+    images = np.asarray(images)
     images = torch.tensor(images)
-    #print("converting images to tensor Time: " + str(time.time() - t1))
+    print("     converting images to tensor Time: " + str(time.time() - t1))
 
     t1 = time.time()
     images = images.permute(0, 3, 1, 2)
-    #print("permutation images : " + str(time.time() - t1))
+    print("     permutation images : " + str(time.time() - t1))
 
     t1 = time.time()
     images = images.float()
-    #print("converting images to float: " + str(time.time() - t1))
+    print("     converting images to float: " + str(time.time() - t1))
 
     # print("Replace cup with cuda")
     t1 = time.time()
     images = Variable(images.cuda() if (torch.cuda.is_available()) else images.cpu())
-    #print("Pushing images to device Time: " + str(time.time() - t1))
+    print("     Pushing images to device Time: " + str(time.time() - t1))
     t1 = time.time()
     out = net(images, 'test')
     del images
-    #print("Running images trough NN Time: " + str(time.time() - t1))
+    print("     Running images trough NN Time: " + str(time.time() - t1))
 
     # print("Replace cup with cuda")
     t1 = time.time()
     # out.cuda() if (torch.cuda.is_available()) else out.cpu()
     out = out.cpu().numpy()
-    #print("Pushing output to CPU Time: " + str(time.time() - t1))
+    print("     Pushing output to CPU Time: " + str(time.time() - t1))
 
     cur_boxes = np.zeros((0, 9))
     t1 = time.time()
@@ -244,9 +242,6 @@ def get_predictions(net):
         pred = np.concatenate((pred, z_app), axis=1)
         pred = np.concatenate((pred, pic_num), axis=1)
         cur_boxes = np.concatenate((cur_boxes, pred), axis=0)
-
-
-
 
 
 
@@ -281,7 +276,7 @@ def get_predictions(net):
                                   axis=0)
         """
 
-    #print("Tensor to float Time: " + str(time.time() - t1))
+    print("     Tensor to float Time: " + str(time.time() - t1))
     # 2000 img = 14.017673254013062
     # with numpy = 1.3463826179504395
     # with giga optimization ==  0.255

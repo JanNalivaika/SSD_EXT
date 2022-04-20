@@ -25,32 +25,28 @@ def deleteOLD():
 if __name__ == '__main__':
     print("idea: segmentation from big to small - skp small images where no info")
     t = time.time()  # Starting time to time everything
-    speed = 1.5  # speed variable: Impacts resolution, dimension, step_size, overlap,
+    speed = 1  # speed variable: Impacts resolution, dimension, step_size, overlap,
     file = "STL_Files/paper.stl"  # SELECT STL-FILES HERE
     resolution, dim_start = Set_Resolution(file)
     resolution = max(int(resolution / speed), 64) # Resolution has to be at least 64
     # !!!ATTENTION!!! low resolution == High detail! a lil bit counterintuitive
     dim_start = int(dim_start * speed)  # can be impacted by speed variable
 
-    #print("NOT WORKING ON CUBES!!!!")  # this is a problem
-    #print("NOT WORKING ON CUBES!!!!")  # this is a problem
-    #print("NOT WORKING ON CUBES!!!!")  # this is a problem
-
     dim_step = int(resolution / 15 * speed)  # Equivalent to step_size; in proportion to speed
     NN_dim = 64  # setting NN Dimension
-    overlap = 1 / 3 / speed   # setting overlap
+    overlap = 2 / 3 / speed   # setting overlap
 
     t1 = time.time()
     deleteOLD()# deleting files from previous runs
-    #print("deleting Time: " + str(time.time() - t1))
+    print("deleting Time: " + str(time.time() - t1))
 
     t1 = time.time()
     turnSTL(file)  # Turning the STL file to face axis
-    #print("Turning  Time: " + str(time.time() - t1))
+    print("Turning  Time: " + str(time.time() - t1))
 
     t1 = time.time()  # timing Slicer
     Slicer(resolution)  # ERRORS ARISE HERE !!!!!! NOT WORKING ON CUBES
-    print("Slicer Time: " + str(time.time() - t1))
+    print("Slicer   Time: " + str(time.time() - t1))
 
     png_precision = int(math.ceil(speed))*2-1  # setting PNG precision; impacts execution speed significantly
     t1 = time.time()  # timing PNG creator
@@ -68,8 +64,8 @@ if __name__ == '__main__':
 
 
     t1 = time.time()  # timing Reconstruction
-    Reconstruct(0.50)
-    #print("Reconstruct Time: " + str(time.time() - t1))
+    Reconstruct(0.95)
+    print("Reconstruct Time: " + str(time.time() - t1))
 
     print("OVERALL Time: " + str(time.time() - t))
 

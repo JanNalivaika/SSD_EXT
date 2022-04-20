@@ -24,6 +24,8 @@ def Reconstruct(perc):
     HD_location = "Output\HD_pictures"
     HDfiles = [HD_location + "/" + f for f in listdir(HD_location) if isfile(join(HD_location, f))]
 
+    upscaled = []
+
     for image in HDfiles:
         image = Image.open(image)
         image = np.array(image)
@@ -44,10 +46,6 @@ def Reconstruct(perc):
         mini_name = mini_picture.split("/")[-1].split("_")        #get hd picture
         HD_LOC = "Output\HD_pictures/HD_" + str(mini_name[0]) + "_" + str(mini_name[1]) + "_" + str(mini_name[2]) + ".png"
         HD_index =  HDfiles.index(HD_LOC)
-
-
-
-
 
 
         max_x_dim = HD_images[HD_index].shape[0]
@@ -117,6 +115,10 @@ def Reconstruct(perc):
             HD_images[HD_index][x1][y1 + x] = color
             HD_images[HD_index][x2][y1 + x] = color
 
+        upscaled.append([z1, y1, x1, z2, y2, x2, Feature, prop, HD_index])
+
+    with open('Output\sliced_and_resized/upscaled_predictions.pickle', 'wb') as handle:
+        pickle.dump(upscaled, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     for idx, x in enumerate(HD_images):
         HD_picture_save = Image.fromarray(x)
